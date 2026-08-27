@@ -20,9 +20,13 @@ quarantine area. A catalogue entry or URL is not counted as an acquired dataset.
 | DS071 verification record | 1062 | Records the publisher MD5 conflict | [File](https://drive.google.com/file/d/1O76MjJ1UJ93zb7qSQFGtbu8jt3ZPN-zN/view) |
 | DS071 polygon boundary | 11979 | Drive size read back | [File](https://drive.google.com/file/d/1mpfsBwpQvHcICaKjMoe1NqZhOa9JVR70/view) |
 | DS071 publisher MD5 companion | 97 | Retained as conflicting publisher evidence | [File](https://drive.google.com/file/d/1LIugV305YIGQBgQZCAE30I61Yi1xJEuc/view) |
+| Implementation source ZIP | 125282 | `2ad439b2860ec6b41cccddf41db4ff07dd55733ce92565faa2f958361aec9b3e`; Drive size read back | [File](https://drive.google.com/file/d/1tZnE67XnC5bzqOPZDH_JUPfGtOXB_FpJ/view) |
+| Five-page implementation/data PDF | 10782 | `9a85614d2cad8ec1572ecd4d3ac77ed94c12216d8710f7015332a715c816346d`; visually checked; Drive size read back | [File](https://drive.google.com/file/d/1saAq90FFonXe9uhB8kEI3q5qv4Ots9ak/view) |
 
 The two West Bengal MSME PDFs and their source manifest are retained in Drive folder
 `1wnXfh_3P91RtJQyltXFv8Po1ekOSjk_A`.
+
+Implementation source is committed locally at Git commit `c33bf20`.
 
 ## Evidence database content
 
@@ -42,3 +46,5 @@ The two West Bengal MSME PDFs and their source manifest are retained in Drive fo
 - Demand, prices, incumbents, route costs, real venture costs, and current finance rules are not
   sufficiently complete for a real venture recommendation.
 - The system therefore returns `INSUFFICIENT_EVIDENCE` instead of fabricating a business answer.
+- Public-link visibility of the root folder is not verified. Google Drive returned "sharing is
+  unavailable at this time" when the sharing dialog was opened; no permission change was made.
