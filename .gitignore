@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store
+*.sqlite3
+data/*.sqlite
+outputs/
+work/
+deliverables/*.zip
+work/pdf_render.*/
+work/spec_pdf_review/
+work/raw_stage/
+outputs/SIH26091_COMPLETE_SHARE_PACKAGE/research_foundation/
