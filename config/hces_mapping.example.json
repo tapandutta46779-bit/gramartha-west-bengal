@@ -1,0 +1,31 @@
+{
+  "dataset_id": "HCES-2023-24",
+  "dataset_version": "DDI-IND-MOSPI-NSS-HCES23-24",
+  "official_source_url": "https://microdata.gov.in/NADA/index.php/catalog/237",
+  "west_bengal_values": ["19"],
+  "households": {
+    "file": "households.csv",
+    "join_columns": ["household_id"],
+    "state_column": "state",
+    "district_column": "district",
+    "nss_region_column": "nss_region",
+    "sector_column": "sector",
+    "weight_column": "multiplier",
+    "household_size_column": "household_size"
+  },
+  "items": {
+    "file": "consumption_items.csv",
+    "join_columns": ["household_id"],
+    "item_code_column": "item_code",
+    "quantity_column": "quantity",
+    "expenditure_column": "expenditure",
+    "recall_days_column": "recall_days",
+    "quantity_unit": "SOURCE_UNIT"
+  },
+  "item_categories": {
+    "milk": [],
+    "milk_products": [],
+    "grocery_food": []
+  }
+}
+

@@ -37,6 +37,23 @@ class LoanTerms(BaseModel):
     verified_for_real_decision: bool = False
 
 
+class SchemeEligibility(BaseModel):
+    scheme_id: str
+    scheme_name: str
+    rule_version: str
+    retrieved_at: str
+    source_url: str
+    category: str | None = None
+    eligible: bool | None = None
+    maximum_loan_amount: float | None = None
+    interest_rate: float | None = None
+    tenure_months: int | None = None
+    collateral_required: bool | None = None
+    status_wording: str = "illustrative eligibility screening; not lender approval"
+    conditions: list[str] = Field(default_factory=list)
+    missing_for_financing: list[str] = Field(default_factory=list)
+
+
 class MonthProjection(BaseModel):
     month: int = Field(gt=0)
     demand: NonNegativeFloat
@@ -54,10 +71,18 @@ class DigitalTwinResult(BaseModel):
     months: list[MonthProjection]
     minimum_cash: float
     cumulative_cash_flow: float
-    break_even_month: int | None
+    operating_break_even_month: int | None
+    cash_break_even_month: int | None
+    investment_payback_month: int | None
+    initial_cash_position: float
+    owner_capital_at_risk: float
+    break_even_month: int | None = Field(
+        default=None,
+        description="Deprecated alias for operating_break_even_month.",
+    )
     default_month: int | None
     assumptions: dict[str, float] = Field(default_factory=dict)
-    method_version: str = "digital-twin-v1"
+    method_version: str = "digital-twin-v2"
 
 
 class FailureBoundary(BaseModel):

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, Field, NonNegativeFloat
+from pydantic import BaseModel, Field, NonNegativeFloat, model_validator
 
 from backend.models.economic_graph import EconomicGraph
 from backend.models.evidence import EvidenceRecord
@@ -18,6 +18,9 @@ class OperatingAssumptions(BaseModel):
     fixed_monthly_cost: NonNegativeFloat
     growth_rate: float = Field(default=0, gt=-1)
     ramp_months: int = Field(default=1, gt=0)
+    initial_investment: NonNegativeFloat = 0
+    owner_capital: NonNegativeFloat = 0
+    loan_disbursement: NonNegativeFloat = 0
 
 
 class LoanRequest(BaseModel):
@@ -29,8 +32,18 @@ class LoanRequest(BaseModel):
 
 
 class AnalyzeRequest(BaseModel):
-    geo_id: str
-    entrepreneur: EntrepreneurProfile
+    state: str = "West Bengal"
+    district: str | None = None
+    locality: str | None = None
+    parent_locality: str | None = None
+    geo_id: str | None = None
+    capital: NonNegativeFloat | None = None
+    business_category: str | None = None
+    profile: dict = Field(default_factory=dict)
+    entrepreneur: EntrepreneurProfile | None = None
+    language: str = "en"
+    allow_fuzzy_location: bool = False
+    catchment_radius_km: float = Field(default=10, gt=0, le=100)
     graph: EconomicGraph | None = None
     candidates: list[VentureCandidate] = Field(default_factory=list)
     evidence: list[EvidenceRecord] = Field(default_factory=list)
@@ -38,6 +51,14 @@ class AnalyzeRequest(BaseModel):
     contribution_margin_per_unit: float = 0
     operating_assumptions: OperatingAssumptions | None = None
     loan: LoanRequest | None = None
+
+    @model_validator(mode="after")
+    def validate_user_or_advanced_input(self):
+        if self.geo_id is None and not self.locality:
+            raise ValueError("provide geo_id or locality")
+        if self.entrepreneur is None and (self.capital is None or not self.business_category):
+            raise ValueError("provide entrepreneur or capital and business_category")
+        return self
 
 
 class CompareRequest(AnalyzeRequest):

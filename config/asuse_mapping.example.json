@@ -1,0 +1,24 @@
+{
+  "dataset_id": "ASUSE-2023-24",
+  "dataset_version": "DDI-IND-MOSPI-NSS-ASUSE23-24",
+  "official_source_url": "https://microdata.gov.in/NADA/index.php/catalog/238",
+  "west_bengal_values": ["19"],
+  "enterprises": {
+    "file": "enterprise_level.csv",
+    "state_column": "state",
+    "district_column": "district",
+    "sector_column": "sector",
+    "nic_column": "major_nic_5dig",
+    "weight_column": "multiplier",
+    "measure_columns": {
+      "receipts_inr": "receipts",
+      "expenses_inr": "expenses",
+      "assets_inr": "assets",
+      "workers": "workers",
+      "rent_inr": "rent",
+      "fuel_power_inr": "fuel_power",
+      "working_capital_inr": "working_capital"
+    }
+  }
+}
+

@@ -71,6 +71,12 @@ class EvidenceStore:
         ).fetchone()
         return GeographicIdentity.model_validate_json(row["payload"]) if row else None
 
+    def all_geographies(self) -> list[GeographicIdentity]:
+        rows = self.connection.execute(
+            "SELECT payload FROM geographic_identity ORDER BY district, locality, geo_id"
+        ).fetchall()
+        return [GeographicIdentity.model_validate_json(row["payload"]) for row in rows]
+
     def put_evidence(self, record: EvidenceRecord) -> None:
         self.connection.execute(
             "INSERT OR REPLACE INTO evidence_record VALUES (?, ?, ?, ?, ?)",

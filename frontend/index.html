@@ -36,12 +36,47 @@
         <div id="identity" class="identity empty">Choose a locality to inspect its evidence.</div>
         <div id="evidence" class="evidence-grid"></div>
       </section>
+      <section class="analysis-panel" aria-labelledby="analysis-heading">
+        <h2 id="analysis-heading">Run evidence-gated analysis</h2>
+        <form id="analysis-form">
+          <input id="selected-geo-id" type="hidden" />
+          <label for="capital">Available own capital (INR)</label>
+          <input id="capital" type="number" min="0" value="100000" required />
+          <label for="sector">Business sector</label>
+          <select id="sector">
+            <option value="dairy">Dairy / milk</option>
+            <option value="poultry">Poultry</option>
+            <option value="fisheries">Fisheries</option>
+            <option value="grocery">Kirana / grocery</option>
+            <option value="transport">Rural transport / aggregation</option>
+            <option value="food processing">Food processing</option>
+          </select>
+          <label for="radius">Catchment radius (km)</label>
+          <input id="radius" type="number" min="1" max="100" value="10" />
+          <label for="language">Explanation language</label>
+          <select id="language">
+            <option value="en">English</option>
+            <option value="bn">বাংলা</option>
+            <option value="hi">हिन्दी</option>
+          </select>
+          <button type="submit" disabled id="analyze-button">Select locality first</button>
+        </form>
+        <p id="analysis-status" role="status" aria-live="polite"></p>
+      </section>
+      <section class="decision-panel" aria-labelledby="decision-heading">
+        <div class="section-heading">
+          <h2 id="decision-heading">Canonical VentureDecision</h2>
+          <span id="decision-state" class="count"></span>
+        </div>
+        <div id="decision" class="decision empty">Run an analysis to inspect the audit trail.</div>
+      </section>
       <aside class="guardrail">
         <strong>Decision guardrail</strong>
         <p>
-          Livestock counts alone are not enough to recommend a business. Demand, prices,
-          incumbent capacity, route costs, venture costs, and current finance rules must also be
-          source-linked. Until then, the API returns <code>INSUFFICIENT_EVIDENCE</code>.
+          Livestock and old census counts alone are not enough to recommend a business. Missing
+          demand, current prices, productive supply, incumbent capacity, route costs, venture
+          costs, or lender-specific finance terms remain visible gates. The UI never converts a
+          gate into a recommendation.
         </p>
       </aside>
     </main>

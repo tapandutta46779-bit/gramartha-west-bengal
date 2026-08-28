@@ -39,15 +39,21 @@ def ingest_livestock_workbook(
     store: EvidenceStore,
     *,
     verify_checksum: bool = True,
+    expected_sha256: str | None = EXPECTED_SHA256,
     maximum_source_rows: int | None = None,
 ) -> dict[str, int]:
     path = Path(workbook_path)
     actual_hash = _sha256(path)
-    if verify_checksum and actual_hash != EXPECTED_SHA256:
+    if verify_checksum and expected_sha256 is None:
+        raise ValueError("an expected SHA-256 is required when verification is enabled")
+    if verify_checksum and actual_hash != expected_sha256:
         raise ValueError(f"regional workbook SHA-256 mismatch: {actual_hash}")
     workbook = load_workbook(path, read_only=False, data_only=True)
     aggregates: dict[tuple[str, str, str, str], dict[str, dict[str, int]]] = defaultdict(
         lambda: defaultdict(lambda: defaultdict(int))
+    )
+    source_references: dict[tuple[str, str, str, str], dict[str, list[int]]] = defaultdict(
+        lambda: defaultdict(list)
     )
     source_rows = 0
     for sheet in workbook.worksheets:
@@ -57,6 +63,7 @@ def ingest_livestock_workbook(
         sex = "male" if "Male" in sheet.title else "female"
         headers = [str(cell.value) for cell in sheet[1]]
         positions = {name: index for index, name in enumerate(headers)}
+        source_row_position = positions.get("source_row")
         parent_column = "block_name" if is_rural else "town_name"
         locality_column = "village_name" if is_rural else "ward_name"
         for row in sheet.iter_rows(min_row=2, values_only=True):
@@ -71,6 +78,8 @@ def ingest_livestock_workbook(
             key = (kind, district, parent, locality)
             for species in SPECIES:
                 aggregates[key][species][sex] += int(row[positions[species]] or 0)
+            if source_row_position is not None and row[source_row_position] is not None:
+                source_references[key][sex].append(int(row[source_row_position]))
             source_rows += 1
         if maximum_source_rows is not None and source_rows >= maximum_source_rows:
             break
@@ -117,7 +126,11 @@ def ingest_livestock_workbook(
                         raw_reference=path.name,
                         attributes={
                             "sex_breakdown": dict(breakdown),
+                            "source_rows": dict(
+                                source_references[(kind, district, parent, locality)]
+                            ),
                             "census_reference_year": 2019,
+                            "dataset_version": "20th Livestock Census 2019",
                         },
                     )
                 )
@@ -134,12 +147,14 @@ def main() -> None:
     parser.add_argument("workbook", type=Path)
     parser.add_argument("--sqlite", type=Path, required=True)
     parser.add_argument("--maximum-source-rows", type=int)
+    parser.add_argument("--expected-sha256")
     parser.add_argument("--skip-checksum", action="store_true")
     args = parser.parse_args()
     result = ingest_livestock_workbook(
         args.workbook,
         EvidenceStore(args.sqlite),
         verify_checksum=not args.skip_checksum,
+        expected_sha256=args.expected_sha256 or EXPECTED_SHA256,
         maximum_source_rows=args.maximum_source_rows,
     )
     print(result)

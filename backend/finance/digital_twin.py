@@ -15,16 +15,37 @@ def project_monthly_cashflow(
     growth_rate: float = 0.0,
     ramp_months: int = 1,
     loan: LoanTerms | None = None,
+    initial_investment: float = 0.0,
+    owner_capital: float = 0.0,
+    loan_disbursement: float = 0.0,
 ) -> DigitalTwinResult:
     if months <= 0 or ramp_months <= 0:
         raise ValueError("months and ramp_months must be positive")
-    if min(monthly_demand, capacity, unit_price, variable_cost_per_unit, fixed_monthly_cost) < 0:
+    if (
+        min(
+            monthly_demand,
+            capacity,
+            unit_price,
+            variable_cost_per_unit,
+            fixed_monthly_cost,
+            initial_investment,
+            owner_capital,
+            loan_disbursement,
+        )
+        < 0
+    ):
         raise ValueError("operating inputs cannot be negative")
-    cash = opening_cash
+    initial_cash_position = opening_cash + owner_capital + loan_disbursement - initial_investment
+    cash = initial_cash_position
     projections = []
-    break_even_month = None
+    operating_break_even_month = None
+    cash_break_even_month = None
+    investment_payback_month = None
     default_month = None
     cumulative_operating = 0.0
+    owner_capital_at_risk = (
+        owner_capital if owner_capital > 0 else max(0.0, initial_investment - loan_disbursement)
+    )
     for month in range(1, months + 1):
         demand = monthly_demand * ((1 + growth_rate) ** (month - 1))
         ramp = min(1.0, month / ramp_months)
@@ -51,15 +72,28 @@ def project_monthly_cashflow(
                 debt_service_coverage_ratio=dscr,
             )
         )
-        if break_even_month is None and cumulative_operating >= 0:
-            break_even_month = month
+        if operating_break_even_month is None and cumulative_operating >= 0:
+            operating_break_even_month = month
+        if cash_break_even_month is None and cash >= 0:
+            cash_break_even_month = month
+        if (
+            owner_capital_at_risk > 0
+            and investment_payback_month is None
+            and cumulative_operating >= owner_capital_at_risk
+        ):
+            investment_payback_month = month
         if default_month is None and cash < 0:
             default_month = month
     return DigitalTwinResult(
         months=projections,
         minimum_cash=min(item.closing_cash for item in projections),
         cumulative_cash_flow=cumulative_operating,
-        break_even_month=break_even_month,
+        operating_break_even_month=operating_break_even_month,
+        cash_break_even_month=cash_break_even_month,
+        investment_payback_month=investment_payback_month,
+        initial_cash_position=initial_cash_position,
+        owner_capital_at_risk=owner_capital_at_risk,
+        break_even_month=operating_break_even_month,
         default_month=default_month,
         assumptions={
             "opening_cash": opening_cash,
@@ -70,5 +104,8 @@ def project_monthly_cashflow(
             "fixed_monthly_cost": fixed_monthly_cost,
             "growth_rate": growth_rate,
             "ramp_months": float(ramp_months),
+            "initial_investment": initial_investment,
+            "owner_capital": owner_capital,
+            "loan_disbursement": loan_disbursement,
         },
     )

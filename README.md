@@ -1,6 +1,6 @@
 # SIH26091 Hyper-Local Economic Network Repair
 
-Deterministic decision backend for evidence-backed rural micro-enterprise analysis in West Bengal.
+Deterministic decision backend for evidence-backed micro-enterprise analysis across West Bengal.
 
 The system separates four layers:
 
@@ -19,9 +19,11 @@ Implementation status is tracked in `docs/IMPLEMENTATION_STATUS.md`. Data acquis
 python3 -m venv .venv
 .venv/bin/pip install -e '.[dev]'
 .venv/bin/sih26091-ingest-livestock \
-  outputs/SIH26091_KOLKATA_SOUTH_BENGAL/DS057_West_Bengal_Kolkata_South_Bengal_Livestock_Localities.xlsx \
-  --sqlite data/sih26091.sqlite
-SIH26091_SQLITE_PATH=data/sih26091.sqlite \
+  outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/DS057_West_Bengal_All_Available_Livestock_Localities.xlsx \
+  --sqlite data/sih26091_phase2.sqlite \
+  --expected-sha256 c26a01f54c7c8107809905b921ac5c8a3a0a27d5c1defe03ce4286c900eb2255
+SIH26091_SQLITE_PATH=data/sih26091_phase2.sqlite \
+SIH26091_OSM_SQLITE_PATH=data/west_bengal_osm.sqlite \
   .venv/bin/uvicorn backend.api.main:app --reload
 ```
 
@@ -31,11 +33,15 @@ Open `http://127.0.0.1:8000/ui/` for the evidence browser and
 ## Verify
 
 ```sh
-.venv/bin/ruff check backend tests
+.venv/bin/ruff check backend scripts tests
 .venv/bin/pytest
 ```
 
-The current controlled suite covers exact allocation, bottleneck sensitivity, hidden connectors,
-zero demand, counterfactual cannibalization, finite-candidate MVV optimality, amortization,
-monthly cash flow, failure boundaries, minimax regret, evidence intervals, regional ingestion,
-and the required API routes.
+The ordinary `/analyze` request accepts location or `geo_id`, capital and sector. It automatically
+resolves geography, retrieves evidence, builds spatial context, applies granular gates, and runs
+the graph/flow/MVV/finance/twin layers only when their required inputs exist. It never converts
+livestock stock, OSM counts, sampled priors or 2011 population into fabricated current values.
+
+Reproducible acquisition and processing commands are documented in
+`docs/DATA_ARCHITECTURE.md`; exact implementation boundaries are in
+`docs/IMPLEMENTATION_STATUS.md`.
