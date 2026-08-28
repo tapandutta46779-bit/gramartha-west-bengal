@@ -1,0 +1,27 @@
+{
+  "dataset_id": "HCES-2023-24",
+  "dataset_version": "DDI-IND-MOSPI-NSS-HCES23-24",
+  "official_source_url": "https://microdata.gov.in/NADA/index.php/catalog/237",
+  "west_bengal_values": ["19"],
+  "households": {
+    "file": "HCES_Data_2023-24_Csv/HCES_Data_2023-24_Csv/LEVEL - 15 (Section 1_1, A2,B2  C2).csv",
+    "join_columns": ["FSU_Serial_No", "Sector", "State", "NSS_Region", "District", "Stratum", "Sub_stratum", "Panel", "Sub_sample", "FOD_Sub_Region", "Sample_SU_No", "Sample_Sub_Division_No", "Second_Stage_Stratum_No", "Sample_Household_No"],
+    "state_column": "State",
+    "district_column": "District",
+    "nss_region_column": "NSS_Region",
+    "sector_column": "Sector",
+    "weight_column": "MULTIPLIER",
+    "household_size_column": "HOUSEHOLD_SIZE",
+    "row_filters": {"Questionnaire_No": ["F"]}
+  },
+  "items": {
+    "file": "HCES_Data_2023-24_Csv/HCES_Data_2023-24_Csv/LEVEL - 05 ( Sec 5  6).csv",
+    "join_columns": ["FSU_Serial_No", "Sector", "State", "NSS_Region", "District", "Stratum", "Sub_stratum", "Panel", "Sub_sample", "FOD_Sub_Region", "Sample_SU_No", "Sample_Sub_Division_No", "Second_Stage_Stratum_No", "Sample_Household_No"],
+    "item_code_column": "Item_Code",
+    "quantity_column": "Total_Consumption_Quantity",
+    "expenditure_column": "Total_Consumption_Value",
+    "default_recall_days": 7,
+    "quantity_unit": "litres"
+  },
+  "item_categories": {"liquid_milk": ["160"]}
+}

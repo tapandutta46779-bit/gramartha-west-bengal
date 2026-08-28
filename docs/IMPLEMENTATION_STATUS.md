@@ -10,9 +10,9 @@ Updated: 2026-08-28. Status values are `DONE`, `PARTIAL`, `BLOCKED`, `NOT_STARTE
 | Current LGD crosswalk | PARTIAL | Census codes and dataset/OSM IDs exist; current LGD village/PIN linkage remains unavailable in a captcha-free bulk path. |
 | Census 2011 PCA | DONE | All 19 publisher district workbooks; 179,148 unique observed population/household/sex records. No current-year projection. |
 | OSM extraction | DONE | 633,601 road ways, 17,212 POIs/places, R-tree indexes, radial catchment and local Dijkstra routing. |
-| HCES 2022-23 / 2023-24 | BLOCKED | Layout/method files acquired; unit data require MoSPI login, email activation, application and data agreement. Tested importer is ready. |
-| ASUSE 2023-24 | BLOCKED | Layout/readme acquired; unit data require MoSPI login/application. Tested weighted-prior importer is ready. |
-| Demand engine | PARTIAL | Evidence interval contract and strict missing gate exist; HCES-derived locality priors are blocked on authenticated microdata. |
+| HCES 2022-23 / 2023-24 | DONE | Authorized CSV archives acquired and integrity-tested; 18,136 and 18,120 WB households transformed into zero-inclusive, weighted liquid-milk priors. Raw unit records remain applicant-only. |
+| ASUSE 2023-24 | DONE | Authorized 98,219,217-byte CSV archive acquired and integrity-tested; 41,886 WB enterprises transformed into 1,448 district/sector/NIC2 priors using official item and weight rules. |
+| Demand engine | PARTIAL | Two HCES waves now provide defensible sampled district/sector milk priors; locality downscaling and current population/price calibration remain gated. |
 | Dairy supply engine | PARTIAL | Livestock stock is observed; conversion to productive/reachable milk supply is intentionally refused until sourced productive fraction/yield assumptions are loaded. |
 | Price ingestion | NOT_STARTED | No verified local milk price distribution is loaded. |
 | Competitor context | PARTIAL | Sector-specific OSM proxy counts and institutions are computed; incumbent capacity remains unknown. |

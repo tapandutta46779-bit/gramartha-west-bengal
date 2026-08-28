@@ -1,0 +1,54 @@
+{
+  "dataset_id": "ASUSE-2023-24",
+  "dataset_version": "DDI-IND-MOSPI-NSS-ASUSE23-24",
+  "official_source_url": "https://microdata.gov.in/NADA/index.php/catalog/238",
+  "state_code": "19",
+  "weight_divisor": 100,
+  "district_names": {
+    "01": "Darjiling",
+    "02": "Jalpaiguri",
+    "03": "Koch Bihar",
+    "04": "Uttar Dinajpur",
+    "05": "Dakshin Dinajpur",
+    "06": "Maldah",
+    "07": "Murshidabad",
+    "08": "Birbhum",
+    "09": "Purba Barddhaman",
+    "10": "Nadia",
+    "11": "North Twenty Four Parganas",
+    "12": "Hugli",
+    "13": "Bankura",
+    "14": "Puruliya",
+    "15": "Haora",
+    "16": "Kolkata",
+    "17": "South Twenty Four Parganas",
+    "18": "Paschim Medinipur",
+    "19": "Purba Medinipur",
+    "20": "Alipurduar",
+    "21": "Kalimpong",
+    "22": "Jhargram",
+    "23": "Paschim Barddhaman"
+  },
+  "members": {
+    "profile": "LEVEL - 02(Block 2)",
+    "reference_period": "LEVEL - 03",
+    "financials": "LEVEL - 08",
+    "workers": "LEVEL - 09",
+    "assets": "LEVEL - 11"
+  },
+  "financial_item_codes": {
+    "input": "765",
+    "output": "766",
+    "gva": "769"
+  },
+  "total_workers_item_code": "789",
+  "land_asset_item_code": "1001",
+  "total_fixed_assets_excluding_land_item_code": "1019",
+  "equipment_asset_item_codes": ["1003", "1004", "1006", "1007", "1008"],
+  "technical_sources": {
+    "readme": "https://microdata.gov.in/NADA/index.php/catalog/238/download/3299",
+    "schedule": "https://microdata.gov.in/NADA/index.php/catalog/238/download/3296",
+    "district_code_crosswalk": "https://microdata.gov.in/NADA/index.php/catalog/238/download/3295",
+    "estimation_procedure": "https://microdata.gov.in/NADA/index.php/catalog/238/download/3294"
+  }
+}

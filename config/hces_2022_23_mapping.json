@@ -1,0 +1,28 @@
+{
+  "dataset_id": "HCES-2022-23",
+  "dataset_version": "DDI-IND-MOSPI-NSSO-HCES22-23",
+  "official_source_url": "https://microdata.gov.in/NADA/index.php/catalog/224",
+  "west_bengal_values": ["19"],
+  "normalize_join_codes": true,
+  "households": {
+    "file": "CSV_data_HH_Cons_exp_22_23/LEVEL - 15 (Section 1_1, A2,B2 C2).csv",
+    "join_columns": ["fsu", "sector", "state", "nss_region", "district", "stratum", "sub_stratum", "panel", "sub_sample", "fod_subregion", "b1q1pt7", "b1q1pt10", "b1q1pt11", "b1q1pt12"],
+    "state_column": "state",
+    "district_column": "district",
+    "nss_region_column": "nss_region",
+    "sector_column": "sector",
+    "weight_column": "mult",
+    "household_size_column": "ba2b2c2q9",
+    "row_filters": {"questionaire_no": ["F"]}
+  },
+  "items": {
+    "file": "CSV_data_HH_Cons_exp_22_23/LEVEL - 05.csv",
+    "join_columns": ["fsu", "sector", "state", "nss_region", "district", "stratum", "sub_stratum", "panel", "sub_sample", "fod_subregion", "b1q1pt7", "b1q1pt10", "b1q1pt11", "b1q1pt12"],
+    "item_code_column": "b5pt1q2",
+    "quantity_column": "b5pt1q5",
+    "expenditure_column": "b5pt1q6",
+    "default_recall_days": 7,
+    "quantity_unit": "litres"
+  },
+  "item_categories": {"liquid_milk": ["160"]}
+}

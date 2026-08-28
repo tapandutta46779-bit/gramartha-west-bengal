@@ -133,39 +133,56 @@ def build() -> list[dict[str, object]]:
             )
     rows.extend(
         [
-            {
-                "dataset_id": "HCES2022-UNIT-DATA",
-                "local_path": "",
-                "size_bytes": "",
-                "sha256": "",
-                "source_url": "https://microdata.gov.in/NADA/index.php/catalog/224",
-                "coverage": "India sample; WB records required",
-                "role": "unit microdata",
-                "status": "BLOCKED_USER_AUTHENTICATION",
-                "blocker": "MoSPI login, email activation, application and data agreement",
-            },
-            {
-                "dataset_id": "HCES2023-UNIT-DATA",
-                "local_path": "",
-                "size_bytes": "",
-                "sha256": "",
-                "source_url": "https://microdata.gov.in/NADA/index.php/catalog/237",
-                "coverage": "India sample; WB records required",
-                "role": "unit microdata",
-                "status": "BLOCKED_USER_AUTHENTICATION",
-                "blocker": "MoSPI login, email activation, application and data agreement",
-            },
-            {
-                "dataset_id": "ASUSE2023-UNIT-DATA",
-                "local_path": "",
-                "size_bytes": "",
-                "sha256": "",
-                "source_url": "https://microdata.gov.in/NADA/index.php/catalog/238",
-                "coverage": "India sample; WB records required",
-                "role": "unit microdata",
-                "status": "BLOCKED_USER_AUTHENTICATION",
-                "blocker": "MoSPI login, email activation, application and data agreement",
-            },
+            row(
+                dataset_id="HCES2022-UNIT-DATA",
+                path="work/raw_stage/HCES_2022_23_RESTRICTED_MICRODATA/CSV_data_HH_Cons_exp_22_23.zip",
+                source_url="https://microdata.gov.in/NADA/index.php/catalog/224",
+                coverage="India sample; retained because publisher offers no WB-only archive",
+                role="restricted unit microdata; CSV ZIP",
+                status="ACQUIRED_RESTRICTED",
+                blocker=(
+                    "Applicant-only access; raw unit records must not be publicly redistributed"
+                ),
+            ),
+            row(
+                "HCES2023-UNIT-DATA",
+                "work/raw_stage/HCES_2023_24_RESTRICTED_MICRODATA/HCES_Data_2023-24_Csv.zip",
+                "https://microdata.gov.in/NADA/index.php/catalog/237",
+                "India sample; retained because publisher offers no WB-only archive",
+                "restricted unit microdata; CSV ZIP",
+                "ACQUIRED_RESTRICTED",
+                "Applicant-only access; raw unit records must not be publicly redistributed",
+            ),
+            row(
+                "ASUSE2023-UNIT-DATA",
+                "work/raw_stage/ASUSE_2023_24_RESTRICTED_MICRODATA/ASUSE_DATA_2023_24_CSV.zip",
+                "https://microdata.gov.in/NADA/index.php/catalog/238",
+                "India sample; retained because publisher offers no WB-only archive",
+                "restricted unit microdata; CSV ZIP",
+                "ACQUIRED_RESTRICTED",
+                "Applicant-only access; raw unit records must not be publicly redistributed",
+            ),
+            row(
+                "HCES2022-WB-MILK-PRIOR",
+                "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/HCES_2022_23_West_Bengal_liquid_milk_priors.json",
+                "derived from HCES2022-UNIT-DATA",
+                "West Bengal sampled district-code/sector priors",
+                "aggregate model prior",
+            ),
+            row(
+                "HCES2023-WB-MILK-PRIOR",
+                "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/HCES_2023_24_West_Bengal_liquid_milk_priors.json",
+                "derived from HCES2023-UNIT-DATA",
+                "West Bengal sampled district-code/sector priors",
+                "aggregate model prior",
+            ),
+            row(
+                "ASUSE2023-WB-ENTERPRISE-PRIOR",
+                "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/ASUSE_2023_24_West_Bengal_enterprise_priors.json",
+                "derived from ASUSE2023-UNIT-DATA",
+                "West Bengal sampled district-code/sector/NIC2 priors",
+                "aggregate model prior",
+            ),
         ]
     )
     OUTPUT.mkdir(parents=True, exist_ok=True)
