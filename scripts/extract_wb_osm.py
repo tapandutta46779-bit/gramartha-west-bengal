@@ -8,6 +8,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import osmium
+from shapely import wkt
 
 CATEGORIES = {
     ("amenity", "atm"): "ATM",
@@ -70,6 +71,8 @@ class Extractor(osmium.SimpleHandler):
         self.connection = connection
         self.entities: list[tuple] = []
         self.roads: list[tuple] = []
+        self.admin_areas: list[tuple] = []
+        self.wkt_factory = osmium.geom.WKTFactory()
 
     def node(self, node) -> None:
         tags = dict(node.tags)
@@ -133,8 +136,44 @@ class Extractor(osmium.SimpleHandler):
             )
         self._flush_if_needed()
 
+    def area(self, area) -> None:
+        tags = dict(area.tags)
+        admin_level = tags.get("admin_level")
+        if (
+            tags.get("boundary") != "administrative"
+            or admin_level not in {"4", "5", "6", "7"}
+            or not tags.get("name")
+        ):
+            return
+        try:
+            geometry_wkt = self.wkt_factory.create_multipolygon(area)
+            geometry = wkt.loads(geometry_wkt)
+        except (RuntimeError, ValueError):
+            return
+        if geometry.is_empty:
+            return
+        min_lon, min_lat, max_lon, max_lat = geometry.bounds
+        self.admin_areas.append(
+            (
+                area.orig_id(),
+                int(admin_level),
+                tags["name"],
+                geometry_wkt,
+                min_lat,
+                max_lat,
+                min_lon,
+                max_lon,
+                json.dumps(tags, sort_keys=True, ensure_ascii=False),
+            )
+        )
+        self._flush_if_needed()
+
     def _flush_if_needed(self) -> None:
-        if len(self.entities) >= 5_000 or len(self.roads) >= 5_000:
+        if (
+            len(self.entities) >= 5_000
+            or len(self.roads) >= 5_000
+            or len(self.admin_areas) >= 500
+        ):
             self.flush()
 
     def flush(self) -> None:
@@ -159,6 +198,17 @@ class Extractor(osmium.SimpleHandler):
                 self.roads,
             )
             self.roads.clear()
+        if self.admin_areas:
+            self.connection.executemany(
+                """
+                INSERT OR REPLACE INTO admin_area
+                (osm_id, admin_level, name, geometry_wkt, min_lat, max_lat,
+                 min_lon, max_lon, tags_json)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                self.admin_areas,
+            )
+            self.admin_areas.clear()
 
 
 def sha256(path: Path) -> str:
@@ -209,6 +259,19 @@ def create_database(
             nodes_json TEXT NOT NULL,
             tags_json TEXT NOT NULL
         );
+        CREATE TABLE admin_area (
+            osm_id INTEGER NOT NULL,
+            admin_level INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            geometry_wkt TEXT NOT NULL,
+            min_lat REAL NOT NULL,
+            max_lat REAL NOT NULL,
+            min_lon REAL NOT NULL,
+            max_lon REAL NOT NULL,
+            tags_json TEXT NOT NULL,
+            UNIQUE(osm_id, admin_level)
+        );
+        CREATE INDEX idx_admin_area_name_level ON admin_area(name, admin_level);
         """
     )
     handler = Extractor(connection)
@@ -226,11 +289,17 @@ def create_database(
         );
         INSERT INTO road_way_rtree
         SELECT rowid, min_lat, max_lat, min_lon, max_lon FROM road_way;
+        CREATE VIRTUAL TABLE admin_area_rtree USING rtree(
+            rowid, min_lat, max_lat, min_lon, max_lon
+        );
+        INSERT INTO admin_area_rtree
+        SELECT rowid, min_lat, max_lat, min_lon, max_lon FROM admin_area;
         """
     )
     counts = {
         "entities": connection.execute("SELECT count(*) FROM osm_entity").fetchone()[0],
         "roads": connection.execute("SELECT count(*) FROM road_way").fetchone()[0],
+        "admin_areas": connection.execute("SELECT count(*) FROM admin_area").fetchone()[0],
     }
     category_counts = dict(
         connection.execute(
@@ -242,9 +311,10 @@ def create_database(
         "source_sha256": source_hash,
         "source_size_bytes": str(source.stat().st_size),
         "extracted_at": datetime.now(UTC).isoformat(),
-        "extractor_version": "WB_OSM_SQLITE_V1",
+        "extractor_version": "WB_OSM_SQLITE_V2_DISTRICT_BOUNDARIES",
         "entity_count": str(counts["entities"]),
         "road_way_count": str(counts["roads"]),
+        "admin_area_count": str(counts["admin_areas"]),
         "category_counts": json.dumps(category_counts, sort_keys=True),
         "osm_completeness_caveat": (
             "OSM is volunteered proxy evidence and is not a complete business registry."

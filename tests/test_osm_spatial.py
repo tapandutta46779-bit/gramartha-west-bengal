@@ -25,9 +25,26 @@ OSM_XML = """<?xml version="1.0" encoding="UTF-8"?>
 
 PLACE_OSM_XML = """<?xml version="1.0" encoding="UTF-8"?>
 <osm version="0.6" generator="test">
+  <node id="30" lat="22.6000" lon="88.3000"/>
+  <node id="31" lat="22.8000" lon="88.3000"/>
+  <node id="32" lat="22.8000" lon="88.5000"/>
+  <node id="33" lat="22.6000" lon="88.5000"/>
   <node id="20" lat="22.7000" lon="88.4000">
     <tag k="place" v="town"/><tag k="name" v="Barasat"/>
   </node>
+  <way id="40">
+    <nd ref="30"/><nd ref="31"/><nd ref="32"/><nd ref="33"/><nd ref="30"/>
+  </way>
+  <relation id="50">
+    <member type="way" ref="40" role="outer"/>
+    <tag k="type" v="boundary"/><tag k="boundary" v="administrative"/>
+    <tag k="admin_level" v="5"/><tag k="name" v="North Twenty Four Parganas"/>
+  </relation>
+  <relation id="51">
+    <member type="way" ref="40" role="outer"/>
+    <tag k="type" v="boundary"/><tag k="boundary" v="administrative"/>
+    <tag k="admin_level" v="6"/><tag k="name" v="Barasat - I"/>
+  </relation>
 </osm>
 """
 
@@ -57,7 +74,8 @@ def test_exact_osm_place_crosswalk_adds_proxy_coordinate(tmp_path: Path) -> None
     source = tmp_path / "places.osm"
     source.write_text(PLACE_OSM_XML)
     osm_database = tmp_path / "osm.sqlite"
-    create_database(source, osm_database)
+    extraction = create_database(source, osm_database)
+    assert extraction["admin_areas"] == 2
     evidence_database = tmp_path / "evidence.sqlite"
     store = EvidenceStore(evidence_database)
     store.put_geography(
@@ -75,6 +93,54 @@ def test_exact_osm_place_crosswalk_adds_proxy_coordinate(tmp_path: Path) -> None
     assert updated.latitude == 22.7
     assert updated.osm_ids == ["node/20"]
     assert "OSM_PLACE_COORDINATE_PROXY" in updated.quality_flags
+
+
+def test_district_boundary_disambiguates_same_named_district_localities(tmp_path: Path) -> None:
+    source = tmp_path / "places.osm"
+    source.write_text(PLACE_OSM_XML)
+    osm_database = tmp_path / "osm.sqlite"
+    create_database(source, osm_database)
+    evidence_database = tmp_path / "evidence.sqlite"
+    store = EvidenceStore(evidence_database)
+    for geo_id, district in (("a", "North 24 Parganas"), ("b", "Nadia")):
+        store.put_geography(
+            GeographicIdentity(
+                geo_id=geo_id,
+                district=district,
+                locality="Barasat",
+                locality_type="VILLAGE",
+            )
+        )
+    report = enrich(evidence_database, osm_database, tmp_path / "report.json")
+    assert report["matched"] == 1
+    assert report["ambiguous_not_merged"] == 1
+    assert store.get_geography("a").latitude == 22.7
+    assert store.get_geography("b").latitude is None
+
+
+def test_subdistrict_boundary_disambiguates_duplicate_name_inside_district(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "places.osm"
+    source.write_text(PLACE_OSM_XML)
+    osm_database = tmp_path / "osm.sqlite"
+    create_database(source, osm_database)
+    evidence_database = tmp_path / "evidence.sqlite"
+    store = EvidenceStore(evidence_database)
+    for geo_id, block in (("a", "Barasat - I"), ("b", "Barasat - II")):
+        store.put_geography(
+            GeographicIdentity(
+                geo_id=geo_id,
+                district="North 24 Parganas",
+                block=block,
+                locality="Barasat",
+                locality_type="VILLAGE",
+            )
+        )
+    report = enrich(evidence_database, osm_database, tmp_path / "report.json")
+    assert report["matched"] == 1
+    assert store.get_geography("a").latitude == 22.7
+    assert store.get_geography("b").latitude is None
 
 
 def test_service_spatial_context_is_proxy_and_withholds_capacity(
