@@ -4,7 +4,12 @@ from pydantic import BaseModel, Field
 
 from backend.models.decision import EvidenceGapCode, EvidenceGate
 from backend.models.economic_graph import EconomicEdge, EconomicGraph, EconomicNode, NodeType
-from backend.models.evidence import ConfidenceLevel, EstimateInterval, EvidenceRecord
+from backend.models.evidence import (
+    ConfidenceLevel,
+    EstimateInterval,
+    EvidenceRecord,
+    FreshnessStatus,
+)
 from backend.models.profile import EntrepreneurProfile
 from backend.models.venture import PrimitiveType, VentureCandidate, VenturePrimitive
 
@@ -47,21 +52,30 @@ def build_automatic_inputs(
     return _build_dairy(geo_id, evidence, profile)
 
 
-def _numeric(evidence: list[EvidenceRecord], variable: str) -> EvidenceRecord | None:
+def _numeric(
+    evidence: list[EvidenceRecord],
+    variable: str,
+    allowed_freshness: set[FreshnessStatus] | None = None,
+) -> EvidenceRecord | None:
     matches = [
         item
         for item in evidence
         if item.variable == variable
         and isinstance(item.value, (int, float))
         and not isinstance(item.value, bool)
+        and (allowed_freshness is None or item.freshness_status in allowed_freshness)
     ]
     return matches[0] if len(matches) == 1 else None
 
 
 def _interval(
-    evidence: list[EvidenceRecord], variable: str, unit: str, method: str
+    evidence: list[EvidenceRecord],
+    variable: str,
+    unit: str,
+    method: str,
+    allowed_freshness: set[FreshnessStatus] | None = None,
 ) -> EstimateInterval:
-    record = _numeric(evidence, variable)
+    record = _numeric(evidence, variable, allowed_freshness)
     if record is None:
         return EstimateInterval.insufficient(unit, method, f"Missing {variable}.")
     value = float(record.value)
@@ -79,26 +93,111 @@ def _interval(
     )
 
 
+def _demand_interval(evidence: list[EvidenceRecord]) -> EstimateInterval:
+    direct = _interval(
+        evidence,
+        "monthly_dairy_demand_litres",
+        "litres/month",
+        "dairy-demand-direct-v1",
+        {FreshnessStatus.CURRENT, FreshnessStatus.RECENT, FreshnessStatus.PROJECTED},
+    )
+    if direct.status != "INSUFFICIENT_EVIDENCE":
+        return direct
+    rate = _numeric(
+        evidence,
+        "monthly_liquid_milk_litres_per_capita_prior",
+        {FreshnessStatus.RECENT, FreshnessStatus.CURRENT},
+    )
+    if rate is None:
+        return EstimateInterval.insufficient(
+            "litres/month", "hces-direct-weighted-district-sector-v1", "Missing HCES rate prior."
+        )
+    population = _numeric(evidence, "population_projected_2026") or _numeric(
+        evidence, "population_current"
+    )
+    if population is not None:
+        status = "PROJECTED" if population.variable == "population_projected_2026" else "ESTIMATED"
+        return _multiply_rate_population(rate, population, status=status)
+    historical = _numeric(evidence, "population_observed_2011")
+    if historical is not None:
+        interval = _multiply_rate_population(rate, historical, status="STALE_FOR_DECISION")
+        return interval.model_copy(
+            update={
+                "confidence": ConfidenceLevel.LOW,
+                "notes": [
+                    "Uses the observed 2011 population with a 2023-24 sampled consumption rate.",
+                    "This is a historical baseline proxy, not a 2026 locality-demand estimate.",
+                ],
+            }
+        )
+    return EstimateInterval.insufficient(
+        "litres/month",
+        "hces-direct-weighted-district-sector-v1",
+        "HCES rate exists, but no locality population baseline or current projection is linked.",
+    )
+
+
+def _multiply_rate_population(
+    rate: EvidenceRecord, population: EvidenceRecord, *, status: str
+) -> EstimateInterval:
+    rate_value = float(rate.value)  # type: ignore[arg-type]
+    population_value = float(population.value)  # type: ignore[arg-type]
+    rate_lower = float(rate.attributes.get("lower", rate_value))
+    rate_upper = float(rate.attributes.get("upper", rate_value))
+    population_lower = float(population.attributes.get("lower", population_value))
+    population_upper = float(population.attributes.get("upper", population_value))
+    return EstimateInterval(
+        central=rate_value * population_value,
+        lower=rate_lower * population_lower,
+        upper=rate_upper * population_upper,
+        unit="litres/month",
+        confidence=_lower_confidence(rate.confidence, population.confidence),
+        evidence_ids=[rate.id, population.id],
+        method_version="hces-rate-times-population-v1",
+        status=status,
+    )
+
+
 def _build_dairy(
     geo_id: str, evidence: list[EvidenceRecord], profile: EntrepreneurProfile
 ) -> AutomaticBuildResult:
-    demand = _interval(evidence, "monthly_dairy_demand_litres", "litres/month", "dairy-demand-v1")
+    demand = _demand_interval(evidence)
     supply = _interval(
         evidence,
         "reachable_milk_supply_litres_month",
         "litres/month",
         "dairy-supply-v1",
+        {FreshnessStatus.CURRENT, FreshnessStatus.RECENT, FreshnessStatus.PROJECTED},
     )
-    price = _interval(evidence, "milk_price_inr_per_litre", "INR/litre", "dairy-price-v1")
-    capacity_record = _numeric(evidence, "incumbent_capacity_litres_month")
-    route_cost_record = _numeric(evidence, "transport_cost_inr_per_litre")
+    price = _interval(
+        evidence,
+        "milk_price_inr_per_litre",
+        "INR/litre",
+        "dairy-price-v1",
+        {FreshnessStatus.CURRENT},
+    )
+    capacity_record = _numeric(
+        evidence,
+        "incumbent_capacity_litres_month",
+        {FreshnessStatus.CURRENT, FreshnessStatus.RECENT},
+    )
+    route_cost_record = _numeric(
+        evidence, "transport_cost_inr_per_litre", {FreshnessStatus.CURRENT}
+    )
     gates = []
-    if demand.status == "INSUFFICIENT_EVIDENCE":
+    if demand.status not in {"EVIDENCE_DERIVED", "ESTIMATED", "PROJECTED"}:
         gates.append(
             EvidenceGate(
                 code=EvidenceGapCode.NO_DEMAND_EVIDENCE,
-                message="No defensible locality dairy-demand estimate is available.",
-                required_variables=["monthly_dairy_demand_litres"],
+                message=(
+                    "No current defensible locality dairy-demand estimate is available. HCES may "
+                    "supply a district/sector rate, but a current or explicitly projected locality "
+                    "population is still required."
+                ),
+                required_variables=[
+                    "monthly_liquid_milk_litres_per_capita_prior",
+                    "population_projected_2026",
+                ],
             )
         )
     if supply.status == "INSUFFICIENT_EVIDENCE":
@@ -139,9 +238,9 @@ def _build_dairy(
 
     graph = None
     graph_summary = {}
-    graph_ready = all(item.status != "INSUFFICIENT_EVIDENCE" for item in (demand, supply)) and all(
-        item is not None for item in (capacity_record, route_cost_record)
-    )
+    graph_ready = demand.status in {"EVIDENCE_DERIVED", "ESTIMATED", "PROJECTED"} and all(
+        item.status != "INSUFFICIENT_EVIDENCE" for item in (supply,)
+    ) and all(item is not None for item in (capacity_record, route_cost_record))
     if graph_ready:
         demand_id = demand.evidence_ids[0]
         supply_id = supply.evidence_ids[0]
@@ -244,7 +343,9 @@ def _dairy_candidates(
     if graph is None:
         return []
     variables = {
-        name: _numeric(evidence, name)
+        name: _numeric(
+            evidence, name, {FreshnessStatus.CURRENT, FreshnessStatus.RECENT}
+        )
         for name in (
             "venture_transport_capex_inr",
             "venture_transport_opex_inr_month",
@@ -281,7 +382,11 @@ def _dairy_candidates(
                 commodity="milk",
                 capacity=capacity,
                 unit_cost=float(
-                    _numeric(evidence, "transport_cost_inr_per_litre").value  # type: ignore[union-attr]
+                    _numeric(
+                        evidence,
+                        "transport_cost_inr_per_litre",
+                        {FreshnessStatus.CURRENT},
+                    ).value  # type: ignore[union-attr]
                 ),
                 evidence_ids=evidence_ids,
                 added_by_venture=True,
@@ -308,3 +413,7 @@ def _confidence_value(level: ConfidenceLevel) -> float:
         ConfidenceLevel.LOW: 0.4,
         ConfidenceLevel.INSUFFICIENT: 0.0,
     }[level]
+
+
+def _lower_confidence(*levels: ConfidenceLevel) -> ConfidenceLevel:
+    return min(levels, key=_confidence_value)

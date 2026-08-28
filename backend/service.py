@@ -15,7 +15,7 @@ from backend.evidence.store import EvidenceStore
 from backend.explanation import deterministic_explanation
 from backend.finance.calculator import amortized_loan
 from backend.finance.digital_twin import project_monthly_cashflow
-from backend.finance.rules import screen_pmmy
+from backend.finance.rules import screen_ahidf, screen_pmmy
 from backend.models.decision import (
     DecisionStatus,
     EvidenceGapCode,
@@ -45,8 +45,10 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         )
 
     entrepreneur = _entrepreneur(request, geography.geo_id)
-    evidence = request.evidence or store.get_evidence(geography.geo_id)
     sector = entrepreneur.business_category
+    local_evidence = request.evidence or store.get_evidence(geography.geo_id)
+    survey_sector = "2" if geography.locality_type in {"TOWN", "WARD"} else "1"
+    evidence = [*local_evidence, *store.get_regional_priors(geography.district, survey_sector)]
     automatic = build_automatic_inputs(
         geo_id=geography.geo_id,
         sector=sector,
@@ -94,6 +96,11 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         requested_amount=requested_finance,
         previously_repaid_tarun=bool(request.profile.get("previously_repaid_tarun", False)),
     )
+    ahidf_screen = screen_ahidf(
+        sector=sector,
+        requested_amount=requested_finance,
+        organization_type=request.profile.get("organization_type"),
+    )
 
     blocking = [gate for gate in gates if gate.blocking]
     viable = selected is not None and (twin is None or twin.default_month is None)
@@ -113,7 +120,7 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         analysis_id=analysis_id,
         created_at=now,
         status=status,
-        methodology_version="decision-v2",
+        methodology_version="decision-v3",
         geography=geography,
         geo_resolution=resolution,
         entrepreneur=entrepreneur,
@@ -150,7 +157,7 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         counterfactual=mvv.counterfactual if mvv else None,
         mvv=mvv,
         loan_terms=loan_terms,
-        official_finance=[finance_screen],
+        official_finance=[finance_screen, ahidf_screen],
         digital_twin=twin,
         operating_break_even=twin.operating_break_even_month if twin else None,
         investment_payback=twin.investment_payback_month if twin else None,
@@ -172,6 +179,7 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         sources=sorted(
             {
                 *(str(item.source_url) for item in evidence),
+                *(item.source_url for item in (finance_screen, ahidf_screen)),
                 *spatial["sources"],
             }
         ),
@@ -294,7 +302,7 @@ def _refusal(
         analysis_id=analysis_id,
         created_at=now,
         status=DecisionStatus.INSUFFICIENT_EVIDENCE,
-        methodology_version="decision-v2",
+        methodology_version="decision-v3",
         geo_resolution=resolution,
         sector=request.business_category,
         confidence=ConfidenceLevel.INSUFFICIENT,

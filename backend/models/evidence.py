@@ -23,6 +23,20 @@ class ConfidenceLevel(StrEnum):
     INSUFFICIENT = "INSUFFICIENT"
 
 
+class DataChangeClass(StrEnum):
+    STRUCTURAL_SLOW_CHANGING = "STRUCTURAL_SLOW_CHANGING"
+    TIME_SENSITIVE_FAST_CHANGING = "TIME_SENSITIVE_FAST_CHANGING"
+
+
+class FreshnessStatus(StrEnum):
+    CURRENT = "CURRENT"
+    RECENT = "RECENT"
+    HISTORICAL_BASELINE = "HISTORICAL_BASELINE"
+    PROJECTED = "PROJECTED"
+    STALE_FOR_DECISION = "STALE_FOR_DECISION"
+    UNKNOWN = "UNKNOWN"
+
+
 class EvidenceSource(BaseModel):
     source_id: str
     name: str
@@ -46,9 +60,13 @@ class EvidenceRecord(BaseModel):
     source_url: HttpUrl | str
     source_dataset: str
     observation_date: date | None = None
+    effective_date: date | None = None
     retrieved_at: datetime
     evidence_type: EvidenceType
     confidence: ConfidenceLevel
+    data_change_class: DataChangeClass | None = None
+    freshness_status: FreshnessStatus = FreshnessStatus.UNKNOWN
+    freshness_as_of: date | None = None
     quality_flags: list[str] = Field(default_factory=list)
     methodology_version: str
     raw_reference: str | None = None

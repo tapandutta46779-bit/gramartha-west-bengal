@@ -43,12 +43,20 @@ class SchemeEligibility(BaseModel):
     rule_version: str
     retrieved_at: str
     source_url: str
+    effective_from: str | None = None
+    effective_to: str | None = None
+    page_last_updated: str | None = None
+    freshness_status: str = "UNKNOWN"
     category: str | None = None
     eligible: bool | None = None
     maximum_loan_amount: float | None = None
     interest_rate: float | None = None
     tenure_months: int | None = None
     collateral_required: bool | None = None
+    interest_subvention_rate: float | None = None
+    maximum_project_finance_share: float | None = None
+    maximum_repayment_months: int | None = None
+    maximum_moratorium_months: int | None = None
     status_wording: str = "illustrative eligibility screening; not lender approval"
     conditions: list[str] = Field(default_factory=list)
     missing_for_financing: list[str] = Field(default_factory=list)

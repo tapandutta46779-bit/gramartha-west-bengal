@@ -10,6 +10,8 @@ from backend.models.decision import VentureDecision
 from backend.models.evidence import EvidenceRecord
 from backend.models.geography import GeographicIdentity
 
+from .districts import canonical_district
+
 
 class EvidenceStore:
     def __init__(self, path: str | Path = ":memory:") -> None:
@@ -38,6 +40,15 @@ class EvidenceStore:
                 payload TEXT NOT NULL
             );
             CREATE INDEX IF NOT EXISTS idx_evidence_geo ON evidence_record(geo_id);
+            CREATE TABLE IF NOT EXISTS regional_prior (
+                id TEXT PRIMARY KEY,
+                district TEXT NOT NULL,
+                sector TEXT NOT NULL,
+                variable TEXT NOT NULL,
+                payload TEXT NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_regional_prior_lookup
+                ON regional_prior(district, sector, variable);
             CREATE TABLE IF NOT EXISTS analysis (
                 analysis_id TEXT PRIMARY KEY,
                 created_at TEXT NOT NULL,
@@ -90,6 +101,24 @@ class EvidenceStore:
         ).fetchall()
         return [EvidenceRecord.model_validate_json(row["payload"]) for row in rows]
 
+    def put_regional_prior(self, record: EvidenceRecord, *, district: str, sector: str) -> None:
+        self.connection.execute(
+            "INSERT OR REPLACE INTO regional_prior VALUES (?, ?, ?, ?, ?)",
+            (record.id, district, sector, record.variable, record.model_dump_json()),
+        )
+        self._commit_unless_deferred()
+
+    def get_regional_priors(self, district: str, sector: str) -> list[EvidenceRecord]:
+        canonical = canonical_district(district)
+        if canonical is None:
+            return []
+        rows = self.connection.execute(
+            "SELECT payload FROM regional_prior WHERE district = ? AND sector = ? "
+            "ORDER BY variable, id",
+            (canonical, sector),
+        ).fetchall()
+        return [EvidenceRecord.model_validate_json(row["payload"]) for row in rows]
+
     def put_analysis(self, decision: VentureDecision) -> None:
         self.connection.execute(
             "INSERT OR REPLACE INTO analysis VALUES (?, ?, ?)",
@@ -105,7 +134,7 @@ class EvidenceStore:
 
     def export_json(self) -> str:
         counts = {}
-        for table in ("geographic_identity", "evidence_record", "analysis"):
+        for table in ("geographic_identity", "evidence_record", "regional_prior", "analysis"):
             counts[table] = self.connection.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
         return json.dumps(counts, sort_keys=True)
 

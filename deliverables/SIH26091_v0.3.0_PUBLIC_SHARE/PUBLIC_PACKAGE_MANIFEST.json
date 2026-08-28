@@ -1,0 +1,935 @@
+{
+  "package": "SIH26091_v0.3.0_PUBLIC_SHARE",
+  "created_at": "2026-08-28T12:01:29.415481+00:00",
+  "file_count": 184,
+  "uncompressed_size_bytes": 1457330971,
+  "exclusions": [
+    "restricted HCES/ASUSE unit-record archives",
+    "fitted joblib artifacts pending redistribution-terms review",
+    "temporary, duplicate and split-part files"
+  ],
+  "files": [
+    {
+      "path": "FILES_TO_DELETE.md",
+      "size_bytes": 67485,
+      "sha256": "897f7086c0e6f5645b3d975c4b1fd8d2d79eeecbac09842cb6e33b4d6890ecb1"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 2077,
+      "sha256": "cc8abb09f94accc28aa729b7e88da21d5a7d7f93149366a277b3834cdea57bbd"
+    },
+    {
+      "path": "backend/__init__.py",
+      "size_bytes": 70,
+      "sha256": "330f5bcbf7c6ae5ce6884ecdb93053f5eecffcd4ecc9ec6b990dda4d3c2cb01e"
+    },
+    {
+      "path": "backend/api/__init__.py",
+      "size_bytes": 24,
+      "sha256": "c5e79b75137811726e30acef2fa5cfc649514fce1c86da771535b368f43238c0"
+    },
+    {
+      "path": "backend/api/contracts.py",
+      "size_bytes": 2554,
+      "sha256": "76f67f5f26dbca81a9326cfe986ef1786ebd4d4ede85c2fe265f288442b7de03"
+    },
+    {
+      "path": "backend/api/main.py",
+      "size_bytes": 3377,
+      "sha256": "ea0cfd99045d2f587b11fd5becf566140c9ffd906937367042816e389dff227d"
+    },
+    {
+      "path": "backend/engine/__init__.py",
+      "size_bytes": 71,
+      "sha256": "81ba5245cf87dad339e422fd7bb743d19b5a69ac2527d79d6c58aa354982a19f"
+    },
+    {
+      "path": "backend/engine/bottleneck.py",
+      "size_bytes": 1578,
+      "sha256": "109025d3ac83ec23794884df8fa86978952ffe924c654f8bf938f37e2a630d5f"
+    },
+    {
+      "path": "backend/engine/counterfactual.py",
+      "size_bytes": 2159,
+      "sha256": "1d4269b018269f5f539ee0dd6a7686ecc5b90f1ef60824e2475fd4e3eb2d7838"
+    },
+    {
+      "path": "backend/engine/flow_engine.py",
+      "size_bytes": 5333,
+      "sha256": "8c31329ff9226fa362f8809f310eca6a4e4af2e24d9887fb1e37161f52bae797"
+    },
+    {
+      "path": "backend/engine/mvv.py",
+      "size_bytes": 1953,
+      "sha256": "0479d0df182788f8d1598b5d11a2e420ed675b9a4fd817e3ee260967bb707528"
+    },
+    {
+      "path": "backend/engine/robust.py",
+      "size_bytes": 2078,
+      "sha256": "f21c0fa8be7bb4ba30cca757090e54a2f8293b49fb4e3528f5e81bae90e547e9"
+    },
+    {
+      "path": "backend/evidence/__init__.py",
+      "size_bytes": 52,
+      "sha256": "a1ea2ef5144823481258384acfe95adddf1f6ec7e26ad6781d4e0e5fa009de3b"
+    },
+    {
+      "path": "backend/evidence/districts.py",
+      "size_bytes": 1258,
+      "sha256": "3398995f5aa398596185b8a833b41740808ef1ee49f3147763ca3da0b5690b52"
+    },
+    {
+      "path": "backend/evidence/freshness.py",
+      "size_bytes": 2262,
+      "sha256": "edf24708924e2ec5f439514b4a6efb243b8b4ed9a41890ee50ecdd75aeba27f0"
+    },
+    {
+      "path": "backend/evidence/geography_resolver.py",
+      "size_bytes": 5912,
+      "sha256": "72aa74d666f445527e5368800145c1d571c2fc76d1a8ebf1a7584d2988318f50"
+    },
+    {
+      "path": "backend/evidence/livestock_adapter.py",
+      "size_bytes": 6943,
+      "sha256": "d8dee4cac8ead59df69eb9b9e0046798d4315a719327ff7935f74ae35f6f5fde"
+    },
+    {
+      "path": "backend/evidence/store.py",
+      "size_bytes": 6458,
+      "sha256": "b70a9b03e470e3525487be4e903177db2c67803c6ec70b86c815dac3c305a927"
+    },
+    {
+      "path": "backend/explanation.py",
+      "size_bytes": 2218,
+      "sha256": "8d665bb9c9eea9324227f7ec10d2fd3b951fc15f12c822647e3fb07d9140be41"
+    },
+    {
+      "path": "backend/finance/__init__.py",
+      "size_bytes": 68,
+      "sha256": "7d9db14d527ee8dfd71869c93316dc444850f7631307a982c45a40a71cf3fa4e"
+    },
+    {
+      "path": "backend/finance/calculator.py",
+      "size_bytes": 1694,
+      "sha256": "85e22147299b0d4b5de18546c7642b120e38702fd13b26481ca26a2976ed22ab"
+    },
+    {
+      "path": "backend/finance/digital_twin.py",
+      "size_bytes": 4298,
+      "sha256": "1d283b60f1f1bf9ea9b72931ccf4bbcdce90e0725b5b93719a1beb3135676c8e"
+    },
+    {
+      "path": "backend/finance/rules.py",
+      "size_bytes": 5846,
+      "sha256": "f727583b834d60dfcc10f8e627dca6c411e803c68e9a2acd3778fc727c148807"
+    },
+    {
+      "path": "backend/finance/stress.py",
+      "size_bytes": 1550,
+      "sha256": "4a17038bed3cec087f9d8fe28f66919444b103d44729bf7e658465dd31af8a70"
+    },
+    {
+      "path": "backend/learning/__init__.py",
+      "size_bytes": 84,
+      "sha256": "1bbb6312e31a36e37345e9e7569861760d01348cb1d8f6a33109343a9acc874c"
+    },
+    {
+      "path": "backend/learning/baselines.py",
+      "size_bytes": 2087,
+      "sha256": "1e20a061d1f1e404104dede66779b9a0fd5850f25cb300d675cfc3d58afc7565"
+    },
+    {
+      "path": "backend/models/__init__.py",
+      "size_bytes": 313,
+      "sha256": "197be71e466b3fc274fe79c5e026f758b86822e02be5949b4d3b2a193107e527"
+    },
+    {
+      "path": "backend/models/decision.py",
+      "size_bytes": 4080,
+      "sha256": "684057b88a52d6c37896caf179df899efa559a1aad69dd6a95fbf3310766d4c1"
+    },
+    {
+      "path": "backend/models/economic_graph.py",
+      "size_bytes": 1926,
+      "sha256": "bfbae6e93005f8430f90418d3c54b100d01852984011219ead30bf9675cee428"
+    },
+    {
+      "path": "backend/models/evidence.py",
+      "size_bytes": 2590,
+      "sha256": "b8a52e3cfc2f8aeacbc986e99b7f985b65d0aeb37a80b704b7bd10ebd7151909"
+    },
+    {
+      "path": "backend/models/finance.py",
+      "size_bytes": 3325,
+      "sha256": "dd55e00756ba332cf1e7e2208ae14122027a4f892bab00f424f60bd39b5090da"
+    },
+    {
+      "path": "backend/models/flow.py",
+      "size_bytes": 848,
+      "sha256": "5cab6ccfe4d26800d0d92b8c096d8f3b938035a26d367bd9e5a493fb8e92be3b"
+    },
+    {
+      "path": "backend/models/geography.py",
+      "size_bytes": 1551,
+      "sha256": "c98e72802c2996465d7204444eeb60d9bac213277cfee5faf46b346200dd6ca7"
+    },
+    {
+      "path": "backend/models/profile.py",
+      "size_bytes": 607,
+      "sha256": "806e1ffebda502acde68197f2f178acf560816a633e31cb634a6039442f851f9"
+    },
+    {
+      "path": "backend/models/venture.py",
+      "size_bytes": 2004,
+      "sha256": "396e1c24ad043aaf9bbe95d2ef8deceaf6b6219c188e17c061bb0a0ab7796891"
+    },
+    {
+      "path": "backend/pipeline/__init__.py",
+      "size_bytes": 59,
+      "sha256": "543962ce3cb36d47aa0fc2a11d5fb2cd844030b68a46dc50b910a399bbf3820d"
+    },
+    {
+      "path": "backend/pipeline/automatic.py",
+      "size_bytes": 15461,
+      "sha256": "578e18fa43e00732df5421e60f991bf5074ed9533cf7aabc43f32107c589940c"
+    },
+    {
+      "path": "backend/service.py",
+      "size_bytes": 18723,
+      "sha256": "ea5ee84e25fea80b86acbe1de0a02bc2d0581e3131e6367a7e4ff7356d080b28"
+    },
+    {
+      "path": "backend/spatial/__init__.py",
+      "size_bytes": 52,
+      "sha256": "678ca258e11ba00a408d325530c9eb8a2741fcc2a86edfe0a49371ce7473c72d"
+    },
+    {
+      "path": "backend/spatial/osm_store.py",
+      "size_bytes": 8686,
+      "sha256": "4fed0ce3fd59901616d94d385d4a4b7a0219694ee984c5347a9d2814474fb732"
+    },
+    {
+      "path": "config/asuse_2023_24_mapping.json",
+      "size_bytes": 1699,
+      "sha256": "37b784875f12ec6e0610c24b2fc5f3b5f22e7b40d7e373cab8a5fdd06bcb1496"
+    },
+    {
+      "path": "config/asuse_2025_mapping.json",
+      "size_bytes": 2160,
+      "sha256": "a7c72b7a4e98dfa59d666e946c58a0df81af82463531f8ae47a469ba0171a9e7"
+    },
+    {
+      "path": "config/asuse_mapping.example.json",
+      "size_bytes": 696,
+      "sha256": "8342ddca37ac76a17a912c3354acf3848697f3f517aff71730a4c99c870e914e"
+    },
+    {
+      "path": "config/hces_2022_23_mapping.json",
+      "size_bytes": 1249,
+      "sha256": "82d6ca0e97b15b6f71165a27e633ba82f7c2efc98428f205058c43a39c49dc24"
+    },
+    {
+      "path": "config/hces_2023_24_mapping.json",
+      "size_bytes": 1424,
+      "sha256": "3977e41313e7e1cf24fdf35563539624d7194431a8c94145755516dea5354d34"
+    },
+    {
+      "path": "config/hces_mapping.example.json",
+      "size_bytes": 880,
+      "sha256": "c91a2a2c764b58f1962f03b082ae5ead500cb22ee29fdb3bb6462315b7ae192b"
+    },
+    {
+      "path": "data/sih26091_phase2.sqlite",
+      "size_bytes": 608501760,
+      "sha256": "c74ab56ac9734ca6a26424ebcd4cf9a85a2a55fbf0e5171ad98f048836e558e5"
+    },
+    {
+      "path": "data/west_bengal_osm.sqlite",
+      "size_bytes": 532041728,
+      "sha256": "14256e7dbc239284e28b00488a733abb971036031526d4cf74ce3cc51ea9ca64"
+    },
+    {
+      "path": "database/schema.sql",
+      "size_bytes": 2100,
+      "sha256": "f9b8ffc3f41cea2da0e782f722ddbb99303de73ec3c80927f6de97c8aa969b47"
+    },
+    {
+      "path": "docs/API.md",
+      "size_bytes": 562,
+      "sha256": "a3cb534549efdbab6c3a6f748389a1daf403bd88c0546bbacb310aaf53cd022a"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "size_bytes": 607,
+      "sha256": "dd9281faeae291cba33298917ab14d43564d88cae41b6ee870e518cd408ab583"
+    },
+    {
+      "path": "docs/BOTTLENECK_MODEL.md",
+      "size_bytes": 371,
+      "sha256": "ed3c3422ee58a0acb81b80b483dc09dd078fd9a84f7c255fa0f149fe4c1c0f3f"
+    },
+    {
+      "path": "docs/CATCHMENT_ROUTING.md",
+      "size_bytes": 489,
+      "sha256": "4223694f3a97ccaf54b8a4ea00548f648a66a743bc2b8f58874487ff420c8544"
+    },
+    {
+      "path": "docs/COMPETITOR_CAPACITY.md",
+      "size_bytes": 335,
+      "sha256": "d6678e9910ee1c410a8c9920159f8e6ff6150f2a9c9cb9e890dfb0404cdd7abf"
+    },
+    {
+      "path": "docs/DATA_ARCHITECTURE.md",
+      "size_bytes": 1250,
+      "sha256": "2118c209ad656acd9d4000d594d9bd1310573d63918f0d6a1a1fda46326f0948"
+    },
+    {
+      "path": "docs/DATA_GAPS.md",
+      "size_bytes": 885,
+      "sha256": "d31e24d227f37a129aa603d36512f338453960a7a1dfb71ed9fc4ebdf43f3bc1"
+    },
+    {
+      "path": "docs/DATA_SOURCES_ACQUIRED.md",
+      "size_bytes": 1775,
+      "sha256": "2f3cb74bbfb465e584497ad9f48612aebbda4c75de490cb2d5dc7c92123b2f66"
+    },
+    {
+      "path": "docs/DEMAND_MODEL.md",
+      "size_bytes": 496,
+      "sha256": "46adeabf81c8440a0a2f5a9ed955e6783671933e11fd2d3c4ebd54ce6f7b5965"
+    },
+    {
+      "path": "docs/DIGITAL_TWIN.md",
+      "size_bytes": 383,
+      "sha256": "8443a3588c0f74180a3a5e8b0d805972eb9dbe8858c21a27ffe4a9d81594b575"
+    },
+    {
+      "path": "docs/EXISTING_REPOSITORY_AUDIT.md",
+      "size_bytes": 4875,
+      "sha256": "c767befd42c6b3fcb38af5095d5850b18f359662f995925a338050fdf162746e"
+    },
+    {
+      "path": "docs/FINAL_COMPLETION_REPORT_V0.3.0.md",
+      "size_bytes": 8150,
+      "sha256": "d61706a094661314738c19ea66e4c698bfa7e8106df32eaf926b95babe2e4bdf"
+    },
+    {
+      "path": "docs/FINANCE_ENGINE.md",
+      "size_bytes": 351,
+      "sha256": "917c29a5787d0b724aa0ef10ee3c2f89b527cf378146ede14680a6c0eff15814"
+    },
+    {
+      "path": "docs/FINANCE_RULES.md",
+      "size_bytes": 1777,
+      "sha256": "6829bfec60852ed72026304b2010384e84bad64018b0ca7f3490c7b5dd0a9056"
+    },
+    {
+      "path": "docs/FLOW_MODEL.md",
+      "size_bytes": 625,
+      "sha256": "cd2a66ba5e6e6a58adfb50b8ecb57c8796f39a732f9007870c7cbee012a825c0"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_STATUS.md",
+      "size_bytes": 4059,
+      "sha256": "c604eb8595689c99e72fe49c1809b2d473a24a41ce9c1cdc8e24c6f14772ef47"
+    },
+    {
+      "path": "docs/LIMITATIONS.md",
+      "size_bytes": 1859,
+      "sha256": "5ee5daac25910795a9aff9836f6e91bb3e4d2674be33dc22c2f3c4b028c32bb4"
+    },
+    {
+      "path": "docs/MICRODATA_IMPORT.md",
+      "size_bytes": 2300,
+      "sha256": "09bf0e4819e18154d7d4709dc7243c02b720fcd003aa0d680e1118d72b4d8c00"
+    },
+    {
+      "path": "docs/MVV_ALGORITHM.md",
+      "size_bytes": 399,
+      "sha256": "b590ddcdc9e52797d2d8cec4f22833ffaf41cacf91887e08b0027399421f1462"
+    },
+    {
+      "path": "docs/PERFORMANCE.md",
+      "size_bytes": 300,
+      "sha256": "1e0b39a0f2695afe0ec613581376377c8ccea01f60ae64dc6ccff31e77d197fd"
+    },
+    {
+      "path": "docs/PHASE2_CURRENT_STATE_AUDIT.md",
+      "size_bytes": 7152,
+      "sha256": "ede1ae7e208fd1c924162c3fe06ca87cee7bc11c4f8ba1996cf867627c0d06b1"
+    },
+    {
+      "path": "docs/PRICE_MODEL.md",
+      "size_bytes": 307,
+      "sha256": "e0e9b1a506069dd1c7c918f23e41dbc085848373321231cd6c8cc95daeb31fe5"
+    },
+    {
+      "path": "docs/PRIVATE_APPLICANT_FILES_MANIFEST.md",
+      "size_bytes": 1271,
+      "sha256": "08ff450b62e48dd2302bddab3aa06f6f66387584162cbea89fb06c63c80b61f1"
+    },
+    {
+      "path": "docs/ROBUST_SELECTION.md",
+      "size_bytes": 278,
+      "sha256": "30ffd3e6876bf232de3d437cc1440bf30f1ae94a9a3b603a1cba8cd2f6e56327"
+    },
+    {
+      "path": "docs/SHARE_PACKAGE_INDEX.md",
+      "size_bytes": 3887,
+      "sha256": "19bf8ba98ed16fcc4843c26c05d630eacc565d91f96b39adf29f01aefcab9e11"
+    },
+    {
+      "path": "docs/STRESS_ENGINE.md",
+      "size_bytes": 382,
+      "sha256": "55788f8f27bab70f32637a0d5225b36e5b62a677484d91775aed532566f2a0b3"
+    },
+    {
+      "path": "docs/SUPPLY_MODEL.md",
+      "size_bytes": 355,
+      "sha256": "ed865c16e23c3d8b2c6e0b4bb9660b9db5a62fce510ebd380ded202968cf7267"
+    },
+    {
+      "path": "docs/VALIDATION.md",
+      "size_bytes": 1407,
+      "sha256": "0bf2c1770ee526851873849d53d72f34f9d7f9f4946d5b346136ec93a67df485"
+    },
+    {
+      "path": "docs/VENTURE_GENERATION.md",
+      "size_bytes": 391,
+      "sha256": "8bd5c09c7ce88d16ca316585fd8036d664557af359dc11d8bc536e551297bcc9"
+    },
+    {
+      "path": "docs/WEST_BENGAL_DATA_IMPLEMENTATION_PLAN.md",
+      "size_bytes": 3263,
+      "sha256": "82529a9183277c0dbe8c472d2c67fae7190f343c02e0163f33eb1296c309d17d"
+    },
+    {
+      "path": "docs/WEST_BENGAL_GEO_CROSSWALK.md",
+      "size_bytes": 1140,
+      "sha256": "8d098ccebdf1624be4164034a1a0324ecb3026cfd5b8d5a63ff50e8d61db189b"
+    },
+    {
+      "path": "frontend/app.js",
+      "size_bytes": 6912,
+      "sha256": "f118459129518e5ce751f40eb005eda22c5d7e8d28821e06444d0aba876f1200"
+    },
+    {
+      "path": "frontend/index.html",
+      "size_bytes": 3961,
+      "sha256": "b0137e0133bbefd4470b30e1103403ac428483a6697183de7fde64c6007dd9b5"
+    },
+    {
+      "path": "frontend/styles.css",
+      "size_bytes": 4237,
+      "sha256": "efc1524f5e8291aa471db446385ad241037774641bf6d18f260ca08dc377672d"
+    },
+    {
+      "path": "output/pdf/SIH26091_Final_Completion_Report_v0.3.0.pdf",
+      "size_bytes": 13293,
+      "sha256": "ebcd4f35cbeb7fa4c32b64577df6873353e6ab6b3a700c244882f23456c2bc5e"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/ASUSE_2023_24_West_Bengal_enterprise_priors.json",
+      "size_bytes": 4170672,
+      "sha256": "f2baa5bbf0853e1a8221f11c616e6ae612ca06d81cb9aad16d468531d20065e8"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/ASUSE_2025_West_Bengal_enterprise_priors.json",
+      "size_bytes": 4461170,
+      "sha256": "c45c925616211ac5886197f005dfaed242a68630a340fe60b0fe86df660888ec"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/BAHS2025_West_Bengal_milk_yield_priors.json",
+      "size_bytes": 1047,
+      "sha256": "2a1dabfd3d3b2ce78d225a936a424f99e29f5973c6d6a95bcc41851c74e386dd"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/CENSUS2011_PCA_West_Bengal_manifest.json",
+      "size_bytes": 8855,
+      "sha256": "ad12e960e63b01331cff0f468bdb2dc7580eca78a340421445a5fb85bf9efa86"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/CENSUS2011_PCA_ingest_report.json",
+      "size_bytes": 523,
+      "sha256": "9d57994cf431387a990d3897e1125a9cacb9b0cd295d68cbe0590006a8a01c0c"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/CENSUS2011_West_Bengal_Location_Directory.csv",
+      "size_bytes": 2636815,
+      "sha256": "cbfe5507a68fdc89d050b64aaca3a4e69a0e9f2abd3564f62d367d44b76e5789"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/CENSUS2011_West_Bengal_Location_Directory_manifest.json",
+      "size_bytes": 1105,
+      "sha256": "b046e4e92b321770aff1edc7a92e597d089bbcf4dddd6cb1fced82891753c08c"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/CENSUS_DS057_DS071_geo_coordinate_crosswalk.json",
+      "size_bytes": 3528,
+      "sha256": "5304ecb5d00beb7143b6674a9d0bfe4f7faf5cd8bc5abfb8c18b472d153ce540"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/DATA_FRESHNESS_AUDIT.json",
+      "size_bytes": 9667,
+      "sha256": "6123580703f4944ae149f6b3b5c3440c65fa24e62a2f70710f3450aed1895f16"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/DATA_FRESHNESS_AUDIT.md",
+      "size_bytes": 3180,
+      "sha256": "574cb307eb66a3c6a854913784c172e63cd0ce42d6ab2389fc9dc1b389f4481f"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/DS057_DS071_geo_coordinate_crosswalk.json",
+      "size_bytes": 3091,
+      "sha256": "45036ce6e87e7455518b8a37a87e11ab4ade662060290a5fcee941fa242b5056"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/DS057_West_Bengal_All_Available_Livestock_Localities.xlsx",
+      "size_bytes": 3811372,
+      "sha256": "c26a01f54c7c8107809905b921ac5c8a3a0a27d5c1defe03ce4286c900eb2255"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/DS057_West_Bengal_All_Available_manifest.json",
+      "size_bytes": 18804,
+      "sha256": "48ad803143c1b8bf5b2d76ac6c97e943ca37a84a537a74631c824689ea978cfc"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/DS071_West_Bengal_OSM_extraction_manifest.json",
+      "size_bytes": 716,
+      "sha256": "aba208dd4e10656348ea55b995e61fadad51a063fa0bf036dfcd39dbfb718ac9"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/DS071_West_Bengal_OSM_manifest.json",
+      "size_bytes": 694,
+      "sha256": "daf5a28bc43802c763eca39f5644720792eeae06580cae31f656876b09769daa"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/FINAL_TECHNICAL_AUDIT.json",
+      "size_bytes": 2435,
+      "sha256": "b6d1d7ac1b2d7e4cfa3b4e0b40450a6d8f88d174f7ca5e565aef556ecd35b9fc"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/FLOW_PERFORMANCE.json",
+      "size_bytes": 1142,
+      "sha256": "2d45c5656ff36b9003d580dc0058dbf6adb0fd4e9e8daddecf681d0ccf66ecbe"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/HCES_2022_23_West_Bengal_liquid_milk_priors.json",
+      "size_bytes": 35985,
+      "sha256": "ffc56b7a22b6a0ee326dbedb67f4ae4e353ac435acd4696a8211c4980c1f6452"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/HCES_2023_24_West_Bengal_liquid_milk_priors.json",
+      "size_bytes": 36071,
+      "sha256": "f72862fb82e9a2e323fe56707c34a7c3cc1b8f844d9ca04534ae3aae26f61287"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/PHASE2_DATASET_REGISTRY.csv",
+      "size_bytes": 19337,
+      "sha256": "c3a3f5b09046bf41876a55126c72127f1a2d2b0c470c85126551474f7fb51553"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/PHASE2_DATASET_REGISTRY.json",
+      "size_bytes": 33244,
+      "sha256": "5c0c1b8aeac5ec59984f858f0a6e4a4f95771bb1a25cd4230e238b7de5671f07"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/WEST_BENGAL_MULTI_DISTRICT_E2E.json",
+      "size_bytes": 8560,
+      "sha256": "b128f72487dffc4b92c4389287e624e804eb67a0d38dd941662fb57a8842037e"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/models/model_registry.json",
+      "size_bytes": 75609,
+      "sha256": "3edbe8e3109012b97eb54ac4ec14489055d6366d319b71d3ea248ea07d7d3f10"
+    },
+    {
+      "path": "pyproject.toml",
+      "size_bytes": 888,
+      "sha256": "b2748a9e7eae9caaaba7c803d05f97b804b3de743bb9714ea8563ffc044c36bc"
+    },
+    {
+      "path": "scripts/audit_data_freshness.py",
+      "size_bytes": 7693,
+      "sha256": "81e3f0631391b0b0262592b9bfe45a55af5f79996491b21307479f1026b72521"
+    },
+    {
+      "path": "scripts/benchmark_flow.py",
+      "size_bytes": 2804,
+      "sha256": "dbfb3d532d8bb9828a8df56d4030c323fb73be7b3da0b23ead5ff89806033956"
+    },
+    {
+      "path": "scripts/build_phase2_registry.py",
+      "size_bytes": 10485,
+      "sha256": "662c6c1be2f4421f0cb9518e9e6892a0f06610e34448d3d8f46e96f86ddcb400"
+    },
+    {
+      "path": "scripts/build_public_package.py",
+      "size_bytes": 4779,
+      "sha256": "df4ecb2e4a44f168527226ec642388735721b469b04d2259ca9249758a384948"
+    },
+    {
+      "path": "scripts/build_wb_census_crosswalk.py",
+      "size_bytes": 9329,
+      "sha256": "a1c723d6dc5eab730ce3ed612f9edfede9c706cecaa01731f4a1241900667736"
+    },
+    {
+      "path": "scripts/create_final_pdf.py",
+      "size_bytes": 8446,
+      "sha256": "6b333c74384befc0d3e1638f37ffacc9363ea39a80b8b7c1d1fee4715d265e22"
+    },
+    {
+      "path": "scripts/download_wb_census_pca.py",
+      "size_bytes": 3476,
+      "sha256": "55683afe0667eea89dd2ddf8d8e52696909ca6a509a548c5fa486ecf7c3b2447"
+    },
+    {
+      "path": "scripts/enrich_geographies_osm.py",
+      "size_bytes": 10693,
+      "sha256": "da0231b7210c3c321b79e233751f85f46e4fab507dbfcd3da809cb2f3c068d69"
+    },
+    {
+      "path": "scripts/extract_wb_livestock.py",
+      "size_bytes": 5047,
+      "sha256": "e87aef56534b170a66d903e9a4a9a46bdbee0358e6349fdabca61280d8266211"
+    },
+    {
+      "path": "scripts/extract_wb_osm.py",
+      "size_bytes": 12297,
+      "sha256": "4a6085ac20285771f23dc13934af1cd4dfd6c2e189fe03016d99cd65ae6c5953"
+    },
+    {
+      "path": "scripts/final_audit.py",
+      "size_bytes": 6871,
+      "sha256": "9f47bc8cb2407e39dbe551e205cd8cbefd0adb5f416caa873606a1cf4c664ee5"
+    },
+    {
+      "path": "scripts/import_asuse.py",
+      "size_bytes": 12747,
+      "sha256": "201d0e246b103bbc61ecfe9c73c777a9ac79919296768e084b193a85a4c94345"
+    },
+    {
+      "path": "scripts/import_hces.py",
+      "size_bytes": 10560,
+      "sha256": "d75719bf46a03371d5f859c2a2259d36eda049bfff7646941c29ec29b2331a8c"
+    },
+    {
+      "path": "scripts/ingest_survey_priors.py",
+      "size_bytes": 7615,
+      "sha256": "8530a3fd8bbbcc441cb889c3a7b72cd50938b101ca3e936966d8e55ca2305e32"
+    },
+    {
+      "path": "scripts/ingest_wb_census_pca.py",
+      "size_bytes": 6907,
+      "sha256": "2637639b05fcf07dbfe7fa0b2af747e22c0da35928dea556c335ebae5f5bde99"
+    },
+    {
+      "path": "scripts/run_wb_e2e.py",
+      "size_bytes": 4204,
+      "sha256": "c5b095b6229f557d5f684dc92f90b662afd0b26433f05dbaedfb46caeb6677cf"
+    },
+    {
+      "path": "scripts/train_survey_models.py",
+      "size_bytes": 17171,
+      "sha256": "c555fa34109dd36881dcc58813db860002c939f546f6f8db6e9fe1455b1f32a8"
+    },
+    {
+      "path": "tests/__init__.py",
+      "size_bytes": 37,
+      "sha256": "1636707dc9b315aee9dff71ef5efb6e717a34e6955eecf9f915af0c33d3c2026"
+    },
+    {
+      "path": "tests/conftest.py",
+      "size_bytes": 2093,
+      "sha256": "95dc072f4038af2f2cbb7b3992aa789c937f0fe810bae283ba04670e1bd6e286"
+    },
+    {
+      "path": "tests/test_api.py",
+      "size_bytes": 2267,
+      "sha256": "55b69f971d9348368d2cc606294090b53c63bd951647a2cbd399007fd34c3428"
+    },
+    {
+      "path": "tests/test_automatic_freshness.py",
+      "size_bytes": 2265,
+      "sha256": "3efd5bd1ac601486471bb2da6e9cd630a7512259c3829810f8873055f4e529fc"
+    },
+    {
+      "path": "tests/test_baselines_and_robust.py",
+      "size_bytes": 1941,
+      "sha256": "d676d91676f9dd6d0cb135b10e7152ca58ed1197895f420d8cf14d2c62ac2fde"
+    },
+    {
+      "path": "tests/test_census_pca.py",
+      "size_bytes": 2404,
+      "sha256": "fe114d7b12bdea43a6fa8bb990c91dca9406ab89068dc0c7302cf3b6d8cf9518"
+    },
+    {
+      "path": "tests/test_finance.py",
+      "size_bytes": 2968,
+      "sha256": "f51665c894661d8fa0b078b91900e98806a3ffa5c69817537a877ea31909c1f8"
+    },
+    {
+      "path": "tests/test_finance_rules.py",
+      "size_bytes": 1795,
+      "sha256": "a0359c512c261d33c58f40cfba18b5f3095de4cb6730ce38dbfed81062129521"
+    },
+    {
+      "path": "tests/test_flow_engine.py",
+      "size_bytes": 4949,
+      "sha256": "caba266c7d784cfa58b75c06d61d3388e7abe89fbe991a405d3b4c6c4ca747de"
+    },
+    {
+      "path": "tests/test_freshness.py",
+      "size_bytes": 1912,
+      "sha256": "bdf97538f2bfcbda6bf39419d85ac0fe9ae7f8c87b3ef59a8514228d054eb75d"
+    },
+    {
+      "path": "tests/test_geography_resolver.py",
+      "size_bytes": 1580,
+      "sha256": "1082092d49679ff0d1528734db92989c2e13be2224b102c5f210cfff80ffdfd2"
+    },
+    {
+      "path": "tests/test_livestock_adapter.py",
+      "size_bytes": 1462,
+      "sha256": "c37c52a4b44ccc76074931334312a1e471b1d6446941ed6e071c80439e00fd24"
+    },
+    {
+      "path": "tests/test_osm_spatial.py",
+      "size_bytes": 6179,
+      "sha256": "683441687a883b78e7cd2aa4a45078f7a0fd391d6f6bc3f359adcea80461f87c"
+    },
+    {
+      "path": "tests/test_survey_imports.py",
+      "size_bytes": 6584,
+      "sha256": "e1551cc7ccc808ab2a955760de36eef5f32247f5c34b878d11641a993208c105"
+    },
+    {
+      "path": "tests/test_venture_engines.py",
+      "size_bytes": 1369,
+      "sha256": "502ce7d667f1a0da41fa26cefcf70addee8a510715cfe253ef5cdd16163402a8"
+    },
+    {
+      "path": "work/raw_stage/ASUSE_2023_24_TECHNICAL/ASUSE_2324_Estimation_Procedure.pdf",
+      "size_bytes": 473170,
+      "sha256": "1cbccc709d0dde393a250b1155ef779230a86d5971146b19b4d44d233161e0ca"
+    },
+    {
+      "path": "work/raw_stage/ASUSE_2023_24_TECHNICAL/ASUSE_2324_Vol_I.pdf",
+      "size_bytes": 3067599,
+      "sha256": "f645fd17921d589f0b5d6d783a0f447edaeb9934400fa573fa8769af2a24c9ab"
+    },
+    {
+      "path": "work/raw_stage/ASUSE_2023_24_TECHNICAL/ASUSE_2324_Vol_II.pdf",
+      "size_bytes": 1747184,
+      "sha256": "b240c52a6c7b2d1b3ed9f06009af0e92b38f009e640e4bc2d86e304c87283b2c"
+    },
+    {
+      "path": "work/raw_stage/ASUSE_2023_24_TECHNICAL/NSS_ASUSE_23_24_Layout.xlsx",
+      "size_bytes": 59374,
+      "sha256": "27c30d182b3b8a9aaa12e92b24e258aa76607de1b9262772f0af689d4f290ebc"
+    },
+    {
+      "path": "work/raw_stage/ASUSE_2023_24_TECHNICAL/README_ASUSE_2324.pdf",
+      "size_bytes": 526481,
+      "sha256": "96f09cd012bfe7ddea13ce3c5a4ccd455156c797c852071b6e9bc0ec4919846a"
+    },
+    {
+      "path": "work/raw_stage/ASUSE_2025_TECHNICAL/ASUSE_2025_Estimation_Procedure.pdf",
+      "size_bytes": 444050,
+      "sha256": "4c9894a225ea2810c1ca69808283ac7db2b46b0f5ea6abd7d8095a0fa2a32575"
+    },
+    {
+      "path": "work/raw_stage/ASUSE_2025_TECHNICAL/ASUSE_2025_Vol_I.pdf",
+      "size_bytes": 4517247,
+      "sha256": "2e39b0a8a13467fd9816bdc74ee5fd03e633695178eb1114cd207913c93f33b1"
+    },
+    {
+      "path": "work/raw_stage/ASUSE_2025_TECHNICAL/ASUSE_2025_Vol_II.pdf",
+      "size_bytes": 1324430,
+      "sha256": "e517cc17c490fc30415c20cdf6352c15854fb2f20bcb1339c428b8c0a7a0f521"
+    },
+    {
+      "path": "work/raw_stage/ASUSE_2025_TECHNICAL/NSS_ASUSE_2025_Layout_mult_post.xlsx",
+      "size_bytes": 58971,
+      "sha256": "01024f6a2c983666fe98c878de7cdaa532feefd7c5f0798593d78aedf42bbb6c"
+    },
+    {
+      "path": "work/raw_stage/ASUSE_2025_TECHNICAL/README_ASUSE_2025.docx",
+      "size_bytes": 44027,
+      "sha256": "a2be4a95cbdc1ac7f00e2c2dddc15755e6a708ac3986ee02248a6f83ddc60a5a"
+    },
+    {
+      "path": "work/raw_stage/BAHS_2025/BasicAnimalHusbandryStatistics2025.pdf",
+      "size_bytes": 60313149,
+      "sha256": "5ec629badd41b07b6f55b7b06fb694ff52bcc24be1cdadcb005b1713f4cb6bfa"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_LOCATION_DIRECTORY/PC11_TV_DIR.xlsx",
+      "size_bytes": 23318601,
+      "sha256": "e5670123e836148cd4a869805333b519f45ce837d1145c8b5cece3a01dbf7dd0"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1901.xlsx",
+      "size_bytes": 451774,
+      "sha256": "9daae1a0e6329faa76c90b846fad0ed4af5ec353cb83f6fd435c45c4ad11a15d"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1902.xlsx",
+      "size_bytes": 508477,
+      "sha256": "37dd65dc262b1cec2188bd03452d78792039bc3fe07829cc7512be487ee88b88"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1903.xlsx",
+      "size_bytes": 677919,
+      "sha256": "f532c41b72eed941dc23b025049153c23c73f5c9d9ea11620124b887527bb006"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1904.xlsx",
+      "size_bytes": 817612,
+      "sha256": "e70b94ba91d4740106d541aa558e089f39f01608f6d35dc6ed64b46e43d97e31"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1905.xlsx",
+      "size_bytes": 838589,
+      "sha256": "1a7a1c82dfcfcefb5892eae101828a968fda8e998439dba7ff5cc5e76c17d36b"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1906.xlsx",
+      "size_bytes": 956031,
+      "sha256": "f0d3ff4d44e87dc625140a1a07ee47e84590ec856d818055375a61cad7fce6d2"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1907.xlsx",
+      "size_bytes": 1251966,
+      "sha256": "f6418fdd93046aa714f67e5a0f5c7347602e6e632f8aa9701bb36f5d637d7b9c"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1908.xlsx",
+      "size_bytes": 1304954,
+      "sha256": "a740fdf2740e2c9f504c556af6db47da59f4bf59ade9cdd8d896e5f9afa972a3"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1909.xlsx",
+      "size_bytes": 1573093,
+      "sha256": "50ab652763dd65a93719ac9eaa464e118fa3e0ea1db5d1b6a6bb73dc390d8236"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1910.xlsx",
+      "size_bytes": 853120,
+      "sha256": "afafdb47b820c7f82f296f3c1b94a108f256be400e029a3b8e9c1861db8f9dea"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1911.xlsx",
+      "size_bytes": 1302924,
+      "sha256": "068f028a9db6caff68550046e2a39faa759ea8c1c1f326240b452ff48277a0d1"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1912.xlsx",
+      "size_bytes": 1209098,
+      "sha256": "5ee084ae24a7d7a16f96e65fc6c31d91ebb7631c560478d03f92e86096359f1d"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1913.xlsx",
+      "size_bytes": 1933063,
+      "sha256": "65faa0b192581e62ae76cb03f924127c34a4a91047eced8ccc5eb2cf330f9b57"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1914.xlsx",
+      "size_bytes": 1399943,
+      "sha256": "4d61d6c4700e2e812c2f5475ed68f7518b22bbef0c601eb7000c774b80788400"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1915.xlsx",
+      "size_bytes": 576736,
+      "sha256": "8a5597b9553c44756f87461df0012d4174d013da09d4579ffae7ac88b20b333c"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1916.xlsx",
+      "size_bytes": 95311,
+      "sha256": "66e134b5cb37ffccf42a1e841b13def9c3db7915365bf7035a2d11a9c294e9dc"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1917.xlsx",
+      "size_bytes": 1323995,
+      "sha256": "0ffdedb11260f431329bcc225371ee84ffa8fe1a899148046790188f7d814e10"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1918.xlsx",
+      "size_bytes": 4171805,
+      "sha256": "e5d9f2b253f3106b87cf16987ab5781a1a8fbf9707cbc5866c16af067d253c5d"
+    },
+    {
+      "path": "work/raw_stage/CENSUS_2011_PCA_WEST_BENGAL/WB_2011_PCA_TV_1919.xlsx",
+      "size_bytes": 1624224,
+      "sha256": "64f7f773a57cb8d7fb8b5e2b13a789fdc32ba86302d79f79d7d14e5bf0db0295"
+    },
+    {
+      "path": "work/raw_stage/DS057_ALL_WEST_BENGAL/VillageAndWardLevelDataMale-Female.xlsx",
+      "size_bytes": 62595836,
+      "sha256": "8917232b56c61a04d72ac7a052eff962aa3a53832a587587e1dfe493b12aa595"
+    },
+    {
+      "path": "work/raw_stage/DS071_WEST_BENGAL/drive_parts/REASSEMBLY.md",
+      "size_bytes": 1183,
+      "sha256": "b10f1a9f773d53920aa2ba02ae58cccc26f78f9c376eb64dd8afd3954507810a"
+    },
+    {
+      "path": "work/raw_stage/DS071_WEST_BENGAL/verification.json",
+      "size_bytes": 1062,
+      "sha256": "fd0b7e7d7515408d4ac86f06fea4340b4499e2190e774fd501bb2b958d4388d4"
+    },
+    {
+      "path": "work/raw_stage/DS071_WEST_BENGAL/west_bengal.md5",
+      "size_bytes": 97,
+      "sha256": "27dd57613f739945dfdc40994db6853196f021e14b716736f864750fd4e22104"
+    },
+    {
+      "path": "work/raw_stage/DS071_WEST_BENGAL/west_bengal.pbf",
+      "size_bytes": 113098966,
+      "sha256": "b5b0c617e22d828954d8754c24aeb5b6440b483260bf040ef9cbbcdfd0e46cca"
+    },
+    {
+      "path": "work/raw_stage/DS071_WEST_BENGAL/west_bengal.poly",
+      "size_bytes": 11979,
+      "sha256": "2470b4bb7037365db5e77c83aa0c79b6f5a5813956cce8af8333acff75e084b8"
+    },
+    {
+      "path": "work/raw_stage/HCES_2022_23_TECHNICAL/Layout_HCES_2022_23.xlsx",
+      "size_bytes": 38223,
+      "sha256": "ebf9548b0e9f3e79d8e946935ad57da45e36c99bd090dd3768728ec689d4e283"
+    },
+    {
+      "path": "work/raw_stage/HCES_2022_23_TECHNICAL/Survey_methodology_and_estimation_procedure.pdf",
+      "size_bytes": 749028,
+      "sha256": "2a11f5f30be33912336625b826fffc3fe354f3c0a7622944c3067c0fd42cd082"
+    },
+    {
+      "path": "work/raw_stage/HCES_2023_24_TECHNICAL/HCES2023-24_Vol_II-2.pdf",
+      "size_bytes": 4934025,
+      "sha256": "1d8ceb5f2500b697daf88131db56f4d5fb41a1c85935250d54c8c99ddb9ab4e8"
+    },
+    {
+      "path": "work/raw_stage/HCES_2023_24_TECHNICAL/Layout_HCES_2023_24.xlsx",
+      "size_bytes": 39461,
+      "sha256": "db0ded41eefdb05c7ed12b3859ce1e0b6aa4dfce4e534eb029079849005c7f24"
+    },
+    {
+      "path": "work/raw_stage/HCES_2023_24_TECHNICAL/Readme_HCES2023.docx",
+      "size_bytes": 21954,
+      "sha256": "9b7a30b393dc8005a20d4ef1cb0eaab9ce4423a1f8c4c06ca6271bebdbba7959"
+    },
+    {
+      "path": "work/raw_stage/HCES_2023_24_TECHNICAL/Survey_methodology_and_Estimation_Procedure.pdf",
+      "size_bytes": 714097,
+      "sha256": "b4f478b7ec06875e44b41fc40dea9d584fa785b7ae85a9eea57b4a08bd6f9b82"
+    },
+    {
+      "path": "work/raw_stage/HCES_2023_24_TECHNICAL/tabulation_state_code.xlsx",
+      "size_bytes": 11210,
+      "sha256": "33860212fb6bc90163064816e8417449fec34991ef108f8d31ea60ac5e09b48a"
+    }
+  ],
+  "zip_size_bytes": 481566831,
+  "zip_sha256": "27da1672f5858214c55078405f23bc1b7bbe81cdfc42f3641b0080a64a5317dd"
+}

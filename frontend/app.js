@@ -62,6 +62,8 @@ async function showEvidence(locality) {
       <dl>
         <div><dt>Type</dt><dd>${escapeText(record.evidence_type)}</dd></div>
         <div><dt>Confidence</dt><dd>${escapeText(record.confidence)}</dd></div>
+        <div><dt>Freshness</dt><dd>${escapeText(record.freshness_status || "UNKNOWN")}</dd></div>
+        <div><dt>Observed</dt><dd>${escapeText(record.observation_date || "not recorded")}</dd></div>
         <div><dt>Source</dt><dd>${escapeText(record.source_id)}</dd></div>
       </dl>`;
     evidence.append(card);
@@ -110,7 +112,7 @@ function renderDecision(payload) {
   const catchment = payload.catchment?.entity_count
     ? `${payload.catchment.entity_count} OSM proxy entities in ${payload.catchment.radius_km} km`
     : "Not computed";
-  const finance = payload.official_finance?.[0];
+  const finance = payload.official_finance || [];
   decision.innerHTML = `
     <div class="decision-summary">
       <div><span>Status</span><strong>${escapeText(payload.status)}</strong></div>
@@ -125,7 +127,7 @@ function renderDecision(payload) {
     <h3>Graph and decision</h3>
     <pre>${escapeText(JSON.stringify({ graph: payload.economic_graph_summary, bottlenecks: payload.bottlenecks, selected_mvv: payload.selected_venture }, null, 2))}</pre>
     <h3>Official finance screening</h3>
-    <p>${finance ? `${escapeText(finance.scheme_name)} · ${escapeText(finance.category || "outside category")} · ${escapeText(finance.status_wording)}` : "No scheme screening."}</p>
+    <ul>${finance.length ? finance.map((item) => `<li><strong>${escapeText(item.scheme_name)}</strong> · ${escapeText(item.category || "outside category")} · ${escapeText(item.freshness_status || "UNKNOWN")} · ${escapeText(item.status_wording)}</li>`).join("") : "<li>No scheme screening.</li>"}</ul>
     <h3>Limitations and sources</h3>
     <ul>${payload.limitations.map((item) => `<li>${escapeText(item)}</li>`).join("")}</ul>
     <ul>${payload.sources.map((item) => `<li><a href="${escapeText(item)}" target="_blank" rel="noreferrer">${escapeText(item)}</a></li>`).join("")}</ul>`;

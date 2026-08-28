@@ -1,0 +1,71 @@
+{
+  "dataset_id": "ASUSE-2025",
+  "dataset_version": "DDI-IND-NSO-ASUSE-Jan2025-Dec2025",
+  "official_source_url": "https://microdata.gov.in/NADA/index.php/catalog/293",
+  "state_code": "19",
+  "weight_divisor": 100,
+  "columns": {
+    "nss_region": "nssreg",
+    "district": "dist",
+    "sector": "sec",
+    "nic2": "b2i202a",
+    "nic5": "b2i202b",
+    "nature_of_operation": "b2i216",
+    "months_operated": "b2i217",
+    "weight": "mlt",
+    "reference_period_type": "b2pt2i265",
+    "financial_item": "b7pt1b7pt2c2",
+    "financial_value": "b7pt1b7pt2c3",
+    "workers_item": "b8c2",
+    "workers_total": "b8c9",
+    "assets_item": "b10c2",
+    "assets_owned": "b10c3"
+  },
+  "district_names": {
+    "01": "Darjiling",
+    "02": "Jalpaiguri",
+    "03": "Koch Bihar",
+    "04": "Uttar Dinajpur",
+    "05": "Dakshin Dinajpur",
+    "06": "Maldah",
+    "07": "Murshidabad",
+    "08": "Birbhum",
+    "09": "Purba Barddhaman",
+    "10": "Nadia",
+    "11": "North Twenty Four Parganas",
+    "12": "Hugli",
+    "13": "Bankura",
+    "14": "Puruliya",
+    "15": "Haora",
+    "16": "Kolkata",
+    "17": "South Twenty Four Parganas",
+    "18": "Paschim Medinipur",
+    "19": "Purba Medinipur",
+    "20": "Alipurduar",
+    "21": "Kalimpong",
+    "22": "Jhargram",
+    "23": "Paschim Barddhaman"
+  },
+  "members": {
+    "profile": "asuseL2.csv",
+    "reference_period": "asuseL3.csv",
+    "financials": "asuseL8.csv",
+    "workers": "asuseL9.csv",
+    "assets": "asuseL11.csv"
+  },
+  "financial_item_codes": {
+    "input": "765",
+    "output": "766",
+    "gva": "769"
+  },
+  "total_workers_item_code": "789",
+  "land_asset_item_code": "1001",
+  "total_fixed_assets_excluding_land_item_code": "1019",
+  "equipment_asset_item_codes": ["1003", "1004", "1006", "1007", "1008"],
+  "technical_sources": {
+    "readme": "https://microdata.gov.in/NADA/index.php/catalog/293/download/4989",
+    "schedule": "https://microdata.gov.in/NADA/index.php/catalog/293/download/4985",
+    "district_code_crosswalk": "https://microdata.gov.in/NADA/index.php/catalog/293/download/4984",
+    "estimation_procedure": "https://microdata.gov.in/NADA/index.php/catalog/293/download/4983"
+  }
+}

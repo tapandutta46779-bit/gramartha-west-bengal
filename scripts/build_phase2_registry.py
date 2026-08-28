@@ -18,6 +18,9 @@ def row(
     role: str,
     status: str = "ACQUIRED",
     blocker: str = "",
+    observation_or_version_date: str = "UNKNOWN",
+    retrieval_date: str = "2026-08-28",
+    license_or_terms: str = "See publisher terms",
 ) -> dict[str, object]:
     local = ROOT / path
     return {
@@ -30,6 +33,9 @@ def row(
         "role": role,
         "status": status,
         "blocker": blocker,
+        "observation_or_version_date": observation_or_version_date,
+        "retrieval_date": retrieval_date,
+        "license_or_terms": license_or_terms,
     }
 
 
@@ -119,6 +125,11 @@ def build() -> list[dict[str, object]]:
             "work/raw_stage/ASUSE_2023_24_TECHNICAL",
             "https://microdata.gov.in/NADA/index.php/catalog/238",
         ),
+        (
+            "ASUSE2025-TECH",
+            "work/raw_stage/ASUSE_2025_TECHNICAL",
+            "https://microdata.gov.in/NADA/index.php/catalog/293",
+        ),
     ]
     for prefix, directory, source_url in technical:
         for path in sorted((ROOT / directory).iterdir()):
@@ -143,6 +154,8 @@ def build() -> list[dict[str, object]]:
                 blocker=(
                     "Applicant-only access; raw unit records must not be publicly redistributed"
                 ),
+                observation_or_version_date="2022-08 through 2023-07",
+                license_or_terms="Restricted access agreement; applicant-only raw data",
             ),
             row(
                 "HCES2023-UNIT-DATA",
@@ -152,6 +165,8 @@ def build() -> list[dict[str, object]]:
                 "restricted unit microdata; CSV ZIP",
                 "ACQUIRED_RESTRICTED",
                 "Applicant-only access; raw unit records must not be publicly redistributed",
+                observation_or_version_date="2023-08 through 2024-07",
+                license_or_terms="Restricted access agreement; applicant-only raw data",
             ),
             row(
                 "ASUSE2023-UNIT-DATA",
@@ -161,6 +176,19 @@ def build() -> list[dict[str, object]]:
                 "restricted unit microdata; CSV ZIP",
                 "ACQUIRED_RESTRICTED",
                 "Applicant-only access; raw unit records must not be publicly redistributed",
+                observation_or_version_date="2023-10 through 2024-09",
+                license_or_terms="Restricted access agreement; applicant-only raw data",
+            ),
+            row(
+                "ASUSE2025-UNIT-DATA",
+                "work/raw_stage/ASUSE_2025_RESTRICTED_MICRODATA/CSV_ASUSE2025.zip",
+                "https://microdata.gov.in/NADA/index.php/catalog/293",
+                "India sample; retained because publisher offers no WB-only archive",
+                "restricted unit microdata; CSV ZIP",
+                "ACQUIRED_RESTRICTED",
+                "Applicant-only access; raw unit records must not be publicly redistributed",
+                observation_or_version_date="2025-01 through 2025-12",
+                license_or_terms="Restricted access agreement; applicant-only raw data",
             ),
             row(
                 "HCES2022-WB-MILK-PRIOR",
@@ -168,6 +196,7 @@ def build() -> list[dict[str, object]]:
                 "derived from HCES2022-UNIT-DATA",
                 "West Bengal sampled district-code/sector priors",
                 "aggregate model prior",
+                observation_or_version_date="2022-08 through 2023-07",
             ),
             row(
                 "HCES2023-WB-MILK-PRIOR",
@@ -175,6 +204,7 @@ def build() -> list[dict[str, object]]:
                 "derived from HCES2023-UNIT-DATA",
                 "West Bengal sampled district-code/sector priors",
                 "aggregate model prior",
+                observation_or_version_date="2023-08 through 2024-07",
             ),
             row(
                 "ASUSE2023-WB-ENTERPRISE-PRIOR",
@@ -182,6 +212,25 @@ def build() -> list[dict[str, object]]:
                 "derived from ASUSE2023-UNIT-DATA",
                 "West Bengal sampled district-code/sector/NIC2 priors",
                 "aggregate model prior",
+                observation_or_version_date="2023-10 through 2024-09",
+            ),
+            row(
+                "ASUSE2025-WB-ENTERPRISE-PRIOR",
+                "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/ASUSE_2025_West_Bengal_enterprise_priors.json",
+                "derived from ASUSE2025-UNIT-DATA",
+                "West Bengal sampled district-code/sector/NIC2 priors",
+                "aggregate model prior",
+                observation_or_version_date="2025-01 through 2025-12",
+            ),
+            row(
+                "SURVEY-MODEL-REGISTRY",
+                "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/models/model_registry.json",
+                "derived from restricted HCES 2023-24 and ASUSE 2025 microdata",
+                "West Bengal geographic holdout validation",
+                "metrics and fitted-artifact registry",
+                license_or_terms=(
+                    "Metrics shareable; fitted models retained privately pending terms review"
+                ),
             ),
         ]
     )

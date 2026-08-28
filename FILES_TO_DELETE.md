@@ -311,3 +311,13 @@ Nothing listed below was deleted before this inventory was created.
 | Filename | Exact bytes | Reason | Re-downloadable? |
 |---|---:|---|---|
 | `work/raw_stage/DS071_WEST_BENGAL/west_bengal.current.pbf` | 113098966 | Byte-for-byte duplicate downloaded solely to verify the interrupted-looking regional PBF. It has the same SHA-256 and MD5 as `west_bengal.pbf`; retain only the original-name copy. | Yes, from the recorded Geo2day URL. |
+
+## Final regional OSM transport-part cleanup
+
+| Filename | Exact bytes | Reason | Re-downloadable? |
+|---|---:|---|---|
+| `work/raw_stage/DS071_WEST_BENGAL/drive_parts/west_bengal.pbf.part-aa` | 94371840 | Split transport duplicate of the verified retained `west_bengal.pbf`; not used by the prototype. | Yes, regenerable losslessly from retained PBF. |
+| `work/raw_stage/DS071_WEST_BENGAL/drive_parts/west_bengal.pbf.part-ab` | 18727126 | Split transport duplicate of the verified retained `west_bengal.pbf`; not used by the prototype. | Yes, regenerable losslessly from retained PBF. |
+
+Deletion completed after identification: both split parts above were removed; the verified original
+PBF, its checksum/verification files and lightweight reassembly note were retained.

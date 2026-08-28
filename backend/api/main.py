@@ -12,7 +12,7 @@ from backend.finance.digital_twin import project_monthly_cashflow
 from backend.finance.stress import find_failure_boundary, summarize_stress
 from backend.service import analyze
 
-app = FastAPI(title="SIH26091 Hyperlocal Network Repair", version="0.2.0")
+app = FastAPI(title="SIH26091 Hyperlocal Network Repair", version="0.3.0")
 store = EvidenceStore(os.environ.get("SIH26091_SQLITE_PATH", ":memory:"))
 frontend_path = Path(__file__).resolve().parents[2] / "frontend"
 if frontend_path.exists():
@@ -21,7 +21,7 @@ if frontend_path.exists():
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "methodology_version": "decision-v2"}
+    return {"status": "ok", "methodology_version": "decision-v3"}
 
 
 @app.get("/localities/search")

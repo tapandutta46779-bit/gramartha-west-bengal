@@ -1,36 +1,29 @@
 # Implementation Status
 
-Updated: 2026-08-28. Status values are `DONE`, `PARTIAL`, `BLOCKED`, `NOT_STARTED`.
+Updated: 2026-08-28. Product version: 0.3.0 / decision methodology v3.
 
 | Component | Status | Verified state |
 |---|---|---|
-| Phase 2 audit | DONE | Baseline commit `f834f99`, original 14 tests and source/data state recorded in `PHASE2_CURRENT_STATE_AUDIT.md`. |
-| All-WB livestock | DONE | 80,950 source rows, 40,475 DS057 identities, 202,375 observed species records, all 23 publisher district labels. |
-| Census 2011 location codes | DONE | Official national LCD filtered to 41,154 WB rows; 31,747 DS057 identities reconciled and ambiguous names withheld. |
-| Current LGD crosswalk | PARTIAL | Census codes and dataset/OSM IDs exist; current LGD village/PIN linkage remains unavailable in a captcha-free bulk path. |
-| Census 2011 PCA | DONE | All 19 publisher district workbooks; 179,148 unique observed population/household/sex records. No current-year projection. |
-| OSM extraction | DONE | 633,601 road ways, 17,212 POIs/places, R-tree indexes, radial catchment and local Dijkstra routing. |
-| HCES 2022-23 / 2023-24 | DONE | Authorized CSV archives acquired and integrity-tested; 18,136 and 18,120 WB households transformed into zero-inclusive, weighted liquid-milk priors. Raw unit records remain applicant-only. |
-| ASUSE 2023-24 | DONE | Authorized 98,219,217-byte CSV archive acquired and integrity-tested; 41,886 WB enterprises transformed into 1,448 district/sector/NIC2 priors using official item and weight rules. |
-| Demand engine | PARTIAL | Two HCES waves now provide defensible sampled district/sector milk priors; locality downscaling and current population/price calibration remain gated. |
-| Dairy supply engine | PARTIAL | Livestock stock is observed; conversion to productive/reachable milk supply is intentionally refused until sourced productive fraction/yield assumptions are loaded. |
-| Price ingestion | NOT_STARTED | No verified local milk price distribution is loaded. |
-| Competitor context | PARTIAL | Sector-specific OSM proxy counts and institutions are computed; incumbent capacity remains unknown. |
-| Automatic graph | PARTIAL | Ordinary input invokes graph builder; a source-linked dairy graph is created only when demand, reachable supply, capacity and route-cost evidence all exist. |
-| Exact flow / counterfactual | DONE | Maximum served demand then minimum economic cost; counterfactual and cannibalization retained. |
-| Bottleneck | PARTIAL | Marginal edge-capacity sensitivity is exact under supplied graph; other requested bottleneck classes remain unimplemented. |
-| Venture generation | PARTIAL | Dairy rented-transport primitive is automatically generated from four source-linked cost/capacity variables; broader library absent. |
-| MVV | PARTIAL | Exact exhaustive oracle over enumerated candidates. Configuration MILP and pruning benchmarks are not implemented. |
-| Official finance | PARTIAL | Current official PMMY category screening implemented; lender rate, tenure, underwriting and sanction remain unknown and are never called approved. |
-| Digital twin | DONE | Operating break-even, cash break-even and owner-investment payback are distinct and unit-tested. |
-| Stress / robustness | PARTIAL | Demand failure boundary and finite-table minimax regret work; expanded multi-shock engine is pending. |
-| Canonical decision/API | DONE | Normal and advanced modes, granular gates, data/model/software versions, spatial context and persisted analysis. |
-| Bengali/Hindi/English | DONE | Deterministic templates; calculations remain frozen. |
-| Functional UI | DONE | Locality search, capital, sector, radius, language, decision gates, spatial/finance/source display. |
-| ML | BLOCKED | No defensible labelled target; transparent baseline and `INSUFFICIENT_TRAINING_DATA` policy retained. |
-| PostgreSQL/PostGIS runtime test | BLOCKED | Schema exists; no configured local/container PostGIS instance has been verified. |
+| West Bengal identity/evidence store | DONE | 53,537 geographic identities, 381,523 locality evidence records and 976 regional survey priors; SQLite integrity passes. |
+| Census geography/PCA | DONE AS HISTORICAL BASELINE | Official Census 2011 codes and population/household observations; never labelled current and no 2026 population projection is loaded. |
+| Livestock | DONE AS HISTORICAL CONTEXT | 202,375 West Bengal species records from the 2019 livestock census; all labelled `STALE_FOR_DECISION`. |
+| OSM spatial layer | DONE WITH PROXY CAVEAT | State extract, 633,601 road ways, 17,212 POIs/places, catchment and local routing; volunteered completeness caveat retained. |
+| HCES processing | DONE | Restricted 2022-23 and 2023-24 archives integrity-tested; 18,136 and 18,120 West Bengal household samples transformed into zero-inclusive weighted milk priors. |
+| ASUSE processing | DONE | Restricted 2023-24 and calendar-2025 archives integrity-tested; latest 39,029 West Bengal enterprise sample transformed into 1,558 district/sector/NIC2 prior groups. |
+| Statistical/ML training | DONE | HCES 18,120 rows and ASUSE 38,626 rows; district-group holdout, baselines, ridge and random forest; fitted private artifacts, registry and real MAE/RMSE/calibration metrics saved. |
+| Production survey integration | DONE | Ordinary requests automatically receive applicable district/sector HCES and ASUSE priors. Direct survey estimators are used because ordinary requests lack the microfeatures required by fitted models. |
+| Data-freshness policy | DONE | Variable class, observation/effective date and explicit freshness labels are stored; stale/unknown dynamic values cannot unlock the graph or recommendation. |
+| Demand | PARTIAL / GATED | HCES rate plus 2011 population is exposed only as `STALE_FOR_DECISION`; current or explicitly projected population is required for a 2026 demand estimate. |
+| Supply / price / capacity / cost | GATED | No fabricated current value. Productive reachable supply, local price, incumbent capacity, route cost and source-linked venture costs are required. |
+| Graph / exact flow / bottleneck | DONE WHEN INPUTS EXIST | Automatic dairy graph is built only with decision-ready variables; min-cost maximum flow and marginal edge-capacity bottleneck ranking are exact for the supplied graph. |
+| Counterfactual / cannibalization | DONE | Baseline, newly served demand, venture flow and displaced incumbent flow are separated. |
+| Venture generation / MVV | PARTIAL | One source-linked dairy transport primitive; exact exhaustive selection over the enumerated candidate set. No claim of a general configuration MILP or complete venture library. |
+| Finance | CURRENT SCREENING, REAL TERMS GATED | PMMY page updated 2026-02-05 and AHIDF temporary extension through 2026-09-30 are screened. Lender rates, underwriting, margin, portal window and sanction remain unknown. |
+| Digital twin / stress / robustness | DONE FOR SUPPLIED ASSUMPTIONS | Monthly accounting, distinct break-even/payback measures, demand failure boundary and exact finite-table minimax regret are tested. Multi-variable probabilistic propagation is not implemented. |
+| Real West Bengal E2E | DONE | Kolkata, North 24 Parganas, South 24 Parganas, Darjeeling, Jalpaiguri, Maldah and Purulia tested against real databases. All honestly returned `INSUFFICIENT_EVIDENCE`. |
+| HTTP/browser UI | DONE | Local UI/search/evidence/analyze flow tested through HTTP in the in-app Chromium browser; zero console warnings/errors. |
+| Test/audit/package | DONE | Ruff, 36 pytest tests, file/hash/ZIP/SQLite/model/accounting/E2E audit, and versioned public-safe package. |
 
-The project does **not** yet produce a real venture recommendation for ordinary localities. It
-correctly returns exact gates—typically demand, productive/reachable supply, price, incumbent
-capacity, route cost, venture cost and lender-specific finance terms—while still returning the
-evidence, Census/OSM context and audit trail it can defend.
+The strongest honest product is an operational, evidence-gated decision engine. It is not a source
+of present-day village demand, statewide economic completeness or automatic recommendations where
+critical current business evidence is absent.

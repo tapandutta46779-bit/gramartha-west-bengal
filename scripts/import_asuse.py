@@ -23,13 +23,20 @@ def _value(row: dict[str, str], aliases: list[str]) -> str:
 
 def _enterprise_key(row: dict[str, str]) -> tuple[str, str, str, str]:
     return (
-        _value(row, ["fsu_serial_no", "FSU_Serial_No"]),
-        _value(row, ["segment_no", "Segment_No"]),
+        _value(row, ["fsu_serial_no", "FSU_Serial_No", "fsu"]),
+        _value(row, ["segment_no", "Segment_No", "segno"]),
         _value(
             row,
-            ["second_stage_stratum_no", "second_stage_stratum", "Second_Stage_Stratum_No"],
+            [
+                "second_stage_stratum_no",
+                "second_stage_stratum",
+                "Second_Stage_Stratum_No",
+                "sss",
+            ],
         ),
-        _value(row, ["sample_est_no", "sample_estab_no", "Sample_Establishment_No"]),
+        _value(
+            row, ["sample_est_no", "sample_estab_no", "Sample_Establishment_No", "estno"]
+        ),
     )
 
 
@@ -58,6 +65,7 @@ def _weighted_summary(values: dict[str, float]) -> dict[str, float]:
 def build_asuse_priors(input_path: Path, mapping_path: Path, output_path: Path) -> dict:
     mapping = json.loads(mapping_path.read_text())
     members = mapping["members"]
+    columns = mapping.get("columns", {})
     state_code = str(mapping["state_code"])
     district_names = mapping.get("district_names", {})
     archive = zipfile.ZipFile(input_path) if input_path.is_file() else None
@@ -81,20 +89,24 @@ def build_asuse_priors(input_path: Path, mapping_path: Path, output_path: Path) 
     weight_divisor = float(mapping.get("weight_divisor", 100))
     with ExitStack() as stack:
         for row in csv.DictReader(open_csv(stack, "profile")):
-            nss_region = _value(row, ["nss_region", "NSS_Region"])
+            nss_region = row[columns.get("nss_region", "nss_region")].strip()
             if nss_region[:2] != state_code:
                 continue
-            weight = _number(row, "mlt") / weight_divisor
+            weight = _number(row, columns.get("weight", "mlt")) / weight_divisor
             if weight <= 0:
                 continue
             enterprises[_enterprise_key(row)] = {
-                "district": _value(row, ["district", "District"]),
+                "district": row[columns.get("district", "district")].strip(),
                 "nss_region": nss_region,
-                "sector": _value(row, ["sector", "Sector"]),
-                "nic2": row["major_nic_2dig"].strip(),
-                "nic5": row["major_nic_5dig"].strip(),
-                "nature_of_operation": row["nature_of_operation"].strip(),
-                "months_operated": _number(row, "months_operated"),
+                "sector": row[columns.get("sector", "sector")].strip(),
+                "nic2": row[columns.get("nic2", "major_nic_2dig")].strip(),
+                "nic5": row[columns.get("nic5", "major_nic_5dig")].strip(),
+                "nature_of_operation": row[
+                    columns.get("nature_of_operation", "nature_of_operation")
+                ].strip(),
+                "months_operated": _number(
+                    row, columns.get("months_operated", "months_operated")
+                ),
                 "weight": weight,
                 "metrics": {},
             }
@@ -103,36 +115,47 @@ def build_asuse_priors(input_path: Path, mapping_path: Path, output_path: Path) 
         for row in csv.DictReader(open_csv(stack, "reference_period")):
             enterprise = enterprises.get(_enterprise_key(row))
             if enterprise:
-                enterprise["reference_period_type"] = row["ref_period_type"].strip()
+                enterprise["reference_period_type"] = row[
+                    columns.get("reference_period_type", "ref_period_type")
+                ].strip()
 
     financial_codes = {value: name for name, value in mapping["financial_item_codes"].items()}
     with ExitStack() as stack:
         for row in csv.DictReader(open_csv(stack, "financials")):
-            metric = financial_codes.get(row["item_no"].strip())
+            metric = financial_codes.get(
+                row[columns.get("financial_item", "item_no")].strip()
+            )
             if not metric:
                 continue
             enterprise = enterprises.get(_enterprise_key(row))
             if enterprise:
-                enterprise["metrics"][metric] = _number(row, "value_rs")
+                enterprise["metrics"][metric] = _number(
+                    row, columns.get("financial_value", "value_rs")
+                )
 
     with ExitStack() as stack:
         for row in csv.DictReader(open_csv(stack, "workers")):
-            if row["item_no"].strip() != mapping["total_workers_item_code"]:
+            if (
+                row[columns.get("workers_item", "item_no")].strip()
+                != mapping["total_workers_item_code"]
+            ):
                 continue
             enterprise = enterprises.get(_enterprise_key(row))
             if enterprise:
-                enterprise["metrics"]["workers"] = _number(row, "total_workers")
+                enterprise["metrics"]["workers"] = _number(
+                    row, columns.get("workers_total", "total_workers")
+                )
 
     equipment_codes = set(mapping["equipment_asset_item_codes"])
     total_asset_code = mapping["total_fixed_assets_excluding_land_item_code"]
     land_code = mapping["land_asset_item_code"]
     with ExitStack() as stack:
         for row in csv.DictReader(open_csv(stack, "assets")):
-            item_code = row["item_no"].strip()
+            item_code = row[columns.get("assets_item", "item_no")].strip()
             enterprise = enterprises.get(_enterprise_key(row))
             if not enterprise:
                 continue
-            value = _number(row, "mv_assets_owned")
+            value = _number(row, columns.get("assets_owned", "mv_assets_owned"))
             if item_code in equipment_codes:
                 enterprise["metrics"]["equipment_investment_owned"] = (
                     enterprise["metrics"].get("equipment_investment_owned", 0) + value
