@@ -9,6 +9,9 @@ client = TestClient(app)
 def test_required_endpoints_and_insufficient_evidence_contract():
     response = client.get("/health")
     assert response.status_code == 200
+    root = client.get("/", follow_redirects=False)
+    assert root.status_code == 307
+    assert root.headers["location"] == "/ui/"
     assert client.get("/ui/").status_code == 200
 
     store.put_geography(

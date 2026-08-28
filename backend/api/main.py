@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from backend.api.contracts import AnalyzeRequest, CompareRequest, StressRequest
@@ -17,6 +18,11 @@ store = EvidenceStore(os.environ.get("SIH26091_SQLITE_PATH", ":memory:"))
 frontend_path = Path(__file__).resolve().parents[2] / "frontend"
 if frontend_path.exists():
     app.mount("/ui", StaticFiles(directory=frontend_path, html=True), name="ui")
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/ui/", status_code=307)
 
 
 @app.get("/health")

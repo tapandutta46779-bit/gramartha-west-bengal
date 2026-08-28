@@ -1,13 +1,31 @@
 const $ = (selector) => document.querySelector(selector);
 const sectors = ["kirana", "poultry", "fishery", "food processing", "transport"];
 let selectedLocality = null;
+let searchTimer = null;
 
 $("#search-form").addEventListener("submit", async (event) => {
   event.preventDefault();
+  await searchLocalities();
+});
+
+$("#query").addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  if ($("#query").value.trim().length < 2) {
+    $("#results").replaceChildren();
+    $("#status").textContent = "Type at least two letters.";
+    return;
+  }
+  $("#status").textContent = "Typing…";
+  searchTimer = setTimeout(searchLocalities, 250);
+});
+
+async function searchLocalities() {
+  const query = $("#query").value.trim();
+  if (query.length < 2) return;
   $("#status").textContent = "Searching verified locality records…";
   $("#results").replaceChildren();
   try {
-    const response = await fetch(`/localities/search?q=${encodeURIComponent($("#query").value)}`);
+    const response = await fetch(`/localities/search?q=${encodeURIComponent(query)}`);
     if (!response.ok) throw new Error(`Search failed (${response.status})`);
     const rows = await response.json();
     $("#status").textContent = rows.length ? "Choose the correct locality below." : "No match found. Try the official spelling or district.";
@@ -20,7 +38,7 @@ $("#search-form").addEventListener("submit", async (event) => {
       const li = document.createElement("li"); li.append(button); $("#results").append(li);
     });
   } catch (error) { $("#status").textContent = error.message; }
-});
+}
 
 function selectLocality(row) {
   selectedLocality = row;

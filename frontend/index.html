@@ -7,7 +7,7 @@
     <main>
       <section class="planner">
         <div class="step"><span>1</span><div><strong>Your area</strong><small>Search a verified West Bengal locality</small></div></div>
-        <form id="search-form" class="search-row"><label class="sr-only" for="query">Village, ward, town or municipality</label><input id="query" autocomplete="off" required placeholder="e.g. Barasat, Adra, Kolkata" /><button type="submit">Find area</button></form>
+        <form id="search-form" class="search-row"><label class="sr-only" for="query">Village, ward, town or municipality</label><input id="query" autocomplete="off" required minlength="2" placeholder="Start typing, e.g. Barasat, Adra, Kolkata" /><button type="submit">Find area</button></form>
         <p id="status" class="muted" role="status" aria-live="polite"></p><ul id="results" class="results"></ul><div id="identity" class="identity empty">No locality selected yet.</div>
         <div class="step plan-step"><span>2</span><div><strong>Your plan</strong><small>Tell us your budget and interest</small></div></div>
         <form id="analysis-form" class="plan-grid"><input id="selected-geo-id" type="hidden" />
