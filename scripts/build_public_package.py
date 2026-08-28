@@ -98,7 +98,9 @@ def build() -> dict:
         "See `docs/PRIVATE_APPLICANT_FILES_MANIFEST.md` inside the ZIP.\n"
     )
     root_name = "SIH26091_v0.3.0_PUBLIC_SHARE"
-    with zipfile.ZipFile(ZIP_PATH, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
+    with zipfile.ZipFile(
+        ZIP_PATH, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6
+    ) as archive:
         archive.writestr(
             f"{root_name}/PUBLIC_PACKAGE_MANIFEST.json",
             json.dumps(manifest, indent=2) + "\n",

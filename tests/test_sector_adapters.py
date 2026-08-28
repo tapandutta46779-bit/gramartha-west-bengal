@@ -34,6 +34,11 @@ def prior(variable: str, value: float) -> EvidenceRecord:
         ("fishery", "46"),
         ("food processing", "10"),
         ("transport", "46"),
+        ("flour mill", "10"),
+        ("spice processing", "10"),
+        ("mustard oil", "10"),
+        ("electronics", "47"),
+        ("household goods", "46"),
     ],
 )
 def test_sector_adapter_builds_traceable_candidate_and_graph(sector: str, nic: str):

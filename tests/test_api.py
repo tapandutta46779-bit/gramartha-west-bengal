@@ -13,6 +13,9 @@ def test_required_endpoints_and_insufficient_evidence_contract():
     assert root.status_code == 307
     assert root.headers["location"] == "/ui/"
     assert client.get("/ui/").status_code == 200
+    district_response = client.get("/districts")
+    assert district_response.status_code == 200
+    assert district_response.json()["state"] == "West Bengal"
 
     store.put_geography(
         GeographicIdentity(
@@ -26,6 +29,11 @@ def test_required_endpoints_and_insufficient_evidence_contract():
     search = client.get("/localities/search", params={"q": "Controlled"})
     assert search.status_code == 200
     assert search.json()[0]["geo_id"] == "WB:TEST:LOCALITY"
+    scoped = client.get(
+        "/localities/search",
+        params={"q": "Controlled", "district": "North 24 Parganas"},
+    )
+    assert scoped.json()[0]["geo_id"] == "WB:TEST:LOCALITY"
 
     request = {
         "geo_id": "WB:TEST:LOCALITY",

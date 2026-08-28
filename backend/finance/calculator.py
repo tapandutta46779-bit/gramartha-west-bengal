@@ -3,6 +3,46 @@ from __future__ import annotations
 from backend.models.finance import FinanceRule, FinanceRuleStatus, LoanTerms
 
 
+def break_even_volume(unit_price: float, variable_cost_per_unit: float, fixed_cost: float) -> float:
+    contribution = unit_price - variable_cost_per_unit
+    if fixed_cost < 0 or unit_price < 0 or variable_cost_per_unit < 0:
+        raise ValueError("cost and price inputs cannot be negative")
+    if contribution <= 0:
+        raise ValueError("positive contribution margin is required")
+    return fixed_cost / contribution
+
+
+def net_present_value(cash_flows: list[float], annual_discount_rate: float) -> float:
+    if not cash_flows or annual_discount_rate <= -1:
+        raise ValueError("cash flows are required and discount rate must exceed -100%")
+    monthly_rate = (1 + annual_discount_rate) ** (1 / 12) - 1
+    return sum(value / ((1 + monthly_rate) ** month) for month, value in enumerate(cash_flows))
+
+
+def internal_rate_of_return(cash_flows: list[float]) -> float | None:
+    if (
+        not cash_flows
+        or not any(value < 0 for value in cash_flows)
+        or not any(value > 0 for value in cash_flows)
+    ):
+        return None
+
+    def npv(monthly_rate: float) -> float:
+        return sum(value / ((1 + monthly_rate) ** month) for month, value in enumerate(cash_flows))
+
+    lower, upper = -0.99, 10.0
+    if npv(lower) * npv(upper) > 0:
+        return None
+    for _ in range(100):
+        middle = (lower + upper) / 2
+        if npv(lower) * npv(middle) <= 0:
+            upper = middle
+        else:
+            lower = middle
+    monthly = (lower + upper) / 2
+    return (1 + monthly) ** 12 - 1
+
+
 def amortized_loan(
     principal: float,
     annual_interest_rate: float,

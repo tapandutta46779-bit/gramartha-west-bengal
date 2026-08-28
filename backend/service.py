@@ -10,10 +10,16 @@ from backend.api.contracts import AnalyzeRequest
 from backend.engine.bottleneck import rank_capacity_bottlenecks
 from backend.engine.flow_engine import solve_min_cost_flow
 from backend.engine.mvv import select_minimum_viable_venture
+from backend.engine.uncertainty import compare_candidates_under_uncertainty, failure_boundaries
 from backend.evidence.geography_resolver import resolve_locality
 from backend.evidence.store import EvidenceStore
 from backend.explanation import deterministic_explanation
-from backend.finance.calculator import amortized_loan
+from backend.finance.calculator import (
+    amortized_loan,
+    break_even_volume,
+    internal_rate_of_return,
+    net_present_value,
+)
 from backend.finance.digital_twin import project_monthly_cashflow
 from backend.finance.rules import screen_ahidf, screen_pmmy
 from backend.models.decision import (
@@ -109,6 +115,66 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
             owner_capital=float(selected.investment),
         )
     requested_finance = float(request.loan.principal) if request.loan else None
+    financial_metrics = {}
+    if selected and twin:
+        month_12 = twin.months[min(11, len(twin.months) - 1)]
+        contribution = max(
+            0.0,
+            twin.assumptions["unit_price"] - twin.assumptions["variable_cost_per_unit"],
+        )
+        cash_flows = [
+            -float(selected.investment),
+            *(month.operating_cash_flow for month in twin.months),
+        ]
+        financial_metrics = {
+            "gross_margin": (
+                (month_12.revenue - month_12.variable_cost) / month_12.revenue
+                if month_12.revenue
+                else None
+            ),
+            "operating_margin": (
+                month_12.operating_cash_flow / month_12.revenue if month_12.revenue else None
+            ),
+            "contribution_margin_per_unit": contribution,
+            "break_even_volume_month": (
+                break_even_volume(
+                    twin.assumptions["unit_price"],
+                    twin.assumptions["variable_cost_per_unit"],
+                    twin.assumptions["fixed_monthly_cost"],
+                )
+                if contribution > 0
+                else None
+            ),
+            "npv_36_month_at_12pct": net_present_value(cash_flows, 0.12),
+            "irr_annualized": internal_rate_of_return(cash_flows),
+            "confidence_note": (
+                "NPV/IRR are planning outputs from benchmark-adjusted assumptions, not "
+                "investment guarantees."
+            ),
+        }
+    robust_analysis = {}
+    computed_boundaries = []
+    if (
+        request.analysis_mode == "deep"
+        and selected
+        and candidates
+        and automatic.demand.central
+        and automatic.price.unit == "gross margin share"
+    ):
+        robust_analysis = compare_candidates_under_uncertainty(
+            candidates,
+            available_capital=float(entrepreneur.available_capital),
+            monthly_demand=float(automatic.demand.central),
+            margin_share=automatic_margin,
+            seed_key=f"{geography.geo_id}:{sector}:deep-v1",
+            minimum_monthly_income=float(entrepreneur.minimum_monthly_income),
+        )
+        computed_boundaries = failure_boundaries(
+            selected,
+            available_capital=float(entrepreneur.available_capital),
+            monthly_demand=float(automatic.demand.central),
+            margin_share=automatic_margin,
+        )
     finance_screen = screen_pmmy(
         sector=sector,
         requested_amount=requested_finance,
@@ -138,7 +204,7 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         analysis_id=analysis_id,
         created_at=now,
         status=status,
-        methodology_version="decision-v4",
+        methodology_version="decision-v5",
         geography=geography,
         geo_resolution=resolution,
         entrepreneur=entrepreneur,
@@ -184,6 +250,7 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
                     selected.investment - float(entrepreneur.available_capital), 0
                 ),
                 "wording": "Potentially eligible / illustrative structure; not lender approval.",
+                "financial_metrics": financial_metrics,
             }
             if selected
             else {}
@@ -193,6 +260,7 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         investment_payback=twin.investment_payback_month if twin else None,
         alternatives=[candidate for candidate in candidates if candidate != selected],
         candidate_ventures=candidates,
+        failure_boundaries=computed_boundaries,
         robust_comparison=(
             {
                 "best_base_case": selected.candidate_id,
@@ -201,6 +269,7 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
                     (item.candidate_id for item in candidates if item != selected), None
                 ),
                 "scope": "enumerated benchmark-adjusted configurations",
+                **robust_analysis,
             }
             if selected and candidates
             else {}
@@ -226,6 +295,8 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
             "mvv_objective": mvv.objective if mvv else None,
             "mvv_exact_scope": "enumerated candidate set" if mvv else None,
             "automatic_graph_attempted": request.graph is None,
+            "analysis_mode": request.analysis_mode,
+            "uncertainty_scenarios": robust_analysis.get("scenario_count", 0),
             "evidence_gate_codes": [gate.code for gate in gates],
         },
         limitations=[*limitations, *spatial["limitations"]],
@@ -355,7 +426,7 @@ def _refusal(
         analysis_id=analysis_id,
         created_at=now,
         status=DecisionStatus.INSUFFICIENT_EVIDENCE,
-        methodology_version="decision-v3",
+        methodology_version="decision-v5",
         geo_resolution=resolution,
         sector=request.business_category,
         confidence=ConfidenceLevel.INSUFFICIENT,

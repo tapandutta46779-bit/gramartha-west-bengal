@@ -1,27 +1,49 @@
 <!doctype html>
 <html lang="en">
-  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>GramArtha — Local business planner</title><link rel="stylesheet" href="styles.css" /></head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#123b31" />
+    <title>GramArtha — West Bengal business advisor</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
   <body>
-    <nav><a class="brand" href="#">Gram<span>Artha</span></a><span>West Bengal business planner</span></nav>
-    <header><p class="eyebrow">Hyper-local economic network repair</p><h1>A practical business plan for your locality and budget.</h1><p class="lede">Choose your area and capital. We estimate the local opportunity, test a minimum viable setup, and show what could make the plan fail.</p></header>
+    <nav><a class="brand" href="#">Gram<span>Artha</span></a><span>West Bengal business advisor</span></nav>
+    <header><p class="eyebrow">Hyper-local economic network repair</p><h1>What business can work where you live?</h1><p class="lede">Enter your locality and budget. GramArtha tests local service gaps, minimum viable ventures, 36-month cash flow and downside scenarios.</p></header>
     <main>
       <section class="planner">
-        <div class="step"><span>1</span><div><strong>Your area</strong><small>Search a verified West Bengal locality</small></div></div>
-        <form id="search-form" class="search-row"><label class="sr-only" for="query">Village, ward, town or municipality</label><input id="query" autocomplete="off" required minlength="2" placeholder="Start typing, e.g. Barasat, Adra, Kolkata" /><button type="submit">Find area</button></form>
-        <p id="status" class="muted" role="status" aria-live="polite"></p><ul id="results" class="results"></ul><div id="identity" class="identity empty">No locality selected yet.</div>
-        <div class="step plan-step"><span>2</span><div><strong>Your plan</strong><small>Tell us your budget and interest</small></div></div>
+        <div class="journey"><b class="active">1 Setup</b><b>2 Local market</b><b>3 Opportunities</b><b>4 Risk</b><b>5 Plan</b><b>6 Finance</b><b>7 Action</b></div>
+        <div class="step"><span>1</span><div><strong>Your area</strong><small>West Bengal → district → canonical locality</small></div></div>
+        <div class="area-grid">
+          <label>State<input value="West Bengal" disabled /></label>
+          <label>District<select id="district" required><option value="">Loading supported districts…</option></select></label>
+        </div>
+        <form id="search-form" class="search-row"><label class="sr-only" for="query">Locality, town, municipality, block, village or ward</label><input id="query" autocomplete="off" required minlength="2" placeholder="Select a district, then type your local area" /><button type="submit">Find area</button></form>
+        <p id="status" class="muted" role="status" aria-live="polite">Select a district before searching.</p><ul id="results" class="results"></ul><div id="identity" class="identity empty">No canonical locality selected yet.</div>
+
+        <div class="step plan-step"><span>2</span><div><strong>Your plan</strong><small>Budget, interest and analysis depth</small></div></div>
         <form id="analysis-form" class="plan-grid"><input id="selected-geo-id" type="hidden" />
           <label>Own capital (₹)<input id="capital" type="number" min="10000" value="100000" required /></label>
-          <label>Business interest<select id="sector"><option value="best">Find the best opportunity for me</option><option value="kirana">Kirana / grocery</option><option value="poultry">Poultry / egg aggregation</option><option value="fishery">Fish collection / distribution</option><option value="food processing">Food processing</option><option value="transport">Rural distribution / aggregation</option><option value="dairy">Dairy / milk</option></select></label>
-          <label>Planning radius<select id="radius"><option value="5">5 km</option><option value="10" selected>10 km</option><option value="20">20 km</option></select></label>
+          <label>Business interest<select id="sector"><option value="best">Find the best opportunity for me</option><optgroup label="Agriculture and food"><option value="dairy">Dairy / milk</option><option value="poultry">Poultry / egg aggregation</option><option value="fishery">Fish collection / distribution</option><option value="food processing">Small food processing</option><option value="flour mill">Flour mill</option><option value="spice processing">Spice processing</option><option value="mustard oil">Mustard oil extraction</option></optgroup><optgroup label="Retail and distribution"><option value="kirana">Kirana / grocery</option><option value="household goods">Household-goods distribution</option><option value="electronics">Electronics / mobile retail</option><option value="transport">Rural distribution / aggregation</option></optgroup></select></label>
+          <label>Planning radius<select id="radius"><option value="3">3 km</option><option value="5">5 km</option><option value="10" selected>10 km</option><option value="15">15 km</option><option value="20">20 km</option></select></label>
+          <label>Analysis<select id="analysis-mode"><option value="deep" selected>Deep — 512 scenarios</option><option value="quick">Quick — central estimate</option></select></label>
           <label>Language<select id="language"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option></select></label>
+          <details class="advanced"><summary>Optional entrepreneur profile</summary><div class="advanced-grid">
+            <label>Desired monthly income (₹)<input id="income-target" type="number" min="0" value="0" /></label>
+            <label>Maximum acceptable debt (₹)<input id="max-debt" type="number" min="0" /></label>
+            <label>Experience (years)<input id="experience" type="number" min="0" value="0" /></label>
+            <label>Risk tolerance<select id="risk-tolerance"><option>LOW</option><option selected>MEDIUM</option><option>HIGH</option></select></label>
+            <label>Existing assets<input id="assets" placeholder="shop, land, vehicle" /></label>
+            <label>Skills<input id="skills" placeholder="sales, bookkeeping, food handling" /></label>
+          </div></details>
           <button class="primary" type="submit" disabled id="analyze-button">Select your area first</button>
         </form>
       </section>
-      <section id="progress-panel" class="progress-panel hidden" aria-live="polite"><div class="spinner"></div><div><strong id="analysis-status">Understanding local demand…</strong><p>Building the economic network, testing venture sizes, finance and 36-month cash flow.</p></div></section>
+      <section id="progress-panel" class="progress-panel hidden" aria-live="polite"><div class="spinner"></div><div><strong id="analysis-status">Starting analysis…</strong><p id="elapsed">Elapsed: 0.0 seconds</p><small>Resolving evidence → graph and flow → MVV → 36-month cash flow → uncertainty and robust ranking</small></div></section>
       <section id="decision" class="decision hidden" aria-labelledby="recommendation-title"></section>
-      <details class="audit"><summary>Evidence and technical audit</summary><div id="audit-content"></div></details>
+      <details class="audit"><summary>How did GramArtha decide? Evidence & methodology</summary><div id="audit-content"></div></details>
     </main>
-    <footer>Planning estimates are not lender approval or guaranteed income. Every estimate retains its method, source and uncertainty.</footer><script src="app.js" defer></script>
+    <footer>Planning estimates are not guaranteed income or lender approval. Numbers retain their method, source, uncertainty and evidence limitations.</footer>
+    <script src="app.js" defer></script>
   </body>
 </html>

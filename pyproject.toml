@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sih26091-network-repair"
-version = "0.3.0"
+version = "0.5.0"
 description = "Evidence-backed West Bengal economic network repair and venture finance engine"
 requires-python = ">=3.12"
 dependencies = [

@@ -41,6 +41,7 @@ def main() -> None:
                 "capital": capital,
                 "business_category": sector,
                 "language": "en",
+                "analysis_mode": "deep",
             },
         )
         payload = response.json()
@@ -54,6 +55,7 @@ def main() -> None:
                 "locality_type": match["locality_type"],
                 "sector": sector,
                 "capital_inr": capital,
+                "analysis_mode": "deep",
                 "http_status": response.status_code,
                 "decision_status": payload.get("status"),
                 "confidence": payload.get("confidence"),
@@ -63,13 +65,27 @@ def main() -> None:
                 "operating_break_even_month": (twin or {}).get("operating_break_even_month"),
                 "investment_payback_month": (twin or {}).get("investment_payback_month"),
                 "minimum_cash_inr": (twin or {}).get("minimum_cash"),
+                "scenario_count": payload.get("robust_comparison", {}).get("scenario_count"),
+                "scenario_survival_rate": next(
+                    (
+                        item["scenario_survival_rate"]
+                        for item in payload.get("robust_comparison", {}).get(
+                            "candidate_summaries", []
+                        )
+                        if selected and item["candidate_id"] == selected["candidate_id"]
+                    ),
+                    None,
+                ),
+                "minimax_regret_winner": payload.get("robust_comparison", {}).get(
+                    "minimax_regret_winner"
+                ),
                 "blocking_gates": [
                     gate["code"] for gate in payload.get("evidence_gates", []) if gate["blocking"]
                 ],
                 "methodology_version": payload.get("methodology_version"),
             }
         )
-    output = Path("outputs/e2e/product_e2e_v0.4.0.json")
+    output = Path("outputs/e2e/product_e2e_v0.5.0.json")
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(results, indent=2), encoding="utf-8")
     print(json.dumps(results, indent=2))

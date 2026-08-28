@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, Field, NonNegativeFloat, model_validator
 
 from backend.models.economic_graph import EconomicGraph
@@ -42,6 +44,7 @@ class AnalyzeRequest(BaseModel):
     profile: dict = Field(default_factory=dict)
     entrepreneur: EntrepreneurProfile | None = None
     language: str = "en"
+    analysis_mode: Literal["quick", "deep"] = "deep"
     allow_fuzzy_location: bool = False
     catchment_radius_km: float = Field(default=10, gt=0, le=100)
     graph: EconomicGraph | None = None

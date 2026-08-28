@@ -64,8 +64,26 @@ class EvidenceStore:
         )
         self._commit_unless_deferred()
 
-    def search_geographies(self, query: str, limit: int = 20) -> list[GeographicIdentity]:
+    def search_geographies(
+        self, query: str, limit: int = 20, district: str | None = None
+    ) -> list[GeographicIdentity]:
         pattern = f"%{query.casefold()}%"
+        if district:
+            rows = self.connection.execute(
+                """
+                SELECT payload FROM geographic_identity
+                WHERE lower(locality) LIKE ?
+                ORDER BY locality, geo_id
+                """,
+                (pattern,),
+            ).fetchall()
+            requested = _district_search_key(district)
+            matches = [GeographicIdentity.model_validate_json(row["payload"]) for row in rows]
+            return [
+                item
+                for item in matches
+                if _district_search_key(item.district).casefold() == requested.casefold()
+            ][:limit]
         rows = self.connection.execute(
             """
             SELECT payload FROM geographic_identity
@@ -75,6 +93,15 @@ class EvidenceStore:
             (pattern, pattern, pattern, limit),
         ).fetchall()
         return [GeographicIdentity.model_validate_json(row["payload"]) for row in rows]
+
+    def list_districts(self) -> list[str]:
+        rows = self.connection.execute(
+            "SELECT DISTINCT district FROM geographic_identity WHERE state = 'West Bengal'"
+        ).fetchall()
+        return sorted(
+            {_district_search_key(row["district"]) for row in rows},
+            key=str.casefold,
+        )
 
     def get_geography(self, geo_id: str) -> GeographicIdentity | None:
         row = self.connection.execute(
@@ -156,3 +183,9 @@ class EvidenceStore:
             raise
         finally:
             self._defer_commits = previous
+
+
+def _district_search_key(value: str) -> str:
+    if value.casefold().strip() in {"barddhaman", "bardhaman"}:
+        return "Barddhaman"
+    return canonical_district(value) or value.strip()

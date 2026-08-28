@@ -13,7 +13,7 @@ from backend.finance.digital_twin import project_monthly_cashflow
 from backend.finance.stress import find_failure_boundary, summarize_stress
 from backend.service import analyze
 
-app = FastAPI(title="SIH26091 Hyperlocal Network Repair", version="0.4.0")
+app = FastAPI(title="SIH26091 Hyperlocal Network Repair", version="0.5.0")
 store = EvidenceStore(os.environ.get("SIH26091_SQLITE_PATH", ":memory:"))
 frontend_path = Path(__file__).resolve().parents[2] / "frontend"
 if frontend_path.exists():
@@ -27,12 +27,21 @@ def root():
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "methodology_version": "decision-v4"}
+    return {"status": "ok", "methodology_version": "decision-v5"}
 
 
 @app.get("/localities/search")
-def search_localities(q: str = Query(min_length=1), limit: int = Query(20, ge=1, le=100)):
-    return store.search_geographies(q, limit)
+def search_localities(
+    q: str = Query(min_length=1),
+    limit: int = Query(20, ge=1, le=100),
+    district: str | None = None,
+):
+    return store.search_geographies(q, limit, district)
+
+
+@app.get("/districts")
+def districts():
+    return {"state": "West Bengal", "districts": store.list_districts()}
 
 
 @app.get("/evidence/{geo_id}")

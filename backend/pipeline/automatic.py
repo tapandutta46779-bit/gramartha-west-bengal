@@ -124,15 +124,23 @@ def _demand_interval(evidence: list[EvidenceRecord]) -> EstimateInterval:
         return _multiply_rate_population(rate, population, status=status)
     historical = _numeric(evidence, "population_observed_2011")
     if historical is not None:
-        interval = _multiply_rate_population(rate, historical, status="STALE_FOR_DECISION")
-        return interval.model_copy(
-            update={
-                "confidence": ConfidenceLevel.LOW,
-                "notes": [
-                    "Uses the observed 2011 population with a 2023-24 sampled consumption rate.",
-                    "This is a historical baseline proxy, not a 2026 locality-demand estimate.",
-                ],
-            }
+        projected = _project_population_2026(historical)
+        return EstimateInterval(
+            central=float(rate.value) * projected["central"],
+            lower=float(rate.attributes.get("lower", rate.value)) * projected["lower"],
+            upper=float(rate.attributes.get("upper", rate.value)) * projected["upper"],
+            unit="litres/month",
+            confidence=ConfidenceLevel.LOW,
+            evidence_ids=[rate.id, historical.id],
+            method_version="hces-rate-times-census-growth-scenario-v1",
+            status="PROJECTED",
+            notes=[
+                "Census 2011 is the structural population anchor, not a current observation.",
+                "Population is projected to 2026 with explicit rural/urban compound-growth "
+                "scenarios; no boundary-change adjustment is available.",
+                f"Population projection: {projected['lower']:.0f}–{projected['upper']:.0f} "
+                f"(central {projected['central']:.0f}).",
+            ],
         )
     return EstimateInterval.insufficient(
         "litres/month",
@@ -160,6 +168,18 @@ def _multiply_rate_population(
         method_version="hces-rate-times-population-v1",
         status=status,
     )
+
+
+def _project_population_2026(record: EvidenceRecord) -> dict[str, float]:
+    rural = str(record.attributes.get("rural_urban", "RURAL")).casefold() == "rural"
+    rates = (0.006, 0.011, 0.016) if rural else (0.010, 0.017, 0.024)
+    base = float(record.value)  # type: ignore[arg-type]
+    years = 15
+    return {
+        "lower": base * ((1 + rates[0]) ** years),
+        "central": base * ((1 + rates[1]) ** years),
+        "upper": base * ((1 + rates[2]) ** years),
+    }
 
 
 def _build_dairy(
@@ -563,6 +583,14 @@ def _build_benchmark_adapter(
             working_capital=working_capital,
             capacity=capacity,
             staff=max(1, round(float(workers.value) * scale)),
+            service_radius_km=5 + (10 * scale),
+            space_sqft=adapter.space_sqft * scale,
+            inventory_days=adapter.inventory_days,
+            receivable_days=adapter.receivable_days,
+            payable_days=adapter.payable_days,
+            lifetime_months=60,
+            residual_value=capex * 0.15,
+            licence_assumptions=list(adapter.licenses),
             required_skills=["basic bookkeeping", "supplier and customer coordination"],
             required_assets=list(adapter.licenses),
             assumption_labels=["ASUSE_WEIGHTED_BENCHMARK", "MODELLED_LOCAL_CONFIGURATION"],

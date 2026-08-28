@@ -29,6 +29,15 @@ class VenturePrimitive(BaseModel):
     required_skills: list[str] = Field(default_factory=list)
     required_assets: list[str] = Field(default_factory=list)
     staff: int = Field(default=0, ge=0)
+    service_radius_km: NonNegativeFloat | None = None
+    space_sqft: NonNegativeFloat | None = None
+    operating_days_per_month: int = Field(default=26, ge=1, le=31)
+    inventory_days: NonNegativeFloat = 0
+    receivable_days: NonNegativeFloat = 0
+    payable_days: NonNegativeFloat = 0
+    lifetime_months: int | None = Field(default=None, gt=0)
+    residual_value: NonNegativeFloat = 0
+    licence_assumptions: list[str] = Field(default_factory=list)
     added_nodes: list[EconomicNode] = Field(default_factory=list)
     added_edges: list[EconomicEdge] = Field(default_factory=list)
     assumption_labels: list[str] = Field(default_factory=list)
@@ -37,6 +46,10 @@ class VenturePrimitive(BaseModel):
     @property
     def investment(self) -> float:
         return float(self.capex + self.working_capital)
+
+    @property
+    def cash_conversion_cycle_days(self) -> float:
+        return float(self.inventory_days + self.receivable_days - self.payable_days)
 
 
 class VentureCandidate(BaseModel):

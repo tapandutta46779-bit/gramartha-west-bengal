@@ -1,6 +1,11 @@
 import pytest
 
-from backend.finance.calculator import amortized_loan
+from backend.finance.calculator import (
+    amortized_loan,
+    break_even_volume,
+    internal_rate_of_return,
+    net_present_value,
+)
 from backend.finance.digital_twin import project_monthly_cashflow
 from backend.finance.stress import find_failure_boundary
 from backend.models.finance import FinanceRule, FinanceRuleStatus
@@ -10,6 +15,15 @@ def test_zero_interest_amortization_hand_case():
     loan = amortized_loan(1200, 0, 12)
     assert loan.monthly_payment == 100
     assert loan.total_interest == 0
+
+
+def test_break_even_npv_and_irr_hand_cases():
+    assert break_even_volume(10, 6, 100) == 25
+    with pytest.raises(ValueError, match="contribution"):
+        break_even_volume(5, 5, 10)
+    cash_flows = [-100, *([0] * 11), 110]
+    assert net_present_value(cash_flows, 0.10) == pytest.approx(0, abs=1e-8)
+    assert internal_rate_of_return(cash_flows) == pytest.approx(0.10, abs=1e-8)
 
 
 def test_real_decision_rejects_unverified_finance_rule():
