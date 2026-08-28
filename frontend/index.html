@@ -1,85 +1,27 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>West Bengal Hyperlocal Network Repair</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
+  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>GramArtha — Local business planner</title><link rel="stylesheet" href="styles.css" /></head>
   <body>
-    <header>
-      <p class="eyebrow">SIH26091 · evidence-first prototype</p>
-      <h1>Find local evidence before recommending a venture.</h1>
-      <p class="lede">
-        Search the verified regional evidence store. This interface shows backend records as-is;
-        it never recalculates recommendations, finance, or risk values in the browser.
-      </p>
-    </header>
+    <nav><a class="brand" href="#">Gram<span>Artha</span></a><span>West Bengal business planner</span></nav>
+    <header><p class="eyebrow">Hyper-local economic network repair</p><h1>A practical business plan for your locality and budget.</h1><p class="lede">Choose your area and capital. We estimate the local opportunity, test a minimum viable setup, and show what could make the plan fail.</p></header>
     <main>
-      <section class="search-panel" aria-labelledby="search-heading">
-        <h2 id="search-heading">Locality evidence</h2>
-        <form id="search-form">
-          <label for="query">Village, ward, district, or municipality</label>
-          <div class="search-row">
-            <input id="query" name="query" autocomplete="off" required minlength="1" />
-            <button type="submit">Search</button>
-          </div>
+      <section class="planner">
+        <div class="step"><span>1</span><div><strong>Your area</strong><small>Search a verified West Bengal locality</small></div></div>
+        <form id="search-form" class="search-row"><label class="sr-only" for="query">Village, ward, town or municipality</label><input id="query" autocomplete="off" required placeholder="e.g. Barasat, Adra, Kolkata" /><button type="submit">Find area</button></form>
+        <p id="status" class="muted" role="status" aria-live="polite"></p><ul id="results" class="results"></ul><div id="identity" class="identity empty">No locality selected yet.</div>
+        <div class="step plan-step"><span>2</span><div><strong>Your plan</strong><small>Tell us your budget and interest</small></div></div>
+        <form id="analysis-form" class="plan-grid"><input id="selected-geo-id" type="hidden" />
+          <label>Own capital (₹)<input id="capital" type="number" min="10000" value="100000" required /></label>
+          <label>Business interest<select id="sector"><option value="best">Find the best opportunity for me</option><option value="kirana">Kirana / grocery</option><option value="poultry">Poultry / egg aggregation</option><option value="fishery">Fish collection / distribution</option><option value="food processing">Food processing</option><option value="transport">Rural distribution / aggregation</option><option value="dairy">Dairy / milk</option></select></label>
+          <label>Planning radius<select id="radius"><option value="5">5 km</option><option value="10" selected>10 km</option><option value="20">20 km</option></select></label>
+          <label>Language<select id="language"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option></select></label>
+          <button class="primary" type="submit" disabled id="analyze-button">Select your area first</button>
         </form>
-        <p id="status" role="status" aria-live="polite"></p>
-        <ul id="results" class="results"></ul>
       </section>
-      <section aria-labelledby="evidence-heading">
-        <div class="section-heading">
-          <h2 id="evidence-heading">Source-linked records</h2>
-          <span id="record-count" class="count"></span>
-        </div>
-        <div id="identity" class="identity empty">Choose a locality to inspect its evidence.</div>
-        <div id="evidence" class="evidence-grid"></div>
-      </section>
-      <section class="analysis-panel" aria-labelledby="analysis-heading">
-        <h2 id="analysis-heading">Run evidence-gated analysis</h2>
-        <form id="analysis-form">
-          <input id="selected-geo-id" type="hidden" />
-          <label for="capital">Available own capital (INR)</label>
-          <input id="capital" type="number" min="0" value="100000" required />
-          <label for="sector">Business sector</label>
-          <select id="sector">
-            <option value="dairy">Dairy / milk</option>
-            <option value="poultry">Poultry</option>
-            <option value="fisheries">Fisheries</option>
-            <option value="grocery">Kirana / grocery</option>
-            <option value="transport">Rural transport / aggregation</option>
-            <option value="food processing">Food processing</option>
-          </select>
-          <label for="radius">Catchment radius (km)</label>
-          <input id="radius" type="number" min="1" max="100" value="10" />
-          <label for="language">Explanation language</label>
-          <select id="language">
-            <option value="en">English</option>
-            <option value="bn">বাংলা</option>
-            <option value="hi">हिन्दी</option>
-          </select>
-          <button type="submit" disabled id="analyze-button">Select locality first</button>
-        </form>
-        <p id="analysis-status" role="status" aria-live="polite"></p>
-      </section>
-      <section class="decision-panel" aria-labelledby="decision-heading">
-        <div class="section-heading">
-          <h2 id="decision-heading">Canonical VentureDecision</h2>
-          <span id="decision-state" class="count"></span>
-        </div>
-        <div id="decision" class="decision empty">Run an analysis to inspect the audit trail.</div>
-      </section>
-      <aside class="guardrail">
-        <strong>Decision guardrail</strong>
-        <p>
-          Livestock and old census counts alone are not enough to recommend a business. Missing
-          demand, current prices, productive supply, incumbent capacity, route costs, venture
-          costs, or lender-specific finance terms remain visible gates. The UI never converts a
-          gate into a recommendation.
-        </p>
-      </aside>
+      <section id="progress-panel" class="progress-panel hidden" aria-live="polite"><div class="spinner"></div><div><strong id="analysis-status">Understanding local demand…</strong><p>Building the economic network, testing venture sizes, finance and 36-month cash flow.</p></div></section>
+      <section id="decision" class="decision hidden" aria-labelledby="recommendation-title"></section>
+      <details class="audit"><summary>Evidence and technical audit</summary><div id="audit-content"></div></details>
     </main>
-    <script src="app.js" defer></script>
+    <footer>Planning estimates are not lender approval or guaranteed income. Every estimate retains its method, source and uncertainty.</footer><script src="app.js" defer></script>
   </body>
 </html>

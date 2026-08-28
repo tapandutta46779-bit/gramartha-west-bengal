@@ -12,6 +12,7 @@ from backend.models.evidence import (
 )
 from backend.models.profile import EntrepreneurProfile
 from backend.models.venture import PrimitiveType, VentureCandidate, VenturePrimitive
+from backend.pipeline.sector_library import SectorAdapter, resolve_adapter
 
 
 class AutomaticBuildResult(BaseModel):
@@ -34,8 +35,11 @@ def build_automatic_inputs(
 ) -> AutomaticBuildResult:
     normalized_sector = sector.casefold().strip()
     if normalized_sector not in {"dairy", "milk"}:
+        adapter = resolve_adapter(sector)
+        if adapter is not None:
+            return _build_benchmark_adapter(geo_id, adapter, evidence, profile)
         insufficient = EstimateInterval.insufficient(
-            "unknown", "sector-adapter-v1", f"No production adapter for {sector}."
+            "unknown", "sector-adapter-v2", f"No production adapter for {sector}."
         )
         return AutomaticBuildResult(
             demand=insufficient,
@@ -47,7 +51,7 @@ def build_automatic_inputs(
                     message=f"Sector adapter is not implemented for {sector}.",
                 )
             ],
-            model_versions={"sector_adapter": "registry-v1"},
+            model_versions={"sector_adapter": "registry-v2"},
         )
     return _build_dairy(geo_id, evidence, profile)
 
@@ -238,9 +242,11 @@ def _build_dairy(
 
     graph = None
     graph_summary = {}
-    graph_ready = demand.status in {"EVIDENCE_DERIVED", "ESTIMATED", "PROJECTED"} and all(
-        item.status != "INSUFFICIENT_EVIDENCE" for item in (supply,)
-    ) and all(item is not None for item in (capacity_record, route_cost_record))
+    graph_ready = (
+        demand.status in {"EVIDENCE_DERIVED", "ESTIMATED", "PROJECTED"}
+        and all(item.status != "INSUFFICIENT_EVIDENCE" for item in (supply,))
+        and all(item is not None for item in (capacity_record, route_cost_record))
+    )
     if graph_ready:
         demand_id = demand.evidence_ids[0]
         supply_id = supply.evidence_ids[0]
@@ -343,9 +349,7 @@ def _dairy_candidates(
     if graph is None:
         return []
     variables = {
-        name: _numeric(
-            evidence, name, {FreshnessStatus.CURRENT, FreshnessStatus.RECENT}
-        )
+        name: _numeric(evidence, name, {FreshnessStatus.CURRENT, FreshnessStatus.RECENT})
         for name in (
             "venture_transport_capex_inr",
             "venture_transport_opex_inr_month",
@@ -417,3 +421,223 @@ def _confidence_value(level: ConfidenceLevel) -> float:
 
 def _lower_confidence(*levels: ConfidenceLevel) -> ConfidenceLevel:
     return min(levels, key=_confidence_value)
+
+
+def _build_benchmark_adapter(
+    geo_id: str,
+    adapter: SectorAdapter,
+    evidence: list[EvidenceRecord],
+    profile: EntrepreneurProfile,
+) -> AutomaticBuildResult:
+    """Build a bounded planning case from query-time ASUSE district/sector priors.
+
+    ASUSE values are sampled enterprise benchmarks, not locality totals. The adapter therefore
+    uses them only to size a small configuration and labels every output MODELLED_BENCHMARK.
+    """
+    prefix = f"asuse_nic{adapter.nic2}_"
+    output = _numeric(evidence, f"{prefix}annual_output_inr_prior")
+    inputs = _numeric(evidence, f"{prefix}annual_input_inr_prior")
+    assets = _numeric(evidence, f"{prefix}total_fixed_assets_owned_prior")
+    workers = _numeric(evidence, f"{prefix}workers_prior")
+    if not all((output, inputs, assets, workers)):
+        missing = EstimateInterval.insufficient(
+            adapter.unit,
+            f"{adapter.key}-asuse-adapter-v1",
+            "District/sector ASUSE benchmark is unavailable.",
+        )
+        return AutomaticBuildResult(
+            demand=missing,
+            supply=missing,
+            price=missing,
+            gates=[
+                EvidenceGate(
+                    code=EvidenceGapCode.NO_DEMAND_EVIDENCE,
+                    message=(
+                        "A district/sector enterprise benchmark is required for this "
+                        "planning estimate."
+                    ),
+                )
+            ],
+            model_versions={"sector_adapter": f"{adapter.key}-v1"},
+        )
+
+    annual_output = max(float(output.value), 1.0)
+    annual_input = max(float(inputs.value), 0.0)
+    monthly_output = annual_output / 12
+    monthly_input = annual_input / 12
+    demand_central = monthly_output * adapter.demand_factor
+    incumbent = monthly_output * adapter.incumbent_factor
+    demand = _benchmark_interval(
+        demand_central,
+        adapter.unit,
+        output,
+        f"{adapter.key}-demand-benchmark-v1",
+        (
+            "Modelled opportunity envelope from a weighted ASUSE district/sector "
+            "enterprise-output benchmark; not measured locality demand."
+        ),
+    )
+    supply = _benchmark_interval(
+        incumbent,
+        adapter.unit,
+        output,
+        f"{adapter.key}-incumbent-benchmark-v1",
+        "Modelled incumbent service envelope; not a census of local businesses.",
+    )
+    margin_ratio = max(0.08, min(0.45, (annual_output - annual_input) / annual_output))
+    price = EstimateInterval(
+        central=margin_ratio,
+        lower=max(0.03, margin_ratio * 0.75),
+        upper=min(0.60, margin_ratio * 1.25),
+        unit="gross margin share",
+        confidence=ConfidenceLevel.LOW,
+        evidence_ids=[output.id, inputs.id],
+        method_version=f"{adapter.key}-margin-benchmark-v1",
+        status="MODELLED_BENCHMARK",
+        notes=[
+            "Weighted ASUSE output/input benchmark; not a current local selling-price observation."
+        ],
+    )
+
+    gap = max(demand_central - incumbent, monthly_output * 0.08)
+    graph = EconomicGraph(
+        graph_id=f"auto:{geo_id}:{adapter.key}:v1",
+        commodity=adapter.commodity,
+        unit=adapter.unit,
+        nodes=[
+            EconomicNode(
+                node_id="local-suppliers",
+                node_type=NodeType.PRODUCER_CLUSTER,
+                geo_id=geo_id,
+                commodity=adapter.commodity,
+                supply=demand_central,
+                confidence=0.4,
+                evidence_ids=[output.id],
+            ),
+            EconomicNode(
+                node_id="local-demand",
+                node_type=NodeType.CUSTOMER_CLUSTER,
+                geo_id=geo_id,
+                commodity=adapter.commodity,
+                demand=demand_central,
+                confidence=0.4,
+                evidence_ids=[output.id],
+            ),
+        ],
+        edges=[
+            EconomicEdge(
+                edge_id="modelled-incumbent-service",
+                source="local-suppliers",
+                target="local-demand",
+                commodity=adapter.commodity,
+                capacity=incumbent,
+                unit_cost=0,
+                confidence=0.35,
+                evidence_ids=[output.id],
+            )
+        ],
+        methodology_version=f"automatic-{adapter.key}-graph-v1",
+    )
+
+    candidate_scales = (("starter", 0.55), ("balanced", 0.78), ("growth", 1.0))
+    asset_benchmark = max(float(assets.value), 20_000)
+    candidates = []
+    for name, scale in candidate_scales:
+        target_total = min(
+            max(float(profile.available_capital) * scale, 25_000),
+            asset_benchmark * adapter.cost_factor * scale,
+        )
+        working_capital = target_total * adapter.working_capital_share
+        capex = target_total - working_capital
+        capacity = min(gap, monthly_output * adapter.capacity_factor * scale)
+        # Variable procurement is represented by the output/input margin interval in the
+        # digital twin. Candidate monthly_opex is the fixed-overhead component only, avoiding
+        # double counting the same ASUSE input benchmark in MVV feasibility and cash flow.
+        monthly_opex = monthly_input * adapter.capacity_factor * scale * 0.10
+        primitive = VenturePrimitive(
+            primitive_id=f"{adapter.key}-{name}-v1",
+            primitive_type=adapter.primitive,
+            sector_compatibility=[adapter.key],
+            capex=capex,
+            monthly_opex=monthly_opex,
+            working_capital=working_capital,
+            capacity=capacity,
+            staff=max(1, round(float(workers.value) * scale)),
+            required_skills=["basic bookkeeping", "supplier and customer coordination"],
+            required_assets=list(adapter.licenses),
+            assumption_labels=["ASUSE_WEIGHTED_BENCHMARK", "MODELLED_LOCAL_CONFIGURATION"],
+            evidence_ids=[output.id, inputs.id, assets.id, workers.id],
+            added_edges=[
+                EconomicEdge(
+                    edge_id=f"venture-{adapter.key}-{name}",
+                    source="local-suppliers",
+                    target="local-demand",
+                    commodity=adapter.commodity,
+                    capacity=capacity,
+                    unit_cost=monthly_opex / max(capacity, 1),
+                    confidence=0.35,
+                    evidence_ids=[output.id, inputs.id],
+                    added_by_venture=True,
+                )
+            ],
+        )
+        candidates.append(
+            VentureCandidate(
+                candidate_id=f"{geo_id}:{adapter.key}:{name}-v1",
+                primitives=[primitive],
+                investment=primitive.investment,
+                monthly_opex=monthly_opex,
+                total_capacity=capacity,
+            )
+        )
+
+    return AutomaticBuildResult(
+        demand=demand,
+        supply=supply,
+        price=price,
+        graph=graph,
+        candidates=candidates,
+        gates=[
+            EvidenceGate(
+                code=EvidenceGapCode.NO_CURRENT_FINANCE_RULE,
+                message=(
+                    "Scheme category screening is current; actual rate, sanction and lender "
+                    "underwriting still require a lender quote."
+                ),
+                blocking=False,
+            )
+        ],
+        graph_summary={
+            "node_count": 2,
+            "edge_count": 1,
+            "commodity": adapter.commodity,
+            "unit": adapter.unit,
+            "builder": graph.methodology_version,
+            "interpretation": (
+                "benchmark-adjusted planning network, not a locality enterprise census"
+            ),
+        },
+        model_versions={
+            "sector_adapter": f"{adapter.key}-v1",
+            "demand": demand.method_version,
+            "supply": supply.method_version,
+            "margin": price.method_version,
+            "cost_library": "sector-cost-library-v1",
+        },
+    )
+
+
+def _benchmark_interval(
+    value: float, unit: str, evidence: EvidenceRecord, method: str, note: str
+) -> EstimateInterval:
+    return EstimateInterval(
+        central=value,
+        lower=value * 0.70,
+        upper=value * 1.30,
+        unit=unit,
+        confidence=ConfidenceLevel.LOW,
+        evidence_ids=[evidence.id],
+        method_version=method,
+        status="MODELLED_BENCHMARK",
+        notes=[note],
+    )

@@ -66,6 +66,11 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
 
     baseline = solve_min_cost_flow(graph) if graph else None
     bottlenecks = rank_capacity_bottlenecks(graph, baseline) if graph and baseline else []
+    automatic_margin = (
+        float(automatic.price.central)
+        if automatic.price.unit == "gross margin share" and automatic.price.central is not None
+        else request.contribution_margin_per_unit
+    )
     mvv = None
     if graph and candidates:
         mvv = select_minimum_viable_venture(
@@ -73,7 +78,7 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
             entrepreneur,
             candidates,
             float(request.minimum_newly_served),
-            request.contribution_margin_per_unit,
+            automatic_margin,
         )
     selected = mvv.selected if mvv else None
     loan_terms = None
@@ -89,6 +94,19 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
     if request.operating_assumptions:
         twin = project_monthly_cashflow(
             **request.operating_assumptions.model_dump(), loan=loan_terms
+        )
+    elif selected and automatic.demand.central and automatic_margin > 0:
+        twin = project_monthly_cashflow(
+            opening_cash=max(float(entrepreneur.available_capital) - selected.investment, 0),
+            monthly_demand=float(automatic.demand.central),
+            capacity=float(selected.total_capacity),
+            unit_price=1.0,
+            variable_cost_per_unit=min(0.92, max(0.05, 1 - automatic_margin)),
+            fixed_monthly_cost=float(selected.monthly_opex) * 0.15,
+            growth_rate=0.003,
+            ramp_months=6,
+            initial_investment=float(selected.investment),
+            owner_capital=float(selected.investment),
         )
     requested_finance = float(request.loan.principal) if request.loan else None
     finance_screen = screen_pmmy(
@@ -120,7 +138,7 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         analysis_id=analysis_id,
         created_at=now,
         status=status,
-        methodology_version="decision-v3",
+        methodology_version="decision-v4",
         geography=geography,
         geo_resolution=resolution,
         entrepreneur=entrepreneur,
@@ -158,12 +176,47 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         mvv=mvv,
         loan_terms=loan_terms,
         official_finance=[finance_screen, ahidf_screen],
+        prudent_financing=(
+            {
+                "estimated_project_cost": selected.investment,
+                "available_own_capital": float(entrepreneur.available_capital),
+                "illustrative_financing_requirement": max(
+                    selected.investment - float(entrepreneur.available_capital), 0
+                ),
+                "wording": "Potentially eligible / illustrative structure; not lender approval.",
+            }
+            if selected
+            else {}
+        ),
         digital_twin=twin,
         operating_break_even=twin.operating_break_even_month if twin else None,
         investment_payback=twin.investment_payback_month if twin else None,
         alternatives=[candidate for candidate in candidates if candidate != selected],
         candidate_ventures=candidates,
-        staged_plan=[],
+        robust_comparison=(
+            {
+                "best_base_case": selected.candidate_id,
+                "lowest_capital": min(candidates, key=lambda item: item.investment).candidate_id,
+                "second_best": next(
+                    (item.candidate_id for item in candidates if item != selected), None
+                ),
+                "scope": "enumerated benchmark-adjusted configurations",
+            }
+            if selected and candidates
+            else {}
+        ),
+        staged_plan=(
+            [
+                "Stage 1: start the selected minimum-capital configuration and preserve the "
+                "modelled cash buffer.",
+                "Stage 2 trigger: expand after three consecutive months above 70% capacity "
+                "with non-negative closing cash.",
+                "Stage 3 trigger: consider owned assets after reserves cover three months of "
+                "operating cost.",
+            ]
+            if selected
+            else []
+        ),
         swot=swot,
         explanation=deterministic_explanation(
             request.language, gates=gates, has_selection=bool(selected and not blocking)
