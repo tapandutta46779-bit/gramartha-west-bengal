@@ -58,7 +58,7 @@ def main() -> None:
         "file_count": len(entries),
         "uncompressed_size_bytes": sum(item["size_bytes"] for item in entries),
         "verified": {
-            "pytest": "57 passed",
+            "pytest": "58 passed",
             "ruff": "passed",
             "javascript_syntax": "passed",
             "multilingual_output": (
@@ -73,6 +73,10 @@ def main() -> None:
             "osm": (
                 "named direct candidates, categories, distances, counts, intensity and "
                 "capacity caveat rendered in the tested public flow"
+            ),
+            "pdf_downloads": (
+                "same-tab blob download with a restart-safe POST fallback; English, Bengali "
+                "and Hindi use application/pdf attachment responses"
             ),
         },
         "exclusions": [

@@ -1,8 +1,10 @@
 from datetime import UTC, datetime
 from io import BytesIO
 
+from fastapi.testclient import TestClient
 from pypdf import PdfReader
 
+from backend.api.main import app, store
 from backend.models.decision import DecisionExplanation, DecisionStatus, VentureDecision
 from backend.models.evidence import ConfidenceLevel, EstimateInterval
 from backend.models.finance import DigitalTwinResult, MonthProjection
@@ -162,3 +164,32 @@ def test_multilingual_pdfs_preserve_page_count_and_analysis_id():
         assert reader.metadata.title.endswith(f"- {language}")
         results[language] = len(reader.pages)
     assert len(set(results.values())) == 1
+
+
+def test_pdf_download_headers_and_restart_safe_post_fallback():
+    decision = decision_fixture()
+    decision.plain_language_summary = build_plain_language_summary(decision)
+    store.put_analysis(decision)
+    client = TestClient(app)
+    for language in ("en", "bn", "hi"):
+        direct = client.get(
+            f"/analysis/{decision.analysis_id}/pdf",
+            params={"language": language},
+        )
+        assert direct.status_code == 200
+        assert direct.headers["content-type"] == "application/pdf"
+        assert direct.headers["content-disposition"].startswith("attachment;")
+        assert f"business_plan_{language}.pdf" in direct.headers["content-disposition"]
+        assert direct.headers["x-content-type-options"] == "nosniff"
+        assert int(direct.headers["content-length"]) == len(direct.content)
+
+        fallback = client.post(
+            "/analysis/pdf",
+            params={"language": language},
+            json=decision.model_dump(mode="json"),
+        )
+        assert fallback.status_code == 200
+        assert fallback.headers["content-type"] == "application/pdf"
+        assert len(PdfReader(BytesIO(fallback.content)).pages) == len(
+            PdfReader(BytesIO(direct.content)).pages
+        )

@@ -33,6 +33,8 @@
 .summary-metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .pdf-language-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 14px; border-radius: 12px; background: #edf7f2; }
 .pdf-language-actions span { margin-right: 4px; font-weight: 800; }
+.pdf-language-actions .download-button { background: #fff; color: #145c45; cursor: pointer; font-family: inherit; }
+.pdf-language-actions .download-button:disabled { cursor: wait; opacity: .7; }
 .technical-layer { margin-top: 8px; border-top: 1px solid #dfe4dd; }
 .technical-layer > summary { padding: 20px 2px; color: #123b31; font-size: 1rem; font-weight: 850; cursor: pointer; }
 .technical-layer-body { padding-top: 6px; }

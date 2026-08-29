@@ -1,17 +1,18 @@
 {
   "package": "SIH26091_GRAMARTHA_v0.7.1_PUBLIC_SHARE",
   "status": "VERIFIED_CONDITIONAL_PLANNING_PRODUCT",
-  "created_at": "2026-08-29T19:49:26.722598+00:00",
+  "created_at": "2026-08-29T19:56:33.818600+00:00",
   "file_count": 175,
-  "uncompressed_size_bytes": 1356148756,
+  "uncompressed_size_bytes": 1356153586,
   "verified": {
-    "pytest": "57 passed",
+    "pytest": "58 passed",
     "ruff": "passed",
     "javascript_syntax": "passed",
     "multilingual_output": "one canonical numeric decision; full-detail English, Bengali and Hindi website/PDF views",
     "pdf": "three eight-page A4 files; all pages rendered and visually inspected with Indic glyph shaping",
     "public_url": "https://gramartha-west-bengal.onrender.com",
-    "osm": "named direct candidates, categories, distances, counts, intensity and capacity caveat rendered in the tested public flow"
+    "osm": "named direct candidates, categories, distances, counts, intensity and capacity caveat rendered in the tested public flow",
+    "pdf_downloads": "same-tab blob download with a restart-safe POST fallback; English, Bengali and Hindi use application/pdf attachment responses"
   },
   "exclusions": [
     "restricted HCES/ASUSE respondent-level archives",
@@ -47,8 +48,8 @@
     },
     {
       "path": "backend/api/main.py",
-      "size_bytes": 4949,
-      "sha256": "aba9e2fcd7d9d8a42a43d5b649a169d133b89f2b58994ef0552dad4e2e8974e5"
+      "size_bytes": 5720,
+      "sha256": "66c01f774a03cfe57854f96c7e5e3ae8f09aa37a055cf42ef21d5bd6c3cbbc8a"
     },
     {
       "path": "backend/engine/__init__.py",
@@ -447,8 +448,8 @@
     },
     {
       "path": "docs/FULL_DETAIL_LOCALIZATION_AUDIT_V0.7.1.md",
-      "size_bytes": 3761,
-      "sha256": "8005c0528a958db9c714ece273806e0f504ae731b2ce07b5a311532cbb676364"
+      "size_bytes": 4123,
+      "sha256": "2dc37ba43d9e1fb1daae028b1f344d6027bfd3b69491a271a73276d615c79acb"
     },
     {
       "path": "docs/GRAMARTHA_DEEP_ENGINE_REPORT_V0.5.0.md",
@@ -557,18 +558,18 @@
     },
     {
       "path": "frontend/app.js",
-      "size_bytes": 46731,
-      "sha256": "dfb07dfb80a41cdc90c03af027b2a82d354c5d9c20a6cec5edce38dcb3fd4d6d"
+      "size_bytes": 48686,
+      "sha256": "ed6c84e4b6782b0dfc9523e82583fb7055781a6bdb128dd4c16313476f67d2d2"
     },
     {
       "path": "frontend/fixes.css",
-      "size_bytes": 3675,
-      "sha256": "0fe90a7bbd8afcceaa85e712f294655ac100786d33698b973fba8945cb70f2e6"
+      "size_bytes": 3870,
+      "sha256": "5d3826d657ffb197697de60490109dccc8a12f28b22d4edf33b1a4be90eb4f27"
     },
     {
       "path": "frontend/index.html",
-      "size_bytes": 7304,
-      "sha256": "2f8e1114e01241fa1d469551f9b0e37de3416812d056ef8ea4314c6dad59ecfd"
+      "size_bytes": 7314,
+      "sha256": "22ca619e9407d6c0907447a185fda1780b11eaf59f07b5c1166d32418e51da3e"
     },
     {
       "path": "frontend/styles.css",
@@ -702,8 +703,8 @@
     },
     {
       "path": "scripts/build_v071_package.py",
-      "size_bytes": 5119,
-      "sha256": "f73850d10174d5802746fc0f45a898250f009baa72c3932c2d5f8dfd2223a2ef"
+      "size_bytes": 5328,
+      "sha256": "06cbe72d5536f0e429f3b1afb4eb745833940b11cc56004970f8306d0a43a9d7"
     },
     {
       "path": "scripts/build_wb_census_crosswalk.py",
@@ -867,8 +868,8 @@
     },
     {
       "path": "tests/test_multilingual_presentation.py",
-      "size_bytes": 5989,
-      "sha256": "2f9143040f07dde6c9e97724050e923df051331db0e974faf1e40dc3d7fd2467"
+      "size_bytes": 7317,
+      "sha256": "158455a827eaa176801f5507182a916802d81c7ad8e5d7a5b26456dbbaad26a8"
     },
     {
       "path": "tests/test_osm_spatial.py",

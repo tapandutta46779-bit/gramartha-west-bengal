@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from urllib.parse import quote
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import RedirectResponse, Response
@@ -11,6 +12,7 @@ from backend.api.contracts import AnalyzeRequest, CompareRequest, StressRequest
 from backend.evidence.store import EvidenceStore
 from backend.finance.digital_twin import project_monthly_cashflow
 from backend.finance.stress import find_failure_boundary, summarize_stress
+from backend.models.decision import VentureDecision
 from backend.reporting.customer_pdf import build_customer_pdf
 from backend.service import analyze
 
@@ -141,11 +143,34 @@ def get_analysis_pdf(
     decision = store.get_analysis(analysis_id)
     if decision is None:
         raise HTTPException(404, "analysis not found")
+    return _pdf_response(decision, language)
+
+
+@app.post("/analysis/pdf")
+def build_analysis_pdf(
+    decision: VentureDecision,
+    language: str = Query("en", pattern="^(en|bn|hi)$"),
+):
+    """Build a PDF from a browser-held canonical decision after a host restart."""
+    return _pdf_response(decision, language)
+
+
+def _pdf_response(decision: VentureDecision, language: str) -> Response:
     if decision.selected_venture is None:
         raise HTTPException(409, "analysis has no selected venture to report")
-    filename = f"GramArtha_{analysis_id}_business_plan_{language}.pdf"
+    filename = f"GramArtha_{decision.analysis_id}_business_plan_{language}.pdf"
+    payload = build_customer_pdf(decision, language)
+    disposition = (
+        f'attachment; filename="{filename}"; '
+        f"filename*=UTF-8''{quote(filename)}"
+    )
     return Response(
-        content=build_customer_pdf(decision, language),
+        content=payload,
         media_type="application/pdf",
-        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        headers={
+            "Content-Disposition": disposition,
+            "Content-Length": str(len(payload)),
+            "Cache-Control": "private, no-store",
+            "X-Content-Type-Options": "nosniff",
+        },
     )
