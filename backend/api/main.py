@@ -14,7 +14,7 @@ from backend.finance.stress import find_failure_boundary, summarize_stress
 from backend.reporting.customer_pdf import build_customer_pdf
 from backend.service import analyze
 
-app = FastAPI(title="GramArtha West Bengal Business Advisor", version="0.6.0")
+app = FastAPI(title="GramArtha West Bengal Business Advisor", version="0.6.1")
 store = EvidenceStore(os.environ.get("SIH26091_SQLITE_PATH", ":memory:"))
 frontend_path = Path(__file__).resolve().parents[2] / "frontend"
 if frontend_path.exists():
