@@ -64,6 +64,11 @@ def audit(evidence_path: Path, osm_path: Path, output_dir: Path) -> dict:
                 named = len(competition.get("likely_direct_competitors", [])) + len(
                     competition.get("likely_indirect_competitors", [])
                 )
+                unnamed_displayed = sum(
+                    not bool(item.get("name"))
+                    for key in ("likely_direct_competitors", "likely_indirect_competitors")
+                    for item in competition.get(key, [])
+                )
                 rows.append(
                     {
                         "district": district,
@@ -78,6 +83,11 @@ def audit(evidence_path: Path, osm_path: Path, output_dir: Path) -> dict:
                         "direct_count": direct,
                         "indirect_count": indirect,
                         "displayed_candidate_count": named,
+                        "displayed_unnamed_count": unnamed_displayed,
+                        "mapped_unnamed_count": int(
+                            competition.get("direct_unnamed_count", 0) or 0
+                        )
+                        + int(competition.get("indirect_unnamed_count", 0) or 0),
                         "candidate_returned": direct + indirect + named > 0,
                         "nearest_market": bool(catchment.get("nearest_market")),
                         "failure": failure,
@@ -104,6 +114,9 @@ def audit(evidence_path: Path, osm_path: Path, output_dir: Path) -> dict:
         "scan_execution_rate": sum(row["scan_executed"] for row in rows) / total,
         "candidate_return_rate": sum(row["candidate_returned"] for row in rows) / total,
         "nearest_market_rate": sum(row["nearest_market"] for row in rows) / total,
+        "displayed_unnamed_candidates": sum(
+            row["displayed_unnamed_count"] for row in rows
+        ),
         "failures": [row for row in rows if row["failure"]],
         "caveat": (
             "District representative-point scans are district context only; they are not "

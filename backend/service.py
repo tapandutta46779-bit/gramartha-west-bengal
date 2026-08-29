@@ -616,9 +616,13 @@ def _spatial_context(
         }
     ]
     markets = [item for item in context_entities if item.category == "MARKET"]
-    nearest_market = _nearest_entity(latitude, longitude, markets)
+    named_markets = [item for item in markets if _entity_display_name(item)[0]]
+    nearest_market = _nearest_entity(latitude, longitude, named_markets)
+    named_institutions = [
+        item for item in institutions if _entity_display_name(item)[0]
+    ]
     nearest_institutions = sorted(
-        institutions,
+        named_institutions,
         key=lambda item: haversine_km(latitude, longitude, item.latitude, item.longitude),
     )[:10]
     route = None
@@ -650,6 +654,18 @@ def _spatial_context(
             "osm_proxy_count": len(direct_competitors) + len(indirect_competitors),
             "direct_count": len(direct_competitors),
             "indirect_count": len(indirect_competitors),
+            "direct_named_count": sum(
+                bool(_entity_display_name(item)[0]) for item in direct_competitors
+            ),
+            "indirect_named_count": sum(
+                bool(_entity_display_name(item)[0]) for item in indirect_competitors
+            ),
+            "direct_unnamed_count": sum(
+                not bool(_entity_display_name(item)[0]) for item in direct_competitors
+            ),
+            "indirect_unnamed_count": sum(
+                not bool(_entity_display_name(item)[0]) for item in indirect_competitors
+            ),
             "categories": sorted(
                 {item.category for item in [*direct_competitors, *indirect_competitors]}
             ),
@@ -658,7 +674,11 @@ def _spatial_context(
                 for item in _nearest_entities(
                     latitude,
                     longitude,
-                    displayed_direct,
+                    [
+                        entity
+                        for entity in displayed_direct
+                        if _entity_display_name(entity)[0]
+                    ],
                     12,
                 )
             ],
@@ -667,7 +687,11 @@ def _spatial_context(
                 for item in _nearest_entities(
                     latitude,
                     longitude,
-                    displayed_indirect,
+                    [
+                        entity
+                        for entity in displayed_indirect
+                        if _entity_display_name(entity)[0]
+                    ],
                     12,
                 )
             ],
@@ -794,9 +818,11 @@ def _entity_summary(
     if entity is None:
         return None
     distance = haversine_km(latitude, longitude, entity.latitude, entity.longitude)
+    display_name, name_source = _entity_display_name(entity)
     return {
         "osm_id": f"{entity.osm_type}/{entity.osm_id}",
-        "name": entity.name,
+        "name": display_name,
+        "name_source": name_source,
         "category": entity.category,
         "latitude": entity.latitude,
         "longitude": entity.longitude,
@@ -805,6 +831,25 @@ def _entity_summary(
             distance > planning_radius_km if planning_radius_km is not None else False
         ),
     }
+
+
+def _entity_display_name(entity: OsmEntity) -> tuple[str | None, str | None]:
+    """Return only a defensible public label and identify its OSM tag source."""
+    candidates = (
+        (entity.name, "name"),
+        (entity.tags.get("official_name"), "official_name"),
+        (entity.tags.get("brand"), "brand"),
+        (entity.tags.get("operator"), "operator"),
+        (entity.tags.get("name:en"), "name:en"),
+        (entity.tags.get("name:bn"), "name:bn"),
+        (entity.tags.get("name:hi"), "name:hi"),
+        (entity.tags.get("short_name"), "short_name"),
+    )
+    for value, source in candidates:
+        normalized = " ".join(str(value or "").split())
+        if normalized:
+            return normalized, source
+    return None, None
 
 
 def _sector_intelligence(sector: str, spatial: dict, selected) -> dict:

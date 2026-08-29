@@ -25,6 +25,17 @@ OSM_XML = """<?xml version="1.0" encoding="UTF-8"?>
 </osm>
 """
 
+UNNAMED_OSM_XML = """<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="test">
+  <node id="61" lat="22.5700" lon="88.3600">
+    <tag k="shop" v="convenience"/><tag k="brand" v="Test Grocery Brand"/>
+  </node>
+  <node id="62" lat="22.5710" lon="88.3610">
+    <tag k="shop" v="convenience"/>
+  </node>
+</osm>
+"""
+
 PLACE_OSM_XML = """<?xml version="1.0" encoding="UTF-8"?>
 <osm version="0.6" generator="test">
   <node id="30" lat="22.6000" lon="88.3000"/>
@@ -166,6 +177,41 @@ def test_service_spatial_context_is_proxy_and_withholds_capacity(
     assert context["catchment"]["nearest_market_route"]["connected"]
     assert context["competition"]["capacity"] is None
     assert context["competition"]["capacity_confidence"] == "UNKNOWN"
+
+
+def test_competitor_lists_recover_tag_labels_and_do_not_display_unnamed(
+    tmp_path: Path, monkeypatch
+) -> None:
+    source = tmp_path / "unnamed.osm"
+    source.write_text(UNNAMED_OSM_XML)
+    database = tmp_path / "osm.sqlite"
+    create_database(source, database)
+    monkeypatch.setenv("SIH26091_OSM_SQLITE_PATH", str(database))
+    geography = GeographicIdentity(
+        geo_id="test",
+        district="Kolkata",
+        locality="Test",
+        locality_type="TEST",
+        latitude=22.57,
+        longitude=88.36,
+    )
+    context = _spatial_context(geography, 1, "kirana")
+    competition = context["competition"]
+    assert competition["direct_count"] == 2
+    assert competition["direct_named_count"] == 1
+    assert competition["direct_unnamed_count"] == 1
+    assert competition["likely_direct_competitors"] == [
+        {
+            "osm_id": "node/61",
+            "name": "Test Grocery Brand",
+            "name_source": "brand",
+            "category": "FOOD_SHOP",
+            "latitude": 22.57,
+            "longitude": 88.36,
+            "straight_line_distance_km": 0.0,
+            "outside_planning_catchment": False,
+        }
+    ]
 
 
 def test_deployment_osm_asset_preserves_every_district_proxy(tmp_path: Path) -> None:

@@ -14,3 +14,17 @@ The full local West Bengal OSM database contained 381 administrative-area geomet
 ## Honesty boundary
 
 An administrative representative point is district context, not a locality centroid. OSM features are volunteered map evidence and may be incomplete. Counts do not measure competitor capacity, sales or market share, and a zero result is not proof that no competitor exists.
+
+## Unnamed-feature follow-up audit
+
+The deployed asset contains 17,212 OSM entities and 381 administrative areas. Of those entities, 3,439 have no primary `name` tag; 429 carry a defensible alternate public label in `official_name`, `brand`, `operator`, a localized `name:*` tag or `short_name`.
+
+The runtime now:
+
+- recovers those alternate labels and records the exact `name_source` in the API;
+- keeps every relevant unnamed feature in direct/indirect density counts;
+- reports named and unnamed counts separately;
+- excludes truly unnamed features from competitor-name cards, named-alternative lists, nearest-market labels and nearest-institution labels instead of repeatedly displaying “Unnamed mapped candidate”;
+- explicitly explains that an unnamed feature is mapped evidence but cannot be represented as an identified business.
+
+The post-fix statewide matrix covered 23 districts, 44 representative localities, 11 sectors and 484 locality-sector rows. Coordinate resolution and scan execution were 100%, no execution failures occurred, and zero unnamed features entered the visible competitor lists. The matrix remains a representative runtime audit, not a claim that volunteered OSM data is complete for every locality.
