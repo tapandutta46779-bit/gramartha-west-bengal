@@ -58,7 +58,7 @@ def main() -> None:
         "file_count": len(entries),
         "uncompressed_size_bytes": sum(item["size_bytes"] for item in entries),
         "verified": {
-            "pytest": "58 passed",
+            "pytest": "59 passed",
             "ruff": "passed",
             "javascript_syntax": "passed",
             "multilingual_output": (
@@ -72,7 +72,8 @@ def main() -> None:
             "public_url": "https://gramartha-west-bengal.onrender.com",
             "osm": (
                 "named direct candidates, categories, distances, counts, intensity and "
-                "capacity caveat rendered in the tested public flow"
+                "capacity caveat rendered in the tested public flow; deployment asset retains "
+                "all 23 district administrative proxies"
             ),
             "pdf_downloads": (
                 "same-page attachment download after restart-safe canonical-decision restore; "

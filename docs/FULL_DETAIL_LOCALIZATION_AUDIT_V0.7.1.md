@@ -16,7 +16,7 @@ language-specific PDF reports, canonical-number preservation and public deployme
 | Language switching without rerunning | IMPLEMENTED + VERIFIED | Frontend reuses `currentDecision`; switching output language performs no POST to `/analyze`. |
 | OSM competition detail | IMPLEMENTED + VERIFIED | Ordinary result pages show names when available, mapped category, straight-line distance, direct/indirect counts, intensity, coordinate/index provenance and the explicit capacity/sales/market-share caveat. |
 | PDF download resilience | IMPLEMENTED + VERIFIED | A normal same-page attachment link avoids blank popup tabs, page navigation and browser-sensitive blob handling. Before download, the browser restores its unchanged canonical decision to survive a deployment restart without rerunning the analysis. GET and fallback POST return `application/pdf`, attachment filenames, explicit lengths, no-store and nosniff headers. |
-| Automated regression suite | VERIFIED | Ruff passed, JavaScript syntax passed, 58 pytest tests passed. |
+| Automated regression suite | VERIFIED | Ruff passed, JavaScript syntax passed, 59 pytest tests passed. |
 | Independent professional linguistic review | NOT PERFORMED | Deterministic Bengali/Hindi copy was visually and functionally reviewed; no external professional translator signed off the wording. |
 
 ## PDF page inventory

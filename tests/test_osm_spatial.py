@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import gzip
+import shutil
 from pathlib import Path
 
 from backend.evidence.store import EvidenceStore
@@ -164,3 +166,19 @@ def test_service_spatial_context_is_proxy_and_withholds_capacity(
     assert context["catchment"]["nearest_market_route"]["connected"]
     assert context["competition"]["capacity"] is None
     assert context["competition"]["capacity_confidence"] == "UNKNOWN"
+
+
+def test_deployment_osm_asset_preserves_every_district_proxy(tmp_path: Path) -> None:
+    from backend.evidence.districts import CURRENT_WEST_BENGAL_DISTRICTS
+
+    compressed = Path("deploy/assets/west_bengal_osm_poi.sqlite.gz")
+    runtime = tmp_path / "west_bengal_osm_poi.sqlite"
+    with gzip.open(compressed, "rb") as source, runtime.open("wb") as target:
+        shutil.copyfileobj(source, target)
+    store = OsmSpatialStore(runtime)
+    missing = [
+        district
+        for district in CURRENT_WEST_BENGAL_DISTRICTS
+        if store.administrative_area_proxy(district) is None
+    ]
+    assert missing == []

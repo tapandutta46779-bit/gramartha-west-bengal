@@ -13,8 +13,15 @@ ASSET_DIR = ROOT / "deploy" / "assets"
 
 def compress(source: Path, destination: Path) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
-    with source.open("rb") as raw, gzip.open(destination, "wb", compresslevel=9) as output:
-        shutil.copyfileobj(raw, output, length=1024 * 1024)
+    with source.open("rb") as raw, destination.open("wb") as compressed:
+        with gzip.GzipFile(
+            filename="",
+            mode="wb",
+            fileobj=compressed,
+            compresslevel=9,
+            mtime=0,
+        ) as output:
+            shutil.copyfileobj(raw, output, length=1024 * 1024)
 
 
 def digest(path: Path) -> str:
@@ -51,8 +58,6 @@ def build_osm_database(temporary: Path) -> Path:
         """
         DELETE FROM road_way;
         DELETE FROM road_way_rtree;
-        DELETE FROM admin_area;
-        DELETE FROM admin_area_rtree;
         VACUUM;
         """
     )

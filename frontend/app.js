@@ -140,12 +140,38 @@ function simpleSummary(p, s, t, l, language) {
     <div class="simple-summary-head"><div><p class="eyebrow">${safe(l.simple_summary)}</p><h2 id="recommendation-title">${safe(t.recommended_venture_name)}</h2><p>${safe(p.geography.locality)}, ${safe(displayDistrict(p.geography.district))} · ${safe(t.recommended_venture_category)}</p></div><span class="conclusion-badge ${safe(String(s.conclusion_status).toLowerCase())}">${safe(t.conclusion_text)}</span></div>
     <div class="language-proof"><span>${safe(l.confidence)}: <strong>${safe(p.confidence)}</strong></span><span>Analysis ID: <code>${safe(p.analysis_id)}</code></span><span>${safe(s.method_version)}</span></div>
     <div class="plain-grid"><article class="plain-highlight"><h3>${safe(l.why)}</h3><p>${safe(t.why_recommended)}</p><p>${safe(t.why_here)}</p></article><article><h3>${safe(l.who)}</h3><p>${safe(t.who_suits)}</p><h3>${safe(l.avoid)}</h3><p>${safe(t.who_should_avoid)}</p></article></div>
+    ${selectionExplanation(p, currentAlternatives, language)}
     <h3 class="simple-subhead">${safe(l.money)}</h3><div class="metric-grid summary-metrics">${summaryMetric(l.capital, s.capital_required, true,language)}${summaryMetric(l.own, s.own_money_used, true,language)}${summaryMetric(l.reserve, s.money_kept_as_reserve, true,language)}${summaryMetric(l.finance, s.finance_needed, true,language)}${summaryMetric(l.revenue, s.monthly_revenue, true,language)}${summaryMetric(l.cash, s.monthly_operating_cash, true,language)}${metric(l.break_even, monthLabel(s.break_even_month,l),"")}${metric(l.payback,monthLabel(s.payback_month,l),"")}</div>
     <h3 class="simple-subhead">${safe(l.market)}</h3><div class="metric-grid summary-metrics">${summaryMetric(l.demand,s.demand_opportunity,false,language)}${summaryMetric(l.price,s.price_guidance,true,language,true)}${metric(l.competition,safe(competitorText),safe(t.top_disadvantages?.[1] || ""))}</div>
+    ${simpleCompetitionPreview(p, language)}
     <div class="plain-grid three"><article><h3>${safe(l.advantages)}</h3>${bulletList(t.top_advantages)}</article><article><h3>${safe(l.disadvantages)}</h3>${bulletList(t.top_disadvantages)}</article><article><h3>${safe(l.risks)}</h3>${bulletList(t.top_risks)}</article></div>
     <article class="first-actions"><h3>${safe(l.actions)}</h3><ol>${t.top_actions.map(x=>`<li>${safe(x)}</li>`).join("")}</ol><p class="caption">${safe(t.data_confidence)}</p></article>
     <div class="pdf-language-actions"><span>${safe(l.download)}:</span>${pdfLink(p.analysis_id,"en","English")}${pdfLink(p.analysis_id,"bn","বাংলা")}${pdfLink(p.analysis_id,"hi","हिन्दी")}</div>
   </section>`;
+}
+
+function selectionExplanation(p, alternatives, language){
+  const compared=alternatives.length?sectors.length:1;
+  const copy={
+    en:compared>1?`Why this type was returned: GramArtha tested ${compared} sector plans, retained the feasible results, and ranked them by downside survival first, then modelled cumulative cash. This is transparent scenario ranking, not an ML sector-classification guess.`:`Business type check: the returned plan remains in your selected ${labelSector(p.sector)} sector; GramArtha did not substitute another business type.`,
+    bn:compared>1?`এই ধরনটি কেন এসেছে: GramArtha ${compared}টি ক্ষেত্র-পরিকল্পনা পরীক্ষা করে কার্যকর ফলগুলি রেখেছে এবং প্রথমে প্রতিকূল পরিস্থিতিতে টিকে থাকা, পরে মডেলভিত্তিক মোট নগদ অনুযায়ী ক্রম দিয়েছে। এটি স্বচ্ছ দৃশ্যপট-র‌্যাঙ্কিং, ML শ্রেণিবিন্যাসের অনুমান নয়।`:`ব্যবসার ধরন যাচাই: ফলটি আপনার নির্বাচিত ${labelSector(p.sector)} ক্ষেত্রেই আছে; GramArtha অন্য ব্যবসার ধরন বসায়নি।`,
+    hi:compared>1?`यह प्रकार क्यों लौटा: GramArtha ने ${compared} क्षेत्र योजनाओं का परीक्षण किया, व्यवहार्य परिणाम रखे और पहले प्रतिकूल परिदृश्य में टिकाऊपन, फिर मॉडल-आधारित संचयी नकदी के अनुसार क्रम दिया। यह पारदर्शी परिदृश्य रैंकिंग है, ML वर्गीकरण का अनुमान नहीं।`:`व्यवसाय प्रकार जाँच: लौटी योजना आपके चुने हुए ${labelSector(p.sector)} क्षेत्र में ही है; GramArtha ने कोई दूसरा व्यवसाय प्रकार नहीं बदला।`,
+  };
+  return `<div class="selection-proof"><strong>${safe(copy[language]||copy.en)}</strong></div>`;
+}
+
+function simpleCompetitionPreview(p,language){
+  const c=p.competition||{}; const center=p.catchment?.center||{};
+  const direct=(c.likely_direct_competitors||[]).map(x=>({...x,kind:"direct"}));
+  const indirect=(c.likely_indirect_competitors||[]).map(x=>({...x,kind:"indirect"}));
+  const items=[...direct,...indirect].sort((a,b)=>(a.straight_line_distance_km??Infinity)-(b.straight_line_distance_km??Infinity)).slice(0,6);
+  const labels=({
+    en:{title:"Nearby OSM competitors and alternatives",direct:"Direct",indirect:"Indirect",inside:"inside radius",outside:"outside radius",none:"No mapped candidate was found in the bounded scan. This is missing OSM evidence, not proof that no competitor exists.",center:"Scan center",vintage:"OSM index"},
+    bn:{title:"নিকটবর্তী OSM প্রতিযোগী ও বিকল্প",direct:"সরাসরি",indirect:"পরোক্ষ",inside:"পরিকল্পনা ব্যাসার্ধের ভিতরে",outside:"পরিকল্পনা ব্যাসার্ধের বাইরে",none:"সীমিত অনুসন্ধানে কোনো মানচিত্রভুক্ত প্রার্থী মেলেনি। এটি OSM প্রমাণের ঘাটতি; কোনো প্রতিযোগী নেই—তার প্রমাণ নয়।",center:"স্ক্যান কেন্দ্র",vintage:"OSM সূচক"},
+    hi:{title:"निकटवर्ती OSM प्रतिस्पर्धी और विकल्प",direct:"प्रत्यक्ष",indirect:"अप्रत्यक्ष",inside:"योजना त्रिज्या के भीतर",outside:"योजना त्रिज्या के बाहर",none:"सीमित खोज में कोई मानचित्रित उम्मीदवार नहीं मिला। यह OSM प्रमाण की कमी है, किसी प्रतिस्पर्धी के न होने का प्रमाण नहीं।",center:"स्कैन केंद्र",vintage:"OSM सूचकांक"},
+  })[language]||{title:"Nearby OSM competitors and alternatives",direct:"Direct",indirect:"Indirect",inside:"inside radius",outside:"outside radius",none:"No mapped candidate was found in the bounded scan. This is missing OSM evidence, not proof that no competitor exists.",center:"Scan center",vintage:"OSM index"};
+  const cards=items.map(x=>`<li><span class="competitor-kind ${x.kind}">${safe(labels[x.kind])}</span><strong>${safe(x.name||"Unnamed mapped candidate")}</strong><small>${safe(friendlyCode(x.category||"Mapped place"))} · ${number(x.straight_line_distance_km)} ${safe(simpleTerms(language).km)} · ${safe(x.outside_planning_catchment?labels.outside:labels.inside)}</small></li>`).join("");
+  return `<article class="simple-competition"><div class="simple-competition-head"><h3>${safe(labels.title)}</h3><span>${safe(labels.center)}: ${safe(friendlyCode(c.coordinate_quality||center.coordinate_quality||"Unavailable"))}</span></div>${cards?`<ul>${cards}</ul>`:`<p>${safe(labels.none)}</p>`}<p class="caption">${safe(c.caveat||"")} ${safe(labels.vintage)}: ${safe(c.osm_data_extracted_at||"unknown")}</p></article>`;
 }
 
 function summaryMetric(label, value, currency, language, includeUnit = false) {
