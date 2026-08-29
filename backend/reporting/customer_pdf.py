@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 from io import BytesIO
+from pathlib import Path
 from xml.sax.saxutils import escape
 
+from fpdf import FPDF
+from pypdf import PdfReader, PdfWriter
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import A4
@@ -18,15 +21,37 @@ from reportlab.platypus import (
 )
 
 from backend.models.decision import VentureDecision
+from backend.presentation import build_plain_language_summary
 
 GREEN = colors.HexColor("#123B31")
 ORANGE = colors.HexColor("#D96F2B")
 PALE = colors.HexColor("#F2F6F2")
 INK = colors.HexColor("#17231D")
 MUTED = colors.HexColor("#667168")
+FONT_DIR = Path(__file__).resolve().parent / "fonts"
 
 
-def build_customer_pdf(decision: VentureDecision) -> bytes:
+def build_customer_pdf(decision: VentureDecision, language: str = "en") -> bytes:
+    selected_language = language if language in {"en", "bn", "hi"} else "en"
+    summary = decision.plain_language_summary or build_plain_language_summary(decision)
+    first_page = _build_plain_language_page(decision, summary, selected_language)
+    technical_pages = _build_technical_pdf(decision)
+    writer = PdfWriter()
+    writer.append(PdfReader(BytesIO(first_page)))
+    writer.append(PdfReader(BytesIO(technical_pages)))
+    writer.add_metadata(
+        {
+            "/Title": f"GramArtha business plan - {decision.analysis_id} - {selected_language}",
+            "/Author": "GramArtha / SIH26091",
+            "/Subject": "Plain-language decision summary followed by the complete technical report",
+        }
+    )
+    output = BytesIO()
+    writer.write(output)
+    return output.getvalue()
+
+
+def _build_technical_pdf(decision: VentureDecision) -> bytes:
     buffer = BytesIO()
     document = SimpleDocTemplate(
         buffer,
@@ -365,6 +390,268 @@ def build_customer_pdf(decision: VentureDecision) -> bytes:
         onLaterPages=lambda canvas, doc: _page(canvas, doc, decision),
     )
     return buffer.getvalue()
+
+
+def _build_plain_language_page(decision, summary, language: str) -> bytes:
+    presentation = summary.presentations[language]
+    labels = presentation.labels
+    pdf = FPDF(format="A4", unit="mm")
+    pdf.set_margins(13, 11, 13)
+    pdf.set_auto_page_break(False)
+    if language == "bn":
+        pdf.add_font("GramArthaUnicode", fname=str(FONT_DIR / "NotoSansBengali.ttf"))
+        family = "GramArthaUnicode"
+    elif language == "hi":
+        pdf.add_font("GramArthaUnicode", fname=str(FONT_DIR / "NotoSansDevanagari.ttf"))
+        family = "GramArthaUnicode"
+    else:
+        family = "Helvetica"
+    if language != "en":
+        pdf.set_text_shaping(True)
+    pdf.add_page()
+    pdf.set_draw_color(220, 229, 223)
+    pdf.set_fill_color(18, 59, 49)
+    pdf.rect(0, 0, 210, 27, style="F")
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font(family, size=9)
+    pdf.set_xy(13, 7)
+    pdf.cell(0, 4, "GRAMARTHA")
+    pdf.set_font(family, size=17)
+    pdf.set_xy(13, 12)
+    pdf.cell(0, 8, labels["simple_summary"])
+    pdf.set_text_color(23, 35, 29)
+    pdf.set_font(family, size=13)
+    pdf.set_xy(13, 32)
+    pdf.multi_cell(184, 7, presentation.recommended_venture_name)
+    geography = decision.geography
+    location = (
+        f"{geography.locality}, {geography.district}" if geography else "Unresolved geography"
+    )
+    pdf.set_text_color(102, 113, 104)
+    if language != "en":
+        pdf.set_text_shaping(False)
+    pdf.set_font(family, size=8)
+    pdf.set_x(13)
+    pdf.multi_cell(184, 4, location)
+    if language != "en":
+        pdf.set_text_shaping(True)
+    pdf.ln(1)
+    _fpdf_box(
+        pdf,
+        family,
+        labels["conclusion"],
+        presentation.conclusion_text,
+        fill=(255, 245, 233),
+        accent=(217, 111, 43),
+    )
+    _fpdf_two_text(
+        pdf,
+        family,
+        (labels["why"], presentation.why_recommended + " " + presentation.why_here),
+        (labels["who"], presentation.who_suits + " " + presentation.who_should_avoid),
+    )
+    _fpdf_section_title(pdf, family, labels["money"])
+    _fpdf_metric_grid(
+        pdf,
+        family,
+        [
+            (labels["capital"], _summary_range(summary.capital_required, True, language)),
+            (labels["own"], _summary_range(summary.own_money_used, True, language)),
+            (labels["reserve"], _summary_range(summary.money_kept_as_reserve, True, language)),
+            (labels["finance"], _summary_range(summary.finance_needed, True, language)),
+            (labels["revenue"], _summary_range(summary.monthly_revenue, True, language)),
+            (labels["cash"], _summary_range(summary.monthly_operating_cash, True, language)),
+            (labels["break_even"], _summary_month(summary.break_even_month, labels)),
+            (labels["payback"], _summary_month(summary.payback_month, labels)),
+        ],
+    )
+    _fpdf_section_title(pdf, family, labels["market"])
+    competition = summary.competition_summary
+    competition_text = _summary_competition(competition, language)
+    _fpdf_metric_grid(
+        pdf,
+        family,
+        [
+            (labels["demand"], _summary_range(summary.demand_opportunity, False, language)),
+            (labels["price"], _summary_range(summary.price_guidance, True, language, True)),
+            (labels["competition"], competition_text),
+        ],
+        columns=3,
+    )
+    _fpdf_three_lists(
+        pdf,
+        family,
+        [
+            (labels["advantages"], presentation.top_advantages[:3]),
+            (labels["disadvantages"], presentation.top_disadvantages[:2]),
+            (labels["risks"], presentation.top_risks[:3]),
+        ],
+    )
+    _fpdf_action_box(pdf, family, labels["actions"], presentation.top_actions[:3])
+    pdf.set_y(279)
+    pdf.set_draw_color(220, 229, 223)
+    pdf.line(13, 278, 197, 278)
+    pdf.set_text_color(102, 113, 104)
+    pdf.set_font(family, size=6.5)
+    pdf.cell(
+        0,
+        4,
+        f"{presentation.data_confidence}  |  {summary.method_version}  |  Page 1",
+        align="C",
+    )
+    return bytes(pdf.output())
+
+
+def _fpdf_section_title(pdf, family, title):
+    pdf.ln(1.5)
+    pdf.set_text_color(18, 59, 49)
+    pdf.set_font(family, size=9.5)
+    pdf.cell(0, 5, title)
+    pdf.ln(5.5)
+
+
+def _fpdf_box(pdf, family, title, body, *, fill, accent):
+    x, y, width = pdf.get_x(), pdf.get_y(), 184
+    pdf.set_fill_color(*fill)
+    pdf.set_draw_color(*accent)
+    pdf.rect(x, y, width, 20, style="DF")
+    pdf.set_xy(x + 4, y + 3)
+    pdf.set_text_color(*accent)
+    pdf.set_font(family, size=8)
+    pdf.cell(width - 8, 4, title)
+    pdf.set_xy(x + 4, y + 8)
+    pdf.set_text_color(23, 35, 29)
+    pdf.set_font(family, size=8.5)
+    pdf.multi_cell(width - 8, 4.2, body)
+    pdf.set_y(y + 22)
+
+
+def _fpdf_two_text(pdf, family, left, right):
+    x, y, gap, width = 13, pdf.get_y(), 4, 90
+    for index, (title, body) in enumerate((left, right)):
+        cell_x = x + index * (width + gap)
+        pdf.set_xy(cell_x, y)
+        pdf.set_text_color(18, 59, 49)
+        pdf.set_font(family, size=8)
+        pdf.cell(width, 4, title)
+        pdf.set_xy(cell_x, y + 5)
+        pdf.set_text_color(23, 35, 29)
+        pdf.set_font(family, size=7.2)
+        pdf.multi_cell(width, 3.6, body)
+    pdf.set_y(y + 25)
+
+
+def _fpdf_metric_grid(pdf, family, items, columns=4):
+    x, y, gap = 13, pdf.get_y(), 2.5
+    width = (184 - gap * (columns - 1)) / columns
+    rows = (len(items) + columns - 1) // columns
+    for index, (label, value) in enumerate(items):
+        row, column = divmod(index, columns)
+        cell_x, cell_y = x + column * (width + gap), y + row * 20
+        pdf.set_fill_color(248, 250, 247)
+        pdf.set_draw_color(226, 231, 225)
+        pdf.rect(cell_x, cell_y, width, 18, style="DF")
+        pdf.set_xy(cell_x + 2, cell_y + 2)
+        pdf.set_text_color(102, 113, 104)
+        pdf.set_font(family, size=5.8)
+        pdf.multi_cell(width - 4, 2.6, str(label), max_line_height=2.6)
+        pdf.set_xy(cell_x + 2, cell_y + 10)
+        pdf.set_text_color(23, 35, 29)
+        ascii_value = str(value).isascii()
+        if ascii_value and family != "Helvetica":
+            pdf.set_text_shaping(False)
+        pdf.set_font(family, size=6.4)
+        pdf.multi_cell(width - 4, 3, str(value), max_line_height=3)
+        if ascii_value and family != "Helvetica":
+            pdf.set_text_shaping(True)
+    pdf.set_y(y + rows * 20)
+
+
+def _fpdf_three_lists(pdf, family, groups):
+    x, y, gap, width = 13, pdf.get_y() + 2, 3, (184 - 6) / 3
+    for index, (title, values) in enumerate(groups):
+        cell_x = x + index * (width + gap)
+        pdf.set_xy(cell_x, y)
+        pdf.set_text_color(18, 59, 49)
+        pdf.set_font(family, size=8)
+        pdf.cell(width, 4, title)
+        pdf.set_xy(cell_x, y + 5)
+        pdf.set_text_color(23, 35, 29)
+        pdf.set_font(family, size=6.5)
+        pdf.multi_cell(width, 3.3, "\n".join(f"- {item}" for item in values))
+    pdf.set_y(y + 42)
+
+
+def _fpdf_action_box(pdf, family, title, values):
+    x, y, width, height = 13, pdf.get_y() + 1, 184, 31
+    pdf.set_fill_color(237, 247, 242)
+    pdf.set_draw_color(192, 216, 204)
+    pdf.rect(x, y, width, height, style="DF")
+    pdf.set_xy(x + 4, y + 3)
+    pdf.set_text_color(18, 59, 49)
+    pdf.set_font(family, size=8)
+    pdf.cell(width - 8, 4, title)
+    pdf.set_xy(x + 4, y + 8)
+    pdf.set_text_color(23, 35, 29)
+    pdf.set_font(family, size=6.6)
+    pdf.multi_cell(
+        width - 8, 3.5, "\n".join(f"{index}. {item}" for index, item in enumerate(values, 1))
+    )
+    pdf.set_y(y + height + 1)
+
+
+def _summary_range(value, money, language, include_unit=False):
+    if value.lower is None or value.upper is None:
+        return "-"
+    if money:
+        suffix = f" / {_localized_unit(value.unit, language)}" if include_unit else ""
+        return f"INR {value.lower:,.0f} - {value.upper:,.0f}{suffix}"
+    return f"{value.lower:,.1f} - {value.upper:,.1f} {_localized_unit(value.unit, language)}"
+
+
+def _summary_month(value, labels):
+    if value is None:
+        return labels["beyond"]
+    return labels["month"].replace("{month}", str(value))
+
+
+def _localized_unit(unit, language):
+    maps = {
+        "bn": {
+            "litres/month": "লিটার/মাস",
+            "litre/month": "লিটার/মাস",
+            "units/month": "ইউনিট/মাস",
+            "INR/litre": "টাকা/লিটার",
+            "INR/month": "টাকা/মাস",
+        },
+        "hi": {
+            "litres/month": "लीटर/माह",
+            "litre/month": "लीटर/माह",
+            "units/month": "इकाई/माह",
+            "INR/litre": "रुपये/लीटर",
+            "INR/month": "रुपये/माह",
+        },
+    }
+    return maps.get(language, {}).get(unit, unit)
+
+
+def _summary_competition(competition, language):
+    direct_count = competition.direct_count if competition.direct_count is not None else "-"
+    indirect_count = competition.indirect_count if competition.indirect_count is not None else "-"
+    if language == "bn":
+        return (
+            f"{direct_count} সরাসরি / {indirect_count} পরোক্ষ; "
+            f"মানচিত্রভিত্তিক ঘনত্ব; {competition.radius_km or '-'} কিমি"
+        )
+    if language == "hi":
+        return (
+            f"{direct_count} प्रत्यक्ष / {indirect_count} अप्रत्यक्ष; "
+            f"मानचित्र-आधारित घनत्व; {competition.radius_km or '-'} किमी"
+        )
+    return (
+        f"{direct_count} direct / {indirect_count} indirect; "
+        f"{competition.intensity}; {competition.radius_km or '-'} km"
+    )
 
 
 def _styles():

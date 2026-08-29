@@ -6,8 +6,14 @@ const sectors = [
 let selectedLocality = null;
 let searchTimer = null;
 let searchSequence = 0;
+let currentDecision = null;
+let currentAlternatives = [];
 
 initializeDistricts();
+
+$("#language").addEventListener("change", () => {
+  if (currentDecision) renderDecision(currentDecision, currentAlternatives, true);
+});
 
 async function initializeDistricts() {
   try {
@@ -75,7 +81,9 @@ $("#analysis-form").addEventListener("submit", async (event) => {
     else { $("#analysis-status").textContent = `Analyzing ${labelSector(requested)}…`; payloads.push(await runAnalysis(requested)); }
     const usable = payloads.filter((item) => item.selected_venture && item.digital_twin);
     const ranked = (usable.length ? usable : payloads).sort(scoreDecision);
-    renderDecision(ranked[0], requested === "best" ? ranked.slice(1, 5) : []);
+    currentDecision = ranked[0];
+    currentAlternatives = requested === "best" ? ranked.slice(1, 5) : [];
+    renderDecision(currentDecision, currentAlternatives);
     $("#analysis-status").textContent = "Analysis complete";
   } catch (error) {
     $("#decision").classList.remove("hidden"); $("#decision").innerHTML = `<div class="notice"><h2>We could not complete this estimate</h2><p>${safe(error.message)}</p></div>`;
@@ -84,7 +92,7 @@ $("#analysis-form").addEventListener("submit", async (event) => {
 
 async function runAnalysis(sector) {
   const profile = {risk_tolerance: $("#risk-tolerance").value, minimum_monthly_income: nullableNumber($("#income-target").value), experience_years: Number($("#experience").value || 0), acceptable_debt: nullableNumber($("#max-debt").value), mobility_km: nullableNumber($("#mobility").value), time_availability_hours_week: nullableNumber($("#time-available").value), family_labour: Number($("#family-labour").value || 0), assets: listValue($("#assets").value), skills: listValue($("#skills").value)};
-  const response = await fetch("/analyze", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({geo_id: $("#selected-geo-id").value, capital: Number($("#capital").value), business_category: sector, catchment_radius_km: Number($("#radius").value), language: $("#language").value, analysis_mode: $("#analysis-mode").value, profile})});
+  const response = await fetch("/analyze", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({geo_id: $("#selected-geo-id").value, capital: Number($("#capital").value), business_category: sector, catchment_radius_km: Number($("#radius").value), language: "en", analysis_mode: $("#analysis-mode").value, profile})});
   if (!response.ok) throw new Error(`Planning service returned ${response.status}`); return response.json();
 }
 
@@ -94,13 +102,19 @@ function scoreDecision(a, b) {
   return (bs?.cumulative_cash_median ?? b.digital_twin?.cumulative_cash_flow ?? -Infinity) - (as?.cumulative_cash_median ?? a.digital_twin?.cumulative_cash_flow ?? -Infinity);
 }
 
-function renderDecision(p, alternatives) {
+function renderDecision(p, alternatives, languageOnly = false) {
   const venture = p.selected_venture; if (!venture) return p.status === "NOT_FEASIBLE" ? renderConstraintFailure(p) : renderInputNeeded(p);
   const primitive = venture.primitives[0]; const twin = p.digital_twin; const month12 = twin?.months?.[11] || twin?.months?.at(-1);
   const gap = Math.max(0, (p.demand?.central || 0) - (p.supply?.central || 0)); const scenario = selectedScenario(p);
+  const summary = p.plain_language_summary;
+  const language = $("#language").value;
+  const presentation = summary?.presentations?.[language] || summary?.presentations?.en;
+  const labels = presentation?.labels || {};
   $("#decision").classList.remove("hidden");
   $("#decision").innerHTML = `
-    <div class="result-head"><div><p class="eyebrow">Recommended planning case</p><h2 id="recommendation-title">${safe(labelSector(p.sector))}</h2><p>${safe(p.geography.locality)}, ${safe(displayDistrict(p.geography.district))} · ${friendlyConfidence(p.confidence)} confidence</p></div><div class="result-actions"><span class="confidence ${String(p.confidence).toLowerCase()}">${safe(p.confidence)}</span><a class="download-button" href="/analysis/${encodeURIComponent(p.analysis_id)}/pdf" target="_blank">Download business plan PDF</a></div></div>
+    ${simpleSummary(p, summary, presentation, labels, language)}
+    <details class="technical-layer"><summary>${safe(labels.technical || "Detailed technical analysis")}</summary><div class="technical-layer-body">
+    <div class="result-head"><div><p class="eyebrow">Recommended planning case</p><h2 id="recommendation-title">${safe(labelSector(p.sector))}</h2><p>${safe(p.geography.locality)}, ${safe(displayDistrict(p.geography.district))} · ${friendlyConfidence(p.confidence)} confidence</p></div><div class="result-actions"><span class="confidence ${String(p.confidence).toLowerCase()}">${safe(p.confidence)}</span></div></div>
     <nav class="result-tabs" aria-label="Planning report sections">${tabButton("summary","Summary",true)}${tabButton("market","Local market")}${tabButton("opportunities","Opportunities")}${tabButton("risk","Risk & SWOT")}${tabButton("plan","Business plan")}${tabButton("finance","Finance")}${tabButton("action","Action plan")}</nav>
     <div class="tab-panel active" data-panel="summary"><div class="why"><strong>Why it fits here</strong><p>The flow model found a modelled service gap and the MVV oracle selected the lowest-investment tested configuration that repairs useful flow within your capital constraint.</p></div>
       <div class="metric-grid">${metric("Project cost", moneyRange(venture.investment), "planning interval")}${metric("Own capital deployed", money(p.prudent_financing?.own_capital_deployed), "remaining capital is reserve")}${metric("Finance required", money(p.prudent_financing?.illustrative_financing_requirement || 0), "within your debt ceiling")}${metric("Monthly revenue", moneyRange(month12?.revenue), "month 12 model")}${metric("Owner-income range", rangeAround(month12?.operating_cash_flow,.20), "central cash surplus ±20% planning band")}${metric("Investment payback", twin?.investment_payback_month ? `${twin.investment_payback_month} months` : "Beyond 36 months", "not operating break-even")}${metric("Scenario survival", scenario ? percent(scenario.scenario_survival_rate) : "Quick plan", scenario ? `${scenario.scenario_count} planning scenarios` : "central estimate only")}${metric("Market gap", moneyOrUnit(gap,p.demand?.unit), "modelled, not observed turnover")}${metric("Entry difficulty", p.entry_difficulty?.label || "Unknown", (p.entry_difficulty?.reasons||[]).slice(0,2).join("; "))}</div>
@@ -112,9 +126,40 @@ function renderDecision(p, alternatives) {
     <div class="tab-panel" data-panel="risk"><div class="two-col"><article><h3>Computed SWOT</h3>${swot(p.swot)}</article><article><h3>Scenario resilience</h3>${plainRow("Scenarios",scenario?.scenario_count || "Quick plan")}${plainRow("Remain solvent",scenario?percent(scenario.scenario_survival_rate):"Not run")}${plainRow("Payback within 36 months",scenario?percent(scenario.payback_within_36_months_rate):"Not run")}${plainRow("10th percentile minimum cash",scenario?money(scenario.minimum_cash_p10):"Not run")}${plainRow("Worst 5% cumulative cash (CVaR)",scenario?money(-scenario.cvar95_loss):"Not run")}</article></div><div class="two-col"><article><h3>Sensitivity tornado</h3>${tornado(p.sensitivity_analysis)}</article><article><h3>Pre-mortem: why this could fail</h3>${premortemList(p.premortem)}</article></div><article><h3>Adaptive failure boundaries</h3><div class="boundary-grid">${(p.failure_boundaries||[]).map(boundaryCard).join("") || "Run Deep analysis to calculate boundaries."}</div><p class="caption">Scenario rates are modelled planning survival, not probability of success. The triangular factors are not empirically calibrated.</p></article></div>
     <div class="tab-panel" data-panel="plan"><div class="two-col"><article><h3>Minimum viable setup</h3><dl class="breakdown"><div><dt>Equipment and setup</dt><dd>${money(primitive.capex)}</dd></div><div><dt>Working capital</dt><dd>${money(primitive.working_capital)}</dd></div><div><dt>Monthly fixed OPEX</dt><dd>${money(primitive.monthly_opex)}</dd></div><div><dt>People</dt><dd>${primitive.staff}</dd></div><div><dt>Space</dt><dd>${number(primitive.space_sqft)} sq ft</dd></div><div><dt>Service radius</dt><dd>${number(primitive.service_radius_km)} km</dd></div></dl>${costBars(p.prudent_financing?.capex_breakdown,"CAPEX allocation")}</article><article><h3>Working-capital cycle</h3>${plainRow("Minimum modelled",money(p.prudent_financing?.working_capital?.minimum_modelled))}${plainRow("Recommended +15% buffer",money(p.prudent_financing?.working_capital?.recommended_with_15pct_buffer))}${plainRow("Inventory days",primitive.inventory_days)}${plainRow("Receivable days",primitive.receivable_days)}${plainRow("Payable days",primitive.payable_days)}${plainRow("Cash conversion cycle",`${primitive.inventory_days+primitive.receivable_days-primitive.payable_days} days`)}<h3 class="subhead">Licences to verify</h3>${bulletList(primitive.licence_assumptions)}</article></div><div class="three-col"><article><h3>Equipment</h3>${bulletList(primitive.equipment)}</article><article><h3>Quality controls</h3>${bulletList(primitive.quality_controls)}</article><article><h3>Operational factors</h3>${bulletList(primitive.operational_factors?.length ? primitive.operational_factors : p.sector_intelligence?.operational_factors)}</article></div><div class="two-col"><article><h3>Weather and seasonality</h3>${bulletList(primitive.weather_factors?.length ? primitive.weather_factors : p.sector_intelligence?.weather_factors,"No material weather-specific factor is registered for this sector.")}</article><article><h3>Insurance / protection</h3>${bulletList(p.sector_intelligence?.insurance_options)}</article></div><div class="two-col"><article><h3>Customer plan</h3>${bulletList(primitive.customer_types)}</article><article><h3>Supplier plan</h3>${bulletList(primitive.supplier_types)}</article></div></div>
     <div class="tab-panel" data-panel="finance"><div class="metric-grid">${metric("Total project cost",moneyRange(venture.investment),"CAPEX + working capital")}${metric("Your own capital",money(Number($("#capital").value)),"entered by you")}${metric("External financing",money(p.prudent_financing.illustrative_financing_requirement||0),"illustrative, not approved")}${metric("Operating break-even",twin?.operating_break_even_month?`Month ${twin.operating_break_even_month}`:"Not reached","cumulative operating cash")}${metric("Cash break-even",twin?.cash_break_even_month?`Month ${twin.cash_break_even_month}`:"Not reached","closing cash")}${metric("Payback",twin?.investment_payback_month?`Month ${twin.investment_payback_month}`:"Beyond model","owner capital recovered")}</div><article><h3>Unit economics and investment metrics</h3><div class="metric-grid">${metric("Gross margin",percent(p.prudent_financing?.financial_metrics?.gross_margin),"month 12")}${metric("Break-even volume",number(p.prudent_financing?.financial_metrics?.break_even_volume_month),"planning revenue units/month")}${metric("36-month NPV",money(p.prudent_financing?.financial_metrics?.npv_36_month_at_12pct),"12% annual discount rate")}${metric("Annualized IRR",percent(p.prudent_financing?.financial_metrics?.irr_annualized),"benchmark-adjusted assumptions")}</div><p class="caption">${safe(p.prudent_financing?.financial_metrics?.confidence_note||"")}</p></article><article><h3>36-month closing cash</h3><div class="cash-chart">${cashBars(twin)}</div></article><article><h3>Possible finance fit</h3><ul>${(p.official_finance||[]).map(x=>`<li><strong>${safe(x.scheme_name)}</strong> — ${safe(x.status_wording)}</li>`).join("")}</ul></article></div>
-    <div class="tab-panel" data-panel="action"><div class="timeline">${(p.staged_plan||[]).map((x,i)=>`<div><b>${i+1}</b><p>${safe(x)}</p></div>`).join("")}</div><div class="action-grid">${actionSections(p.action_plan)}</div></div>`;
+    <div class="tab-panel" data-panel="action"><div class="timeline">${(p.staged_plan||[]).map((x,i)=>`<div><b>${i+1}</b><p>${safe(x)}</p></div>`).join("")}</div><div class="action-grid">${actionSections(p.action_plan)}</div></div></div></details>`;
   bindTabs(); renderAudit(p);
+  if (languageOnly) $("#decision").scrollIntoView({behavior: reducedMotion() ? "auto" : "smooth", block: "start"});
 }
+
+function simpleSummary(p, s, t, l, language) {
+  if (!s || !t) return `<div class="notice"><strong>Plain-language summary is unavailable for this stored analysis.</strong></div>`;
+  const competition = s.competition_summary || {};
+  const terms = simpleTerms(language);
+  const competitorText = `${competition.direct_count ?? "—"} ${terms.direct}, ${competition.indirect_count ?? "—"} ${terms.indirect} · ${localizedIntensity(competition.intensity,language)} · ${number(competition.radius_km)} ${terms.km}`;
+  return `<section class="simple-summary" lang="${safe(language)}">
+    <div class="simple-summary-head"><div><p class="eyebrow">${safe(l.simple_summary)}</p><h2 id="recommendation-title">${safe(t.recommended_venture_name)}</h2><p>${safe(p.geography.locality)}, ${safe(displayDistrict(p.geography.district))} · ${safe(t.recommended_venture_category)}</p></div><span class="conclusion-badge ${safe(String(s.conclusion_status).toLowerCase())}">${safe(t.conclusion_text)}</span></div>
+    <div class="language-proof"><span>${safe(l.confidence)}: <strong>${safe(p.confidence)}</strong></span><span>Analysis ID: <code>${safe(p.analysis_id)}</code></span><span>${safe(s.method_version)}</span></div>
+    <div class="plain-grid"><article class="plain-highlight"><h3>${safe(l.why)}</h3><p>${safe(t.why_recommended)}</p><p>${safe(t.why_here)}</p></article><article><h3>${safe(l.who)}</h3><p>${safe(t.who_suits)}</p><h3>${safe(l.avoid)}</h3><p>${safe(t.who_should_avoid)}</p></article></div>
+    <h3 class="simple-subhead">${safe(l.money)}</h3><div class="metric-grid summary-metrics">${summaryMetric(l.capital, s.capital_required, true,language)}${summaryMetric(l.own, s.own_money_used, true,language)}${summaryMetric(l.reserve, s.money_kept_as_reserve, true,language)}${summaryMetric(l.finance, s.finance_needed, true,language)}${summaryMetric(l.revenue, s.monthly_revenue, true,language)}${summaryMetric(l.cash, s.monthly_operating_cash, true,language)}${metric(l.break_even, monthLabel(s.break_even_month,l),"")}${metric(l.payback,monthLabel(s.payback_month,l),"")}</div>
+    <h3 class="simple-subhead">${safe(l.market)}</h3><div class="metric-grid summary-metrics">${summaryMetric(l.demand,s.demand_opportunity,false,language)}${summaryMetric(l.price,s.price_guidance,true,language,true)}${metric(l.competition,safe(competitorText),safe(t.top_disadvantages?.[1] || ""))}</div>
+    <div class="plain-grid three"><article><h3>${safe(l.advantages)}</h3>${bulletList(t.top_advantages)}</article><article><h3>${safe(l.disadvantages)}</h3>${bulletList(t.top_disadvantages)}</article><article><h3>${safe(l.risks)}</h3>${bulletList(t.top_risks)}</article></div>
+    <article class="first-actions"><h3>${safe(l.actions)}</h3><ol>${t.top_actions.map(x=>`<li>${safe(x)}</li>`).join("")}</ol><p class="caption">${safe(t.data_confidence)}</p></article>
+    <div class="pdf-language-actions"><span>${safe(l.download)}:</span>${pdfLink(p.analysis_id,"en","English")}${pdfLink(p.analysis_id,"bn","বাংলা")}${pdfLink(p.analysis_id,"hi","हिन्दी")}</div>
+  </section>`;
+}
+
+function summaryMetric(label, value, currency, language, includeUnit = false) {
+  const unit = localizeUnit(value?.unit,language);
+  const display = value?.lower == null ? "—" : currency ? `${money(value.lower)}–${money(value.upper)}${includeUnit?` / ${safe(unit)}`:""}` : `${number(value.lower)}–${number(value.upper)} ${safe(unit)}`;
+  return metric(label, display, safe(localizedStatus(value?.status,language)));
+}
+function monthLabel(value, labels) { return value ? String(labels.month || "Month {month}").replace("{month}",value) : labels.beyond || "Beyond 36 months / not reached"; }
+function pdfLink(id, language, label) { return `<a class="download-button" href="/analysis/${encodeURIComponent(id)}/pdf?language=${language}" target="_blank" hreflang="${language}">${label}</a>`; }
+function reducedMotion(){return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;}
+function simpleTerms(language){return ({bn:{direct:"সরাসরি",indirect:"পরোক্ষ",km:"কিমি"},hi:{direct:"प्रत्यक्ष",indirect:"अप्रत्यक्ष",km:"किमी"},en:{direct:"direct",indirect:"indirect",km:"km"}})[language]||{direct:"direct",indirect:"indirect",km:"km"};}
+function localizeUnit(unit,language){const maps={bn:{"litres/month":"লিটার/মাস","litre/month":"লিটার/মাস","units/month":"ইউনিট/মাস","INR/litre":"টাকা/লিটার","INR/month":"টাকা/মাস"},hi:{"litres/month":"लीटर/माह","litre/month":"लीटर/माह","units/month":"इकाई/माह","INR/litre":"रुपये/लीटर","INR/month":"रुपये/माह"}};return maps[language]?.[unit]||unit||"";}
+function localizedStatus(status,language){const maps={bn:{PLANNING_RANGE:"পরিকল্পনার সীমা",MODELLED:"মডেলভিত্তিক",ILLUSTRATIVE:"উদাহরণমূলক",PROJECTED_MONTH_12:"১২তম মাসের প্রক্ষেপণ",PROJECTED:"প্রক্ষেপিত",RECENT_SURVEY_UNIT_VALUE:"সাম্প্রতিক সমীক্ষার একক মূল্য",UNAVAILABLE:"তথ্য নেই"},hi:{PLANNING_RANGE:"योजना सीमा",MODELLED:"मॉडल-आधारित",ILLUSTRATIVE:"उदाहरणात्मक",PROJECTED_MONTH_12:"माह 12 का अनुमान",PROJECTED:"अनुमानित",RECENT_SURVEY_UNIT_VALUE:"हालिया सर्वेक्षण इकाई मूल्य",UNAVAILABLE:"जानकारी उपलब्ध नहीं"}};return maps[language]?.[status]||status||"UNAVAILABLE";}
+function localizedIntensity(value,language){if(language==="bn")return value&&value!=="UNKNOWN"?"মানচিত্রভিত্তিক ঘনত্ব":"অজানা";if(language==="hi")return value&&value!=="UNKNOWN"?"मानचित्र-आधारित घनत्व":"अज्ञात";return friendlyCompetitionIntensity(value);}
 
 function bindTabs(){ document.querySelectorAll(".result-tabs button").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".result-tabs button").forEach(x=>x.classList.toggle("active",x===button));document.querySelectorAll(".tab-panel").forEach(panel=>panel.classList.toggle("active",panel.dataset.panel===button.dataset.tab));})); }
 function renderInputNeeded(p){const gates=(p.evidence_gates||[]).filter(g=>g.blocking);$("#decision").classList.remove("hidden");$("#decision").innerHTML=`<div class="notice"><p class="eyebrow">Evidence gate — no fabricated plan</p><h2>${safe(labelSector(p.sector))} cannot yet be estimated responsibly for this locality.</h2>${bulletList(gates.map(g=>g.message),"Linked evidence is insufficient.")}<p><strong>Useful next action:</strong> collect or link ${safe([...new Set(gates.flatMap(g=>g.required_variables||[]))].join(", ")||"the missing current evidence")}, or use “Find the best opportunity” to test sectors supported by the available evidence.</p></div>${geographyPanel(p)}${compactCompetitionPanel(p)}${factorPanel(p)}`;renderAudit(p);}

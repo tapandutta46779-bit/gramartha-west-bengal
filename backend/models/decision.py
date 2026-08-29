@@ -11,6 +11,7 @@ from .evidence import ConfidenceLevel, EstimateInterval, EvidenceRecord
 from .finance import DigitalTwinResult, LoanTerms, SchemeEligibility, StressResult
 from .flow import Bottleneck, FlowResult
 from .geography import GeographicIdentity, GeographicResolution
+from .presentation import PlainLanguageSummary
 from .profile import EntrepreneurProfile
 from .venture import CounterfactualResult, MVVResult, VentureCandidate
 
@@ -103,3 +104,4 @@ class VentureDecision(BaseModel):
     model_versions: dict[str, str] = Field(default_factory=dict)
     data_versions: dict[str, str] = Field(default_factory=dict)
     software_git_commit: str | None = None
+    plain_language_summary: PlainLanguageSummary | None = None

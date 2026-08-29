@@ -14,7 +14,7 @@ from backend.finance.stress import find_failure_boundary, summarize_stress
 from backend.reporting.customer_pdf import build_customer_pdf
 from backend.service import analyze
 
-app = FastAPI(title="GramArtha West Bengal Business Advisor", version="0.6.1")
+app = FastAPI(title="GramArtha West Bengal Business Advisor", version="0.7.0")
 store = EvidenceStore(os.environ.get("SIH26091_SQLITE_PATH", ":memory:"))
 frontend_path = Path(__file__).resolve().parents[2] / "frontend"
 if frontend_path.exists():
@@ -28,7 +28,11 @@ def root():
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "methodology_version": "decision-v6"}
+    return {
+        "status": "ok",
+        "methodology_version": "decision-v6",
+        "presentation_version": "plain-language-summary-v1",
+    }
 
 
 @app.get("/localities/search")
@@ -130,15 +134,18 @@ def get_analysis(analysis_id: str):
 
 
 @app.get("/analysis/{analysis_id}/pdf")
-def get_analysis_pdf(analysis_id: str):
+def get_analysis_pdf(
+    analysis_id: str,
+    language: str = Query("en", pattern="^(en|bn|hi)$"),
+):
     decision = store.get_analysis(analysis_id)
     if decision is None:
         raise HTTPException(404, "analysis not found")
     if decision.selected_venture is None:
         raise HTTPException(409, "analysis has no selected venture to report")
-    filename = f"GramArtha_{analysis_id}_business_plan.pdf"
+    filename = f"GramArtha_{analysis_id}_business_plan_{language}.pdf"
     return Response(
-        content=build_customer_pdf(decision),
+        content=build_customer_pdf(decision, language),
         media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )

@@ -6,9 +6,9 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231b6b52'/%3E%3Cpath d='M15 42V22h34v20H15zm7-5h20V27H22v10z' fill='white'/%3E%3C/svg%3E" />
     <meta name="theme-color" content="#123b31" />
     <title>GramArtha — West Bengal business advisor</title>
-    <link rel="stylesheet" href="styles.css?v=0.6.2" />
-    <link rel="stylesheet" href="version.css?v=0.6.2" />
-    <link rel="stylesheet" href="fixes.css?v=0.6.2" />
+    <link rel="stylesheet" href="styles.css?v=0.7.0" />
+    <link rel="stylesheet" href="version.css?v=0.7.0" />
+    <link rel="stylesheet" href="fixes.css?v=0.7.0" />
     <script>
       if (window.location.protocol === "file:") {
         window.addEventListener("DOMContentLoaded", () => {
@@ -27,7 +27,7 @@
     </script>
   </head>
   <body>
-    <nav><a class="brand" href="#">Gram<span>Artha</span> <em>v0.6.2</em></a><span>West Bengal business advisor</span></nav>
+    <nav><a class="brand" href="#">Gram<span>Artha</span> <em>v0.7.0</em></a><span>West Bengal business advisor</span></nav>
     <header><p class="eyebrow">Hyper-local economic network repair</p><h1>What business can work where you live?</h1><p class="lede">Enter your locality and budget. GramArtha tests local service gaps, minimum viable ventures, 36-month cash flow and downside scenarios.</p></header>
     <main>
       <section class="planner">
@@ -46,7 +46,7 @@
           <label>Business interest<select id="sector"><option value="best">Find the best opportunity for me</option><optgroup label="Agriculture and food"><option value="dairy">Dairy / milk</option><option value="poultry">Poultry / egg aggregation</option><option value="fishery">Fish collection / distribution</option><option value="food processing">Small food processing</option><option value="flour mill">Flour mill</option><option value="spice processing">Spice processing</option><option value="mustard oil">Mustard oil extraction</option></optgroup><optgroup label="Retail and distribution"><option value="kirana">Kirana / grocery</option><option value="household goods">Household-goods distribution</option><option value="electronics">Electronics / mobile retail</option><option value="transport">Rural distribution / aggregation</option></optgroup></select></label>
           <label>Planning radius<select id="radius"><option value="3">3 km</option><option value="5">5 km</option><option value="10" selected>10 km</option><option value="15">15 km</option><option value="20">20 km</option></select></label>
           <label>Analysis<select id="analysis-mode"><option value="deep" selected>Deep — 512 scenarios</option><option value="quick">Quick — central estimate</option></select></label>
-          <label>Language<select id="language"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option></select></label>
+          <label>Output language (input stays English)<select id="language"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option></select></label>
           <details class="advanced"><summary>Optional entrepreneur profile</summary><div class="advanced-grid">
             <label>Desired monthly income (₹)<input id="income-target" type="number" min="0" placeholder="Optional" /></label>
             <label>Maximum acceptable debt (₹)<input id="max-debt" type="number" min="0" /></label>
@@ -69,7 +69,7 @@
     <script>
       if (window.location.protocol !== "file:") {
         const application = document.createElement("script");
-        application.src = "app.js?v=0.6.2";
+        application.src = "app.js?v=0.7.0";
         document.body.appendChild(application);
       }
     </script>

@@ -37,6 +37,7 @@ from backend.models.geography import GeographicResolution, ResolutionMethod
 from backend.models.profile import EntrepreneurProfile
 from backend.pipeline.automatic import build_automatic_inputs
 from backend.pipeline.sector_factors import sector_factors
+from backend.presentation import build_plain_language_summary
 from backend.spatial.osm_store import OsmEntity, OsmSpatialStore, haversine_km
 
 _OFFICIAL_LOCALITY_COORDINATE_PROXIES = {
@@ -381,6 +382,9 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         data_versions={**_data_versions(evidence), **spatial["data_versions"]},
         software_git_commit=_git_commit(),
     )
+    decision = decision.model_copy(
+        update={"plain_language_summary": build_plain_language_summary(decision)}
+    )
     store.put_analysis(decision)
     return decision
 
@@ -505,6 +509,9 @@ def _refusal(
         explanation=deterministic_explanation(request.language, gates=gates, has_selection=False),
         limitations=[gate.message for gate in gates],
         software_git_commit=_git_commit(),
+    )
+    decision = decision.model_copy(
+        update={"plain_language_summary": build_plain_language_summary(decision)}
     )
     store.put_analysis(decision)
     return decision
