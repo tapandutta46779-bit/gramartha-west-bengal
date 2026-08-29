@@ -1,9 +1,9 @@
 {
   "package": "SIH26091_GRAMARTHA_v0.7.1_PUBLIC_SHARE",
   "status": "VERIFIED_CONDITIONAL_PLANNING_PRODUCT",
-  "created_at": "2026-08-29T19:35:48.493494+00:00",
+  "created_at": "2026-08-29T19:44:16.464810+00:00",
   "file_count": 175,
-  "uncompressed_size_bytes": 1355770217,
+  "uncompressed_size_bytes": 1356148642,
   "verified": {
     "pytest": "57 passed",
     "ruff": "passed",
@@ -237,13 +237,13 @@
     },
     {
       "path": "backend/presentation/detail_language.py",
-      "size_bytes": 79810,
-      "sha256": "419d934bac06c8cf6113752921a1b8651e1dbf978be687474d35e8bae0343f52"
+      "size_bytes": 88277,
+      "sha256": "6f0d072f23c69eec68d9984fc01d2894578c43880e0adb62db2eb643a5ac1c13"
     },
     {
       "path": "backend/presentation/plain_language.py",
-      "size_bytes": 27920,
-      "sha256": "f20f44b23707bd41c9eff24986175cb62b778c0fa7579ee0b78d81ef33c39a8e"
+      "size_bytes": 27993,
+      "sha256": "57cca2db120c524f96716acef7ee3175f2fb0d5851d50d4999ff971fe4a83e0a"
     },
     {
       "path": "backend/reporting/__init__.py",
@@ -327,8 +327,8 @@
     },
     {
       "path": "data/sih26091_phase2.sqlite",
-      "size_bytes": 790601728,
-      "sha256": "0ab26717381bb2b8abf515ab4d0b8bd8a2582d38958dbbbef7138c6a16bb4063"
+      "size_bytes": 790970368,
+      "sha256": "f467342e3f99036d1e0978f15fb6f6623cf3d29284badb3528cae6727b29ccc8"
     },
     {
       "path": "data/west_bengal_osm.sqlite",
@@ -557,8 +557,8 @@
     },
     {
       "path": "frontend/app.js",
-      "size_bytes": 46091,
-      "sha256": "68ce73ef288b67ec2e1644f55570b759fb5f78c274465ba1088c8a9b7a07331f"
+      "size_bytes": 46731,
+      "sha256": "dfb07dfb80a41cdc90c03af027b2a82d354c5d9c20a6cec5edce38dcb3fd4d6d"
     },
     {
       "path": "frontend/fixes.css",
@@ -587,18 +587,18 @@
     },
     {
       "path": "output/pdf/GramArtha_Puapur_Transport_Business_Plan_v0.7.1_bn.pdf",
-      "size_bytes": 216511,
-      "sha256": "6a3e27ef29aae23a9c00b458b740726a9803f7064d1c7ed1f3c77c1be307db5f"
+      "size_bytes": 216594,
+      "sha256": "37da27977e462a6a8b0bd71d93c555f9748bb874971302504eae4883ae5843a0"
     },
     {
       "path": "output/pdf/GramArtha_Puapur_Transport_Business_Plan_v0.7.1_en.pdf",
-      "size_bytes": 43988,
-      "sha256": "0baf00150021407167ca3a46f749cae512c8c91144750529c2ee0fccb1c33081"
+      "size_bytes": 44056,
+      "sha256": "09595fba8461ad04bf6770dc9d3d18f77a5720a8e8c0c775ffba72163f449990"
     },
     {
       "path": "output/pdf/GramArtha_Puapur_Transport_Business_Plan_v0.7.1_hi.pdf",
-      "size_bytes": 152385,
-      "sha256": "0e06b0c8b8a7467c62246b8cef03b94aff2a31e2aeb66b35dacd20812ee1f68a"
+      "size_bytes": 152474,
+      "sha256": "1c1527f88fd5aa518fb328d63674285050b3340492cb382e27e0458d172f476e"
     },
     {
       "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/DATA_FRESHNESS_AUDIT.json",
@@ -867,8 +867,8 @@
     },
     {
       "path": "tests/test_multilingual_presentation.py",
-      "size_bytes": 5624,
-      "sha256": "ccc4eb5695f534534caf075a033ee330c31411306596ca407479aeac68667d44"
+      "size_bytes": 5989,
+      "sha256": "2f9143040f07dde6c9e97724050e923df051331db0e974faf1e40dc3d7fd2467"
     },
     {
       "path": "tests/test_osm_spatial.py",

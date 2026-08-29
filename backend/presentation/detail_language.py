@@ -162,6 +162,42 @@ _EXACT["bn"].update({
     "Adverse selling price moved cash below plan.": "প্রতিকূল বিক্রয়দর নগদকে পরিকল্পনার নিচে নামিয়েছে।",
     "Adverse variable cost moved cash below plan.": "প্রতিকূল পরিবর্তনশীল খরচ নগদকে পরিকল্পনার নিচে নামিয়েছে।",
     "Adverse fixed opex moved cash below plan.": "প্রতিকূল স্থির পরিচালন ব্যয় নগদকে পরিকল্পনার নিচে নামিয়েছে।",
+    "important locality inputs remain benchmark-adjusted": "গুরুত্বপূর্ণ স্থানীয় উপাত্ত এখনও বেঞ্চমার্ক-সমন্বিত",
+    "An owner-operator able to supervise daily buying, selling and cash control.": "এমন মালিক-পরিচালক যিনি প্রতিদিনের ক্রয়, বিক্রয় ও নগদ নিয়ন্ত্রণ তদারক করতে পারবেন।",
+    "Anyone unable to control this leading risk:": "যিনি এই প্রধান ঝুঁকি নিয়ন্ত্রণ করতে পারবেন না:",
+    "Village": "গ্রাম",
+    "Market": "বাজার",
+    "Low proxy density": "কম প্রক্সি ঘনত্ব",
+    "Block sibling median proxy": "একই ব্লকের এলাকার মধ্যম প্রক্সি",
+    "No defensible historical-to-current crosswalk linked": "যাচাইযোগ্য ঐতিহাসিক-বর্তমান ক্রসওয়াক সংযুক্ত নয়",
+    "Official code linked": "সরকারি কোড সংযুক্ত",
+    "Historical observations retain their observation year; a crosswalk never makes them current.": "ঐতিহাসিক পর্যবেক্ষণে পর্যবেক্ষণের বছর অক্ষুণ্ণ থাকে; ক্রসওয়াক সেগুলিকে বর্তমান করে না।",
+    "MODELLED_BENCHMARK": "মডেলভিত্তিক বেঞ্চমার্ক",
+    "INR/month": "টাকা/মাস",
+    "gross margin share": "মোট মার্জিনের অংশ",
+    "Gap: ": "ঘাটতি: ",
+    "Observation classes and years are preserved; this is not measured locality turnover.": "পর্যবেক্ষণের শ্রেণি ও বছর অক্ষুণ্ণ; এটি মাপা স্থানীয় বিক্রয় নয়।",
+    "OSM competitors found inside your radius.": "আপনার ব্যাসার্ধের মধ্যে OSM প্রতিযোগী পাওয়া গেছে।",
+    "Names and distances are shown below.": "নাম ও দূরত্ব নিচে দেখানো হয়েছে।",
+    "Scan center:": "স্ক্যান কেন্দ্র:",
+    "OSM index:": "OSM সূচির সময়:",
+    "Unknown — OSM proxy counts do not measure capacity, sales or market share": "অজানা — OSM প্রক্সি গণনা ক্ষমতা, বিক্রয় বা বাজার অংশ মাপে না",
+    "DISTRIBUTION": "বিতরণ",
+    "Survival-first": "টিকে থাকা অগ্রাধিকার",
+    "Alternative": "বিকল্প",
+    "Robust": "দৃঢ় বিকল্প",
+    "selling price factor": "বিক্রয়দরের গুণক",
+    "variable cost factor": "পরিবর্তনশীল খরচের গুণক",
+    "fixed opex factor": "স্থির পরিচালন ব্যয়ের গুণক",
+    "minimum cash buffer": "ন্যূনতম নগদ সুরক্ষা",
+    "No failure in tested range": "পরীক্ষিত সীমায় ব্যর্থতা নেই",
+    "equipment and fixtures": "যন্ত্রপাতি ও স্থায়ী সরঞ্জাম",
+    "installation and setup": "স্থাপন ও প্রস্তুতি",
+    "premises deposit and basic fitout": "জায়গার জামানত ও প্রাথমিক সাজসজ্জা",
+    "licensing and contingency": "লাইসেন্স ও আপৎকালীন সংস্থান",
+    "CAPEX + working capital": "মূলধনী ব্যয় + কার্যকরী মূলধন",
+    "cumulative operating cash": "সঞ্চিত পরিচালন নগদ",
+    "Payback": "বিনিয়োগ ফেরত",
 })
 
 _EXACT["hi"].update({
@@ -196,6 +232,42 @@ _EXACT["hi"].update({
     "Adverse selling price moved cash below plan.": "प्रतिकूल बिक्री मूल्य ने नकदी को योजना से नीचे किया।",
     "Adverse variable cost moved cash below plan.": "प्रतिकूल परिवर्ती लागत ने नकदी को योजना से नीचे किया।",
     "Adverse fixed opex moved cash below plan.": "प्रतिकूल स्थिर परिचालन व्यय ने नकदी को योजना से नीचे किया।",
+    "important locality inputs remain benchmark-adjusted": "महत्वपूर्ण स्थानीय इनपुट अभी बेंचमार्क-समायोजित हैं",
+    "An owner-operator able to supervise daily buying, selling and cash control.": "ऐसा मालिक-संचालक जो दैनिक खरीद, बिक्री और नकदी नियंत्रण देख सके।",
+    "Anyone unable to control this leading risk:": "जो इस प्रमुख जोखिम को नियंत्रित न कर सके:",
+    "Village": "गाँव",
+    "Market": "बाजार",
+    "Low proxy density": "कम प्रॉक्सी घनत्व",
+    "Block sibling median proxy": "उसी ब्लॉक के क्षेत्रों का मध्य प्रॉक्सी",
+    "No defensible historical-to-current crosswalk linked": "कोई सत्यापित ऐतिहासिक-से-वर्तमान क्रॉसवॉक जुड़ा नहीं",
+    "Official code linked": "आधिकारिक कोड जुड़ा है",
+    "Historical observations retain their observation year; a crosswalk never makes them current.": "ऐतिहासिक अवलोकनों का वर्ष सुरक्षित रहता है; क्रॉसवॉक उन्हें वर्तमान नहीं बनाता।",
+    "MODELLED_BENCHMARK": "मॉडल-आधारित बेंचमार्क",
+    "INR/month": "रुपये/माह",
+    "gross margin share": "सकल मार्जिन हिस्सा",
+    "Gap: ": "अंतर: ",
+    "Observation classes and years are preserved; this is not measured locality turnover.": "अवलोकन वर्ग और वर्ष सुरक्षित हैं; यह मापा गया स्थानीय कारोबार नहीं है।",
+    "OSM competitors found inside your radius.": "आपकी त्रिज्या के भीतर OSM प्रतिस्पर्धी मिले।",
+    "Names and distances are shown below.": "नाम और दूरियाँ नीचे दी गई हैं।",
+    "Scan center:": "स्कैन केंद्र:",
+    "OSM index:": "OSM सूचक समय:",
+    "Unknown — OSM proxy counts do not measure capacity, sales or market share": "अज्ञात — OSM प्रॉक्सी गणना क्षमता, बिक्री या बाजार हिस्सेदारी नहीं मापती",
+    "DISTRIBUTION": "वितरण",
+    "Survival-first": "जीवित रहने को प्राथमिकता",
+    "Alternative": "विकल्प",
+    "Robust": "मजबूत विकल्प",
+    "selling price factor": "बिक्री मूल्य गुणक",
+    "variable cost factor": "परिवर्ती लागत गुणक",
+    "fixed opex factor": "स्थिर परिचालन व्यय गुणक",
+    "minimum cash buffer": "न्यूनतम नकदी सुरक्षा",
+    "No failure in tested range": "परीक्षित सीमा में विफलता नहीं",
+    "equipment and fixtures": "उपकरण और स्थायी सामग्री",
+    "installation and setup": "स्थापना और सेटअप",
+    "premises deposit and basic fitout": "स्थान जमा और बुनियादी फिटआउट",
+    "licensing and contingency": "लाइसेंस और आकस्मिक प्रावधान",
+    "CAPEX + working capital": "पूंजीगत व्यय + कार्यशील पूंजी",
+    "cumulative operating cash": "संचयी परिचालन नकदी",
+    "Payback": "निवेश वापसी",
 })
 
 
@@ -246,6 +318,8 @@ _DYNAMIC = {
     ],
 }
 
+DETAIL_SOURCE_TEXTS = frozenset(_EXACT["bn"]) | frozenset(_EXACT["hi"])
+
 
 def translate_detail_text(value: str, language: str) -> str:
     if language == "en" or not value:
@@ -262,6 +336,9 @@ def translate_detail_text(value: str, language: str) -> str:
     for pattern, replacement in _DYNAMIC[language]:
         if re.fullmatch(pattern, text):
             return re.sub(pattern, replacement, text)
+    words = re.findall(r"[A-Za-z][A-Za-z'.-]*", text)
+    if len(words) >= 2 and all(word[0].isupper() or word.isupper() for word in words):
+        return text
     # Preserve proper names and machine identifiers, but localize the recurring
     # scientific-honesty vocabulary used by generated explanations.
     replacements = {

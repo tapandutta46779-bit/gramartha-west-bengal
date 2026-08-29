@@ -10,7 +10,11 @@ from backend.models.presentation import (
     PlainLanguageSummary,
     SummaryRange,
 )
-from backend.presentation.detail_language import DETAIL_LABELS, build_translation_map
+from backend.presentation.detail_language import (
+    DETAIL_LABELS,
+    DETAIL_SOURCE_TEXTS,
+    build_translation_map,
+)
 
 _SECTOR_NAMES = {
     "en": {
@@ -324,6 +328,7 @@ def build_plain_language_summary(decision: VentureDecision) -> PlainLanguageSumm
     detail_values = sorted(
         _string_leaves(decision.model_dump(exclude={"plain_language_summary"}))
         | set(DETAIL_LABELS["en"].values())
+        | set(DETAIL_SOURCE_TEXTS)
     )
     detailed = {
         language: DetailedLanguagePresentation(

@@ -141,6 +141,14 @@ def test_plain_language_summary_is_one_numeric_contract_with_three_text_views():
     assert set(summary.detailed_presentations) == {"en", "bn", "hi"}
     assert summary.detailed_presentations["bn"].labels["market"] == "স্থানীয় বাজার"
     assert summary.detailed_presentations["hi"].labels["finance"] == "वित्त"
+    assert (
+        summary.detailed_presentations["bn"].translations["CAPEX + working capital"]
+        == "মূলধনী ব্যয় + কার্যকরী মূলধন"
+    )
+    assert (
+        summary.detailed_presentations["hi"].translations["cumulative operating cash"]
+        == "संचयी परिचालन नकदी"
+    )
 
 
 def test_multilingual_pdfs_preserve_page_count_and_analysis_id():
