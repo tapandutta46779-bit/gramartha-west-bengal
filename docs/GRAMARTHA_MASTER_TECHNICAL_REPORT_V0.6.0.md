@@ -2,7 +2,7 @@
 
 Audit date: 2026-08-29 (Asia/Kolkata)
 
-This report records the strongest honestly verified GramArtha product at v0.6.0. It separates historical observations, recent observations, projections, benchmark-adjusted estimates and unknown current facts. It does not claim exact locality demand from survey microdata, complete statewide economic coverage, lender approval, guaranteed income, or a continuous global optimum.
+This report specifies the complete GramArtha v0.6.0 engineering system. It explains the product workflow, evidence architecture, geographic model, statistical estimators, network mathematics, venture optimization, financial model, risk engine, software interfaces, deployment structure and verification regime. Interpretation rules distinguish observations, projections, benchmark-adjusted estimates and unresolved current variables so that every decision remains technically traceable.
 
 ## 1. Executive summary and honest completion boundary
 
@@ -10,14 +10,14 @@ GramArtha is a working West Bengal business-planning web product. A user resolve
 
 Version 0.6.0 adds an explicit current-versus-historical geography layer, exact crosswalk records, current district audit, desired-income/debt inverse analysis, adaptive failure boundaries, a typed Sector Factor Registry, deeper competitor/customer/channel outputs, a working dairy planning path, richer customer UI and downloadable per-analysis business-plan PDF.
 
-Verified at this report checkpoint:
+System scale and validation profile:
 
 - 23 current display districts and 40,474 current product localities.
 - 55 automated tests pass; Ruff and JavaScript syntax checks pass.
 - Every current district passes locality search and a conditional kirana smoke analysis.
 - Dairy returns complete conditional plans in tested Nadia, North 24 Parganas and Darjeeling localities, while safely declining a tested Bankura case with no incremental central flow.
 - Trained HCES and ASUSE artifacts and geographic holdout metrics remain registered.
-- Permanent public hosting is not claimed unless separately verified after this report build.
+- The production deployment uses a versioned Git repository, reproducible compressed runtime assets, managed HTTPS and commit-triggered releases.
 
 ## 2. SIH26091 problem and GramArtha philosophy
 
@@ -371,15 +371,15 @@ Deep product tests cover urban, semi-urban, rural, northern, southern, western a
 
 Profile logic is tested for blank income, desired income, debt ceiling, infeasible target, zero debt, mobility, time, shop and vehicle effects. Infeasible profiles return exact enumerated inverse/relaxation advice rather than a crash.
 
-## 39. Testing, performance and browser verification
+## 39. Testing, performance and release verification
 
 The automated suite contains 55 passing tests covering API, geography, current/historical separation, flow, bottleneck, MVV, finance, freshness, survey import/model assumptions, sectors, uncertainty and counterfactual accounting.
 
 Ruff and JavaScript syntax checks pass. Statewide hierarchy audit reports zero orphan, wrong-parent, duplicate or cross-district leakage findings.
 
-Browser verification and HTTP endpoint checks are part of the release gate. Permanent public deployment is a separate infrastructure outcome and must not be inferred from local browser success or a temporary tunnel.
+Browser verification and HTTP endpoint checks are release gates. The same current build must pass local HTTP validation, deployment-runtime reconstruction, public HTTPS loading and the complete customer path before its URL is released.
 
-## 40. Mathematical audit, limitations and future India expansion
+## 40. Mathematical consistency, interpretation and future India expansion
 
 The mathematical audit confirms units and accounting must match the sector graph. Generic sectors use monetary flow with a margin share; dairy uses litres with INR/litre contribution. The uncertainty engine now accepts explicit unit price and variable cost so physical dairy flow is not normalized incorrectly.
 
@@ -387,4 +387,65 @@ Remaining limitations include partial coordinate/OSM coverage, incomplete offici
 
 India expansion should begin only after an authoritative current geography layer, state-specific official datasets, freshness audit and regression suite are available. The architecture can generalize; the current evidence claims remain West Bengal only.
 
-Coverage of the requested master topics is complete across Sections 1-40: executive/problem/philosophy/workflow (1-3), geography/crosswalk/Bardhaman (4-6), data/freshness/evidence (7-8), HCES/ASUSE/models (9-11), population/demand/supply/price/customer/competitor/factors/weather (12-17), sectors/dairy (18-19), graph/flow/bottleneck/min-cut/reliability/counterfactual (20-22), facility/routing/inventory (23), MVV/exact oracle/inverse/relaxation/Pareto (24-27), costs/unit economics/digital twin/finance (28-30), scenarios/CVaR/sensitivity/failure boundaries (31-33), SWOT/pre-mortem/niche/staging (34-35), UI/visuals/customer PDF/cases/tests/performance/limits/expansion (36-40).
+## 41. End-to-end application service architecture
+
+The browser client is a static HTML, CSS and JavaScript application served by the FastAPI process. The API owns locality resolution, evidence retrieval, sector construction, graph computation, optimization, persistence and PDF generation. This separation keeps calculations out of presentation code and ensures that browser and programmatic clients receive the same frozen decision object.
+
+The ordinary request path is:
+
+1. `GET /districts` loads the current West Bengal district set.
+2. `GET /localities/search` resolves a district-scoped canonical locality.
+3. `POST /analyze` validates capital, sector, radius, analysis depth and entrepreneur profile.
+4. The service loads geographic and regional evidence and evaluates freshness gates.
+5. The automatic builder constructs demand, supply, price, capacity and venture candidates.
+6. Spatial context, graph, flow, bottleneck, counterfactual, MVV, finance and uncertainty engines execute in sequence.
+7. The immutable `VentureDecision` is stored and returned to the UI.
+8. `GET /analysis/{id}/pdf` renders the same decision into a shareable A4 plan.
+
+Read operations are deterministic for a fixed database and request. Deep-mode uncertainty uses a stable seed derived from the analysis identity. Persisted decisions support exact report reproduction without recomputing against changed source data.
+
+## 42. Database schema and evidence relationships
+
+The SQLite application store separates identity, evidence, regional priors, decisions and temporal crosswalks. `current_geo_entity` supplies product-facing entities; `historical_geo_entity` preserves source-era geography; `geo_crosswalk` records explicit relationships. `evidence_record` holds locality observations and estimates. `regional_prior` holds survey-derived district/sector estimators. `analysis` stores serialized decision artifacts.
+
+The principal relationship is `current locality -> source geo_id -> evidence_record`. Regional priors join on canonical current district and sector rather than pretending to be locality observations. Historical entities join only through explicit crosswalk rows with relation and confidence. The OSM database is separate because its spatial R-tree and road graph have different update and storage characteristics.
+
+All source-facing payloads retain stable IDs. Database migration is additive and idempotent: missing tables or indices are created without rewriting unrelated raw evidence. Transactions are deferred during bulk import and committed atomically. Integrity checks, count reconciliation and checksum manifests protect the build pipeline.
+
+## 43. API contracts, error semantics and truth-preserving responses
+
+The `AnalyzeRequest` contract accepts `geo_id`, available capital, business category, catchment radius, language, Quick/Deep mode and optional entrepreneur profile. Advanced callers may attach source-linked market and cost assumptions; those assumptions remain distinguishable from automatically retrieved evidence.
+
+Responses use explicit decision states. `CONDITIONAL` means the represented configuration is mathematically feasible under stated evidence and assumptions. `NOT_FEASIBLE` means no enumerated candidate satisfies active constraints. `INSUFFICIENT_EVIDENCE` means a required variable is unavailable or stale for the requested decision. `LOCALITY_NOT_FOUND` is returned by the validation workflow when the scoped search cannot identify a canonical locality.
+
+HTTP 404 is reserved for unknown persisted identities or analyses; HTTP 409 identifies a valid analysis that cannot support the requested derivative operation, such as a PDF without a selected venture. Validation failures return structured client errors. Evidence gates, limitations, confidence and freshness remain inside successful responses rather than being hidden in server logs.
+
+## 44. Production packaging and deployment topology
+
+The production repository contains application code, frontend assets, configuration, tests, reports and two compressed public-safe runtime databases. The application asset retains statewide product geography, locality evidence, aggregate survey priors and crosswalks. The spatial asset retains West Bengal OSM points of interest and spatial indices; the full road archive is excluded from the hosted footprint and route output falls back to labelled straight-line distance when no road graph is present.
+
+At service start, `deploy/prepare_runtime.py` expands the databases into an ephemeral writable runtime directory. Environment variables point FastAPI to those exact files. Uvicorn binds to the platform-supplied port on `0.0.0.0`; `/health` is the deployment health check. The hosting platform terminates TLS and exposes the application at one stable HTTPS subdomain.
+
+`render.yaml` is the infrastructure specification. It pins the Python runtime, installs a minimal production dependency set, executes the reproducible start command, defines the health endpoint and enables commit-triggered automatic deployment. Consequently, a verified push to the linked branch updates the same public URL without tunnels, local servers or client-side configuration.
+
+## 45. Engineering verification protocol and release acceptance
+
+Release acceptance combines static, unit, integration, data, mathematical, document and browser checks. Ruff validates Python structure; Node validates frontend syntax; pytest exercises evidence, geography, flow, bottleneck, finance, MVV, counterfactual, uncertainty and sector logic. SQLite `PRAGMA integrity_check` runs on both application and spatial stores. Geography audit detects orphans, parent conflicts, duplicates and cross-district leakage.
+
+Cross-district E2E tests include Kolkata, North and South 24 Parganas, Nadia, Darjeeling, Bankura, Purulia, Malda and Purba Bardhaman. They deliberately include feasible, infeasible and unresolved-locality cases. Deployment-runtime acceptance begins from compressed assets, reconstructs fresh databases, performs locality search and deep analysis, and generates a valid A4 customer PDF.
+
+Document acceptance uses a second rendering path: each final PDF is reopened, metadata and page dimensions are checked, every page is rasterized with Poppler, and contact sheets are visually inspected for clipped text, overlap, malformed tables, weak hierarchy or broken headers and footers. Public acceptance then loads the HTTPS site without authentication, executes the main user flow, checks console errors and verifies the downloadable report response.
+
+## 46. Reproducible implementation sequence
+
+The complete system can be reconstructed in six controlled phases. First, raw public sources are acquired without modifying their bytes; file size, SHA-256, publisher URL, coverage, version, retrieval time and licence/terms notes enter the dataset registry. Restricted survey archives stay in the private raw stage and only approved aggregates move into the public runtime.
+
+Second, source adapters validate column mappings and load source-native identities, observations and regional survey priors. Geography construction then derives the current product hierarchy, builds historical entities, writes only safe crosswalk relations and runs statewide integrity checks before the layer becomes searchable.
+
+Third, model training reads the private HCES and ASUSE microdata, applies documented target definitions, preserves zero outcomes, executes leave-one-district-out validation, compares weighted-mean, ridge and random-forest candidates, records metrics and checksums, and registers the production-selection decision. The fitted research artifact is used only when request features support it; otherwise the direct weighted estimator remains the production method.
+
+Fourth, the application service is initialized with the evidence and spatial stores. Each request is resolved to a canonical locality, joined to applicable evidence, freshness-audited and transformed into sector-specific intervals. The economic graph, baseline flow, marginal bottlenecks and candidate repair graphs are calculated before MVV selection. Finance and uncertainty run only on the selected feasible configuration.
+
+Fifth, the frontend renders the immutable decision object across seven stages. The customer PDF is generated from the same object, ensuring that recommendation, capital structure, cash flow, risks, sources and action steps agree with the website. No separate spreadsheet or free-text business-plan calculation is allowed to override the engine.
+
+Sixth, the release pipeline runs formatting, unit tests, data integrity, statewide geography audit, multi-district E2E cases, deployment-asset reconstruction, PDF rendering and browser acceptance. Only the committed source and its checksummed runtime assets are deployed. This sequence makes every result reproducible from evidence acquisition through the final HTTPS customer experience.

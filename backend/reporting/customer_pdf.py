@@ -9,7 +9,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.platypus import (
-    PageBreak,
+    CondPageBreak,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
@@ -31,10 +31,10 @@ def build_customer_pdf(decision: VentureDecision) -> bytes:
     document = SimpleDocTemplate(
         buffer,
         pagesize=A4,
-        rightMargin=18 * mm,
-        leftMargin=18 * mm,
-        topMargin=18 * mm,
-        bottomMargin=18 * mm,
+        rightMargin=17 * mm,
+        leftMargin=17 * mm,
+        topMargin=17 * mm,
+        bottomMargin=15 * mm,
         title=f"GramArtha business plan - {decision.analysis_id}",
         author="GramArtha / SIH26091",
     )
@@ -185,7 +185,7 @@ def build_customer_pdf(decision: VentureDecision) -> bytes:
         styles,
     )
 
-    story.append(PageBreak())
+    story.append(CondPageBreak(35 * mm))
     _section(story, "4. Business setup", styles)
     if primitive:
         story.append(
@@ -259,7 +259,7 @@ def build_customer_pdf(decision: VentureDecision) -> bytes:
     _cash_table(story, twin, styles)
     _finance_table(story, decision, styles)
 
-    story.append(PageBreak())
+    story.append(CondPageBreak(35 * mm))
     _section(story, "7. Scenario analysis and failure boundaries", styles)
     selected_summary = next(
         (
@@ -308,7 +308,7 @@ def build_customer_pdf(decision: VentureDecision) -> bytes:
     for key, values in decision.action_plan.items():
         _bullet_block(story, action_labels.get(key, key), values, styles)
 
-    story.append(PageBreak())
+    story.append(CondPageBreak(35 * mm))
     _section(story, "10. Evidence, confidence and limitations", styles)
     story.append(
         Paragraph(
@@ -319,16 +319,26 @@ def build_customer_pdf(decision: VentureDecision) -> bytes:
             styles["body"],
         )
     )
-    evidence_rows = [
-        [
-            Paragraph(_text(item.variable), styles["table"]),
-            Paragraph(_text(item.source_dataset), styles["table"]),
-            Paragraph(_text(str(item.observation_date or "Unknown")), styles["table"]),
-            Paragraph(_text(item.freshness_status.value), styles["table"]),
-            Paragraph(_text(item.confidence.value), styles["table"]),
-        ]
-        for item in decision.evidence
-    ]
+    grouped_evidence: dict[tuple[str, str, str, str], list[str]] = {}
+    for item in decision.evidence:
+        key = (
+            item.source_dataset,
+            str(item.observation_date or "Unknown"),
+            item.freshness_status.value,
+            item.confidence.value,
+        )
+        grouped_evidence.setdefault(key, []).append(item.variable)
+    evidence_rows = []
+    for (dataset, observation, freshness, confidence), variables in grouped_evidence.items():
+        evidence_rows.append(
+            [
+                Paragraph(_text(", ".join(sorted(set(variables)))), styles["table"]),
+                Paragraph(_text(dataset), styles["table"]),
+                Paragraph(_text(observation), styles["table"]),
+                Paragraph(_text(freshness), styles["table"]),
+                Paragraph(_text(confidence), styles["table"]),
+            ]
+        )
     if evidence_rows:
         story.append(
             _table(
@@ -337,7 +347,17 @@ def build_customer_pdf(decision: VentureDecision) -> bytes:
             )
         )
     _bullet_block(story, "Evidence gates and limitations", decision.limitations, styles)
-    _bullet_block(story, "Sources", decision.sources, styles)
+    if decision.sources:
+        story.append(Paragraph("Sources", styles["h2x"]))
+        story.append(
+            Paragraph(
+                "<br/>".join(
+                    f"{index}. {_text(source)}"
+                    for index, source in enumerate(decision.sources, start=1)
+                ),
+                styles["source"],
+            )
+        )
 
     document.build(
         story,
@@ -414,6 +434,16 @@ def _styles():
     styles.add(
         ParagraphStyle(
             name="table", parent=styles["BodyText"], textColor=INK, fontSize=6.7, leading=8.5
+        )
+    )
+    styles.add(
+        ParagraphStyle(
+            name="source",
+            parent=styles["BodyText"],
+            textColor=MUTED,
+            fontSize=6.2,
+            leading=7.5,
+            spaceAfter=2,
         )
     )
     styles.add(

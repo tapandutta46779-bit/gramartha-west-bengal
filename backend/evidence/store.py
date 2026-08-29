@@ -197,8 +197,16 @@ class EvidenceStore:
 
     def get_crosswalks(self, source_geo_id: str) -> list[GeoCrosswalk]:
         rows = self.connection.execute(
-            "SELECT * FROM geo_crosswalk WHERE source_geo_id = ? ORDER BY confidence DESC",
-            (source_geo_id,),
+            """
+            SELECT DISTINCT x.* FROM geo_crosswalk x
+            LEFT JOIN current_geo_entity c
+              ON c.canonical_current_id = x.canonical_current_id
+            WHERE x.source_geo_id = ?
+               OR x.canonical_current_id = ?
+               OR c.source_geo_id = ?
+            ORDER BY x.confidence DESC
+            """,
+            (source_geo_id, source_geo_id, source_geo_id),
         ).fetchall()
         return [
             GeoCrosswalk(
@@ -234,8 +242,29 @@ class EvidenceStore:
         self._commit_unless_deferred()
 
     def get_evidence(self, geo_id: str) -> list[EvidenceRecord]:
+        # Current product localities frequently carry a DS057 identity while the
+        # structural observation remains keyed to its Census-2011 identity.  An
+        # explicit high-confidence crosswalk may link those records; retrieving
+        # them here preserves their 2011 observation date instead of pretending
+        # that the historical measurement is current.
         rows = self.connection.execute(
-            "SELECT payload FROM evidence_record WHERE geo_id = ? ORDER BY variable, id", (geo_id,)
+            """
+            WITH current_ids AS (
+                SELECT canonical_current_id FROM current_geo_entity
+                WHERE source_geo_id = ? OR canonical_current_id = ?
+            ), linked_geo_ids AS (
+                SELECT ? AS geo_id
+                UNION
+                SELECT source_geo_id FROM geo_crosswalk
+                WHERE canonical_current_id IN current_ids
+                  AND confidence >= 0.90
+                  AND relation = 'EXACT_NAME_AND_COMPATIBLE_CURRENT_HIERARCHY'
+            )
+            SELECT payload FROM evidence_record
+            WHERE geo_id IN linked_geo_ids
+            ORDER BY variable, id
+            """,
+            (geo_id, geo_id, geo_id),
         ).fetchall()
         return [EvidenceRecord.model_validate_json(row["payload"]) for row in rows]
 

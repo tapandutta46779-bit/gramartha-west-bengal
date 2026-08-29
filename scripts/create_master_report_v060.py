@@ -11,6 +11,7 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.platypus import (
     BaseDocTemplate,
+    CondPageBreak,
     Frame,
     LongTable,
     PageBreak,
@@ -66,26 +67,27 @@ def style_map():
             fontSize=15,
             leading=19,
             textColor=TEAL,
-            spaceAfter=4 * mm,
+            spaceBefore=3.5 * mm,
+            spaceAfter=2.5 * mm,
             keepWithNext=True,
         ),
         "body": ParagraphStyle(
             "GA60Body",
             parent=base["BodyText"],
-            fontSize=9.1,
-            leading=13.2,
+            fontSize=9.8,
+            leading=13.5,
             textColor=INK,
-            spaceAfter=2.2 * mm,
+            spaceAfter=1.8 * mm,
         ),
         "bullet": ParagraphStyle(
             "GA60Bullet",
             parent=base["BodyText"],
-            fontSize=8.9,
-            leading=12.5,
+            fontSize=9.4,
+            leading=12.8,
             leftIndent=5 * mm,
             firstLineIndent=-3.5 * mm,
             textColor=INK,
-            spaceAfter=1.4 * mm,
+            spaceAfter=1.0 * mm,
         ),
         "table": ParagraphStyle(
             "GA60Table", parent=base["BodyText"], fontSize=7.1, leading=9.1, textColor=INK
@@ -148,14 +150,18 @@ def story():
     styles = style_map()
     lines = SOURCE.read_text(encoding="utf-8").splitlines()
     result = [
-        Spacer(1, 32 * mm),
+        Spacer(1, 18 * mm),
         Paragraph("SIH26091 | GRAMARTHA", styles["subtitle"]),
         Paragraph("Master Technical Report", styles["title"]),
-        Paragraph("Version 0.6.0 | Evidence, mathematics, product and audit", styles["subtitle"]),
-        Spacer(1, 16 * mm),
         Paragraph(
-            "Current/historical West Bengal geography, survey models, economic network repair, "
-            "profile-constrained optimization, dairy, robust finance and customer product.",
+            "Version 0.6.0 | System architecture, data engineering, mathematical models, "
+            "decision pipeline and production implementation",
+            styles["subtitle"],
+        ),
+        Spacer(1, 8 * mm),
+        Paragraph(
+            "A complete technical description of the evidence-to-decision system for "
+            "hyper-local enterprise discovery across West Bengal.",
             ParagraphStyle(
                 "GA60Cover",
                 parent=styles["body"],
@@ -167,22 +173,22 @@ def story():
                 rightIndent=12 * mm,
             ),
         ),
-        Spacer(1, 18 * mm),
+        Spacer(1, 9 * mm),
         LongTable(
             [
                 [
-                    Paragraph("VERIFIED", styles["table_header"]),
-                    Paragraph("BOUNDARY", styles["table_header"]),
+                    Paragraph("SYSTEM SCALE", styles["table_header"]),
+                    Paragraph("DECISION ENGINE", styles["table_header"]),
                 ],
                 [
                     Paragraph(
-                        "55 tests; 23 current districts; 40,474 current localities; "
-                        "trained artifacts; customer PDF.",
+                        "23 districts, 40,474 current product localities, 381,523 locality "
+                        "evidence records and 1,022 regional priors.",
                         styles["table"],
                     ),
                     Paragraph(
-                        "Conditional planning evidence; no guaranteed income, lender approval "
-                        "or complete current locality market census.",
+                        "Graph construction, min-cost maximum flow, bottleneck analysis, exact "
+                        "finite MVV search, finance, digital twin and robust stress selection.",
                         styles["table"],
                     ),
                 ],
@@ -200,10 +206,94 @@ def story():
                 ]
             ),
         ),
+        Spacer(1, 7 * mm),
+        table_from(
+            [
+                "| Stage | Computation | Primary output |",
+                "| 1. Resolve | Current geography + historical crosswalk | Canonical locality |",
+                "| 2. Evidence | Source, date, unit, freshness, confidence | "
+                "Auditable variable set |",
+                "| 3. Estimate | Demand, supply, price, capacity intervals | Local market state |",
+                "| 4. Network | Catchment + economic graph + exact flow | Gap and bottleneck |",
+                "| 5. Design | Venture generation + profile constraints | "
+                "Feasible configurations |",
+                "| 6. Select | MVV + inverse optimization + Pareto/regret | "
+                "Recommended configuration |",
+                "| 7. Finance | 36-month twin + stress + schemes | Capital and action plan |",
+            ],
+            styles,
+        ),
+        Spacer(1, 6 * mm),
+        Paragraph(
+            "Prepared as a professional engineering reference for implementation review, "
+            "model audit, product demonstration and controlled future expansion.",
+            ParagraphStyle(
+                "GA60CoverFoot",
+                parent=styles["body"],
+                fontSize=9.5,
+                leading=14,
+                textColor=MUTED,
+                alignment=TA_CENTER,
+                leftIndent=12 * mm,
+                rightIndent=12 * mm,
+            ),
+        ),
+        PageBreak(),
+        Paragraph("Technical contents", styles["h2"]),
+        table_from(
+            [
+                "| Part | Sections | Engineering coverage |",
+                "| I. Product and evidence foundation | 1-8 | Problem, workflow, geography, "
+                "sources and freshness |",
+                "| II. Statistical estimation | 9-17 | HCES, ASUSE, models, population, "
+                "demand, supply, price and factors |",
+                "| III. Network and venture computation | 18-27 | Sector adapters, dairy, "
+                "graph, flow, bottlenecks, MVV and robustness |",
+                "| IV. Finance and risk | 28-35 | Unit economics, digital twin, schemes, "
+                "scenarios, CVaR, sensitivity and staging |",
+                "| V. Product implementation | 36-45 | UI, PDFs, API, schema, deployment, "
+                "testing and expansion |",
+            ],
+            styles,
+        ),
+        Spacer(1, 5 * mm),
+        Paragraph(
+            "Reading path: Sections 1-8 define the evidence contract; Sections 9-17 explain "
+            "statistical estimation; Sections 18-27 formalize network repair and optimization; "
+            "Sections 28-35 establish finance and risk mathematics; Sections 36-45 document "
+            "the production software, interfaces, verification and deployment architecture.",
+            styles["body"],
+        ),
+        Spacer(1, 3 * mm),
+        table_from(
+            [
+                "| Design rule | Engineering consequence |",
+                "| Evidence before inference | Missing current facts become gates or field tasks |",
+                "| Unit-safe computation | Physical and monetary flows never share "
+                "implicit units |",
+                "| Exact scope labels | Finite search, projections and proxies retain "
+                "their scope |",
+                "| One decision object | API, website and PDF reproduce the same calculations |",
+                "| Reproducible release | Checksummed inputs, deterministic tests and "
+                "versioned deploys |",
+            ],
+            styles,
+        ),
+        Spacer(1, 3 * mm),
+        table_from(
+            [
+                "| Symbol | Definition |",
+                "| D, S, U | Demand, reachable supply and unserved demand |",
+                "| f_e, u_e, c_e | Edge flow, capacity and unit economic cost |",
+                "| I, C, Dmax | Investment, own capital and acceptable-debt ceiling |",
+                "| CCC | Inventory days + receivable days - payable days |",
+                "| VaR95, CVaR95 | Loss percentile and mean tail loss |",
+            ],
+            styles,
+        ),
         PageBreak(),
     ]
     paragraph = []
-    first = True
 
     def flush():
         if paragraph:
@@ -224,9 +314,7 @@ def story():
             continue
         if line.startswith("## "):
             flush()
-            if not first:
-                result.append(PageBreak())
-            first = False
+            result.append(CondPageBreak(22 * mm))
             result.append(Paragraph(rich(line[3:]), styles["h2"]))
         elif line.startswith("- ") or re.match(r"^\d+\. ", line):
             flush()

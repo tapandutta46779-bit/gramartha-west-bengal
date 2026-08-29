@@ -1,0 +1,10 @@
+.brand em {
+  margin-left: 5px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: #e7efe9;
+  color: #315b4b;
+  font-size: 0.55rem;
+  font-style: normal;
+  vertical-align: middle;
+}

@@ -258,6 +258,11 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
             "geo_confidence": resolution.confidence,
             "official_geo_code_available": bool(geography.lgd_code or geography.census_code),
             "osm_spatial_context_available": bool(spatial["catchment"]),
+            "geography_source_ids": geography.source_ids,
+            "geography_quality_flags": geography.quality_flags,
+            "historical_crosswalks": [
+                item.model_dump() for item in store.get_crosswalks(geography.geo_id)
+            ],
         },
         demand=automatic.demand,
         supply=automatic.supply,
