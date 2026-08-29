@@ -540,12 +540,6 @@ def _spatial_context(
         "sources": set(),
         "data_versions": {},
     }
-    coordinate = _spatial_coordinate(geography, evidence_store)
-    if coordinate is None:
-        empty["limitations"] = [
-            "No verified/proxy coordinate is attached, so spatial catchment was not computed."
-        ]
-        return empty
     path = os.environ.get("SIH26091_OSM_SQLITE_PATH")
     if not path or not Path(path).is_file():
         empty["limitations"] = [
@@ -553,6 +547,15 @@ def _spatial_context(
         ]
         return empty
     store = OsmSpatialStore(path)
+    coordinate = _spatial_coordinate(geography, evidence_store)
+    if coordinate is None:
+        coordinate = store.administrative_area_proxy(geography.district)
+    if coordinate is None:
+        empty["limitations"] = [
+            "No locality, parent-area or district coordinate proxy is available, so the "
+            "spatial catchment was not computed."
+        ]
+        return empty
     latitude = coordinate["latitude"]
     longitude = coordinate["longitude"]
     radial = store.radial_catchment(
@@ -581,9 +584,20 @@ def _spatial_context(
         displayed_direct, displayed_indirect = _sector_competitors(discovery.entities, sector)
         displayed_direct = _deduplicate_entities(displayed_direct, latitude, longitude)
         displayed_indirect = _deduplicate_entities(displayed_indirect, latitude, longitude)
+    context_entities = radial.entities
+    if radius_km < 30 and not any(
+        item.category in {"MARKET", "SCHOOL", "COLLEGE", "HOSPITAL", "CLINIC"}
+        for item in context_entities
+    ):
+        context_entities = store.radial_catchment(
+            latitude,
+            longitude,
+            30.0,
+            limit=50_000,
+        ).entities
     institutions = [
         item
-        for item in radial.entities
+        for item in context_entities
         if item.category
         in {
             "SCHOOL",
@@ -594,7 +608,7 @@ def _spatial_context(
             "TEA_OR_SWEET_SHOP",
         }
     ]
-    markets = [item for item in radial.entities if item.category == "MARKET"]
+    markets = [item for item in context_entities if item.category == "MARKET"]
     nearest_market = _nearest_entity(latitude, longitude, markets)
     nearest_institutions = sorted(
         institutions,
@@ -655,8 +669,18 @@ def _spatial_context(
             "capacity_confidence": "UNKNOWN",
             "competition_intensity": _competition_intensity(len(direct_competitors), radius_km),
             "intensity_confidence": "LOW_OSM_PROXY",
+            "coordinate_quality": coordinate.get("coordinate_quality", "UNKNOWN"),
+            "osm_data_extracted_at": metadata.get("extracted_at", "UNKNOWN"),
+            "osm_extractor_version": metadata.get("extractor_version", "UNKNOWN"),
             "hhi": None,
             "caveat": (
+                "The scan center is a district representative-point proxy, not this locality's "
+                "coordinate; treat nearby results as district context only. "
+                if coordinate.get("coordinate_quality")
+                == "OSM_DISTRICT_REPRESENTATIVE_POINT_PROXY"
+                else ""
+            )
+            + (
                 "OSM candidates are deduplicated direct/indirect proxies; capacity, sales and "
                 "market shares remain unknown, so HHI is not calculated."
             ),

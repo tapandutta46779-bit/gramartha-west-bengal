@@ -9,6 +9,8 @@ from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
+from shapely import wkt
+
 
 @dataclass(frozen=True)
 class OsmEntity:
@@ -60,6 +62,40 @@ class OsmSpatialStore:
         return {
             row["key"]: row["value"]
             for row in self.connection.execute("SELECT key, value FROM metadata")
+        }
+
+    def administrative_area_proxy(self, district: str) -> dict[str, object] | None:
+        """Return a clearly labelled district point for unresolved localities."""
+        aliases = {
+            "malda": "Maldah",
+            "coochbehar": "Cooch Behar",
+            "darjiling": "Darjeeling",
+            "hugli": "Hooghly",
+            "haora": "Howrah",
+            "puruliya": "Purulia",
+            "24 paraganas north": "North 24 Parganas",
+            "north twenty four parganas": "North 24 Parganas",
+            "24 paraganas south": "South 24 Parganas",
+            "south twenty four parganas": "South 24 Parganas",
+            "paschim barddhaman": "Paschim Bardhaman",
+        }
+        target = aliases.get(district.casefold().strip(), district.strip())
+        row = self.connection.execute(
+            "SELECT osm_id, name, geometry_wkt FROM admin_area "
+            "WHERE admin_level = 5 AND lower(name) = lower(?) LIMIT 1",
+            (target,),
+        ).fetchone()
+        if row is None:
+            return None
+        point = wkt.loads(row["geometry_wkt"]).representative_point()
+        return {
+            "latitude": point.y,
+            "longitude": point.x,
+            "coordinate_quality": "OSM_DISTRICT_REPRESENTATIVE_POINT_PROXY",
+            "coordinate_parent": row["name"],
+            "coordinate_reference_count": 1,
+            "source_url": "https://www.openstreetmap.org/copyright",
+            "osm_admin_area_id": f"relation/{row['osm_id']}",
         }
 
     def radial_catchment(

@@ -1,0 +1,88 @@
+/* v0.6.2: presentation and file-protocol handoff fixes. */
+.two-col {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.decision article,
+.two-col > *,
+.three-col > * {
+  min-width: 0;
+}
+
+.range-row {
+  grid-template-columns: minmax(9rem, 0.8fr) minmax(0, 1.2fr);
+}
+
+.range-row > span,
+.range-row > strong,
+.range-row > small,
+.entity-list li > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.range-row > strong {
+  text-align: right;
+}
+
+.file-protocol-guard {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+}
+
+.file-protocol-guard section {
+  width: min(680px, 100%);
+  padding: 36px;
+  border: 1px solid #dfe4dd;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 28px rgba(25, 58, 44, 0.08);
+}
+
+.file-protocol-guard p {
+  color: #5b6860;
+  line-height: 1.65;
+}
+
+.osm-provenance {
+  display: block;
+  margin-top: 8px;
+  color: #4f6d61;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 780px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .planner,
+  .decision,
+  .tab-panel,
+  .decision article {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .two-col {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .range-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .range-row > strong {
+    text-align: left;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .range-row small {
+    grid-column: 1;
+  }
+}

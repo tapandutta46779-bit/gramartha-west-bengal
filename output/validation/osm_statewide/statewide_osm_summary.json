@@ -1,0 +1,29 @@
+{
+  "created_at": "2026-08-29T09:37:19.659805+00:00",
+  "evidence_database": "data/sih26091_phase2.sqlite",
+  "osm_database": "data/west_bengal_osm.sqlite",
+  "districts_expected": 23,
+  "districts_tested": 23,
+  "localities_tested": 44,
+  "sectors_tested": [
+    "dairy",
+    "kirana",
+    "poultry",
+    "fishery",
+    "food processing",
+    "flour mill",
+    "spice processing",
+    "mustard oil",
+    "household goods",
+    "electronics",
+    "transport"
+  ],
+  "matrix_rows": 484,
+  "resolved_coordinate_rate": 1.0,
+  "scan_execution_rate": 1.0,
+  "candidate_return_rate": 0.9483471074380165,
+  "nearest_market_rate": 0.45454545454545453,
+  "failures": [],
+  "caveat": "District representative-point scans are district context only; they are not locality coordinates or proof of local competitors. OSM is incomplete volunteered data.",
+  "matrix_csv": "output/validation/osm_statewide/statewide_osm_matrix.csv"
+}

@@ -1,4 +1,4 @@
-# GramArtha v0.6.0 — West Bengal Hyper-Local Economic Network Repair
+# GramArtha v0.6.2 — West Bengal Hyper-Local Economic Network Repair
 
 Deterministic decision backend for evidence-backed micro-enterprise analysis across West Bengal.
 
@@ -14,6 +14,10 @@ The LLM boundary is strict: AI may structure inputs and explain a frozen `Ventur
 Implementation status is tracked in `docs/IMPLEMENTATION_STATUS.md`. Data acquisition truth is separate from source catalogues: a URL is not an acquired dataset.
 
 ## Run locally
+
+On macOS, double-click **`Open GramArtha.command`**. It starts the required API with the
+current GramArtha and West Bengal OSM databases and opens the correct served website. Do not open
+`frontend/index.html` directly: a `file://` page cannot access the planning API.
 
 ```sh
 python3 -m venv .venv
