@@ -1,0 +1,899 @@
+{
+  "package": "SIH26091_GRAMARTHA_v0.7.1_PUBLIC_SHARE",
+  "status": "VERIFIED_CONDITIONAL_PLANNING_PRODUCT",
+  "created_at": "2026-08-29T19:35:48.493494+00:00",
+  "file_count": 175,
+  "uncompressed_size_bytes": 1355770217,
+  "verified": {
+    "pytest": "57 passed",
+    "ruff": "passed",
+    "javascript_syntax": "passed",
+    "multilingual_output": "one canonical numeric decision; full-detail English, Bengali and Hindi website/PDF views",
+    "pdf": "three eight-page A4 files; all pages rendered and visually inspected with Indic glyph shaping",
+    "public_url": "https://gramartha-west-bengal.onrender.com",
+    "osm": "named direct candidates, categories, distances, counts, intensity and capacity caveat rendered in the tested public flow"
+  },
+  "exclusions": [
+    "restricted HCES/ASUSE respondent-level archives",
+    "private fitted joblib artifacts pending redistribution-terms review",
+    "credentials, local analysis rows, duplicate and temporary files"
+  ],
+  "claim_boundary": "Conditional planning estimates only; not observed complete locality demand, calibrated success probability, lender approval or guaranteed income.",
+  "files": [
+    {
+      "path": "FILES_TO_DELETE.md",
+      "size_bytes": 67485,
+      "sha256": "897f7086c0e6f5645b3d975c4b1fd8d2d79eeecbac09842cb6e33b4d6890ecb1"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 2972,
+      "sha256": "fc895f571d0ea90f6a28890d53adbb245453a4b540bb49fe8c533b76efd80ff8"
+    },
+    {
+      "path": "backend/__init__.py",
+      "size_bytes": 70,
+      "sha256": "330f5bcbf7c6ae5ce6884ecdb93053f5eecffcd4ecc9ec6b990dda4d3c2cb01e"
+    },
+    {
+      "path": "backend/api/__init__.py",
+      "size_bytes": 24,
+      "sha256": "c5e79b75137811726e30acef2fa5cfc649514fce1c86da771535b368f43238c0"
+    },
+    {
+      "path": "backend/api/contracts.py",
+      "size_bytes": 2635,
+      "sha256": "332c301459df093bfbd9a9ffc404ff6f6a58ad003afbd4b2c6fb8f86132fb7e6"
+    },
+    {
+      "path": "backend/api/main.py",
+      "size_bytes": 4949,
+      "sha256": "aba9e2fcd7d9d8a42a43d5b649a169d133b89f2b58994ef0552dad4e2e8974e5"
+    },
+    {
+      "path": "backend/engine/__init__.py",
+      "size_bytes": 71,
+      "sha256": "81ba5245cf87dad339e422fd7bb743d19b5a69ac2527d79d6c58aa354982a19f"
+    },
+    {
+      "path": "backend/engine/bottleneck.py",
+      "size_bytes": 1578,
+      "sha256": "109025d3ac83ec23794884df8fa86978952ffe924c654f8bf938f37e2a630d5f"
+    },
+    {
+      "path": "backend/engine/counterfactual.py",
+      "size_bytes": 2159,
+      "sha256": "1d4269b018269f5f539ee0dd6a7686ecc5b90f1ef60824e2475fd4e3eb2d7838"
+    },
+    {
+      "path": "backend/engine/flow_engine.py",
+      "size_bytes": 5333,
+      "sha256": "8c31329ff9226fa362f8809f310eca6a4e4af2e24d9887fb1e37161f52bae797"
+    },
+    {
+      "path": "backend/engine/mvv.py",
+      "size_bytes": 6772,
+      "sha256": "1bc01052dcdc5d26b41afd9ca5579fff9d502b4a3d6ac8c3fcbb2c6f2f3cc8f4"
+    },
+    {
+      "path": "backend/engine/robust.py",
+      "size_bytes": 2078,
+      "sha256": "f21c0fa8be7bb4ba30cca757090e54a2f8293b49fb4e3528f5e81bae90e547e9"
+    },
+    {
+      "path": "backend/engine/uncertainty.py",
+      "size_bytes": 16686,
+      "sha256": "308ac3fa7ec9b3985c25caee1f623bbd21875ff668d7df184e62c6ae65123121"
+    },
+    {
+      "path": "backend/evidence/__init__.py",
+      "size_bytes": 52,
+      "sha256": "a1ea2ef5144823481258384acfe95adddf1f6ec7e26ad6781d4e0e5fa009de3b"
+    },
+    {
+      "path": "backend/evidence/current_geography.py",
+      "size_bytes": 13325,
+      "sha256": "7d36c9d1fa6e8135b3dbf277405f1e03bffe6b016fa49b635ddf73ae668e2e5d"
+    },
+    {
+      "path": "backend/evidence/districts.py",
+      "size_bytes": 4278,
+      "sha256": "72d0eda6d937cbea24c1b67caa04adbb68ed699998f013a6158367f15c2fe007"
+    },
+    {
+      "path": "backend/evidence/freshness.py",
+      "size_bytes": 2262,
+      "sha256": "edf24708924e2ec5f439514b4a6efb243b8b4ed9a41890ee50ecdd75aeba27f0"
+    },
+    {
+      "path": "backend/evidence/geography_resolver.py",
+      "size_bytes": 5912,
+      "sha256": "72aa74d666f445527e5368800145c1d571c2fc76d1a8ebf1a7584d2988318f50"
+    },
+    {
+      "path": "backend/evidence/livestock_adapter.py",
+      "size_bytes": 6943,
+      "sha256": "d8dee4cac8ead59df69eb9b9e0046798d4315a719327ff7935f74ae35f6f5fde"
+    },
+    {
+      "path": "backend/evidence/store.py",
+      "size_bytes": 18360,
+      "sha256": "ac948446f6b1e8f849904803f6a3abd2ff3b250b3e4775ee3e0b28027836dd9c"
+    },
+    {
+      "path": "backend/explanation.py",
+      "size_bytes": 2218,
+      "sha256": "8d665bb9c9eea9324227f7ec10d2fd3b951fc15f12c822647e3fb07d9140be41"
+    },
+    {
+      "path": "backend/finance/__init__.py",
+      "size_bytes": 68,
+      "sha256": "7d9db14d527ee8dfd71869c93316dc444850f7631307a982c45a40a71cf3fa4e"
+    },
+    {
+      "path": "backend/finance/calculator.py",
+      "size_bytes": 3223,
+      "sha256": "250dfe3896901655c59cf7e426d94b7c08c4b9a90fae98f70025e015a45bce4a"
+    },
+    {
+      "path": "backend/finance/digital_twin.py",
+      "size_bytes": 4298,
+      "sha256": "1d283b60f1f1bf9ea9b72931ccf4bbcdce90e0725b5b93719a1beb3135676c8e"
+    },
+    {
+      "path": "backend/finance/rules.py",
+      "size_bytes": 5845,
+      "sha256": "ea8e47f1edba391094710fe1ca926a6e4457d6b2e3fe352dcf3093ef353d6817"
+    },
+    {
+      "path": "backend/finance/stress.py",
+      "size_bytes": 1550,
+      "sha256": "4a17038bed3cec087f9d8fe28f66919444b103d44729bf7e658465dd31af8a70"
+    },
+    {
+      "path": "backend/learning/__init__.py",
+      "size_bytes": 84,
+      "sha256": "1bbb6312e31a36e37345e9e7569861760d01348cb1d8f6a33109343a9acc874c"
+    },
+    {
+      "path": "backend/learning/baselines.py",
+      "size_bytes": 2087,
+      "sha256": "1e20a061d1f1e404104dede66779b9a0fd5850f25cb300d675cfc3d58afc7565"
+    },
+    {
+      "path": "backend/models/__init__.py",
+      "size_bytes": 313,
+      "sha256": "197be71e466b3fc274fe79c5e026f758b86822e02be5949b4d3b2a193107e527"
+    },
+    {
+      "path": "backend/models/decision.py",
+      "size_bytes": 4608,
+      "sha256": "d0d525e67503f72e63fb8d282ebacba889fe8d46d4e437563a48af99871cb6ac"
+    },
+    {
+      "path": "backend/models/economic_graph.py",
+      "size_bytes": 1926,
+      "sha256": "bfbae6e93005f8430f90418d3c54b100d01852984011219ead30bf9675cee428"
+    },
+    {
+      "path": "backend/models/evidence.py",
+      "size_bytes": 2590,
+      "sha256": "b8a52e3cfc2f8aeacbc986e99b7f985b65d0aeb37a80b704b7bd10ebd7151909"
+    },
+    {
+      "path": "backend/models/finance.py",
+      "size_bytes": 3325,
+      "sha256": "dd55e00756ba332cf1e7e2208ae14122027a4f892bab00f424f60bd39b5090da"
+    },
+    {
+      "path": "backend/models/flow.py",
+      "size_bytes": 848,
+      "sha256": "5cab6ccfe4d26800d0d92b8c096d8f3b938035a26d367bd9e5a493fb8e92be3b"
+    },
+    {
+      "path": "backend/models/geography.py",
+      "size_bytes": 2408,
+      "sha256": "2c0c91c1934870e9072fe8c6b3d65e43d2e8975a6dbc5141531cfcdac8e84c9d"
+    },
+    {
+      "path": "backend/models/presentation.py",
+      "size_bytes": 2891,
+      "sha256": "36f7ce6ccdaff088fe108d1a06af14d9d6ca37e69a449433e23729082e1a6305"
+    },
+    {
+      "path": "backend/models/profile.py",
+      "size_bytes": 730,
+      "sha256": "012f73e2b86a1ae4823461254b81290b2ab2aacc52c607cfe809ca641c764376"
+    },
+    {
+      "path": "backend/models/venture.py",
+      "size_bytes": 3285,
+      "sha256": "0d448c1d021719ea9d8a2580325dad520aee1fbee69c0700f202eeee8e766c3a"
+    },
+    {
+      "path": "backend/pipeline/__init__.py",
+      "size_bytes": 59,
+      "sha256": "543962ce3cb36d47aa0fc2a11d5fb2cd844030b68a46dc50b910a399bbf3820d"
+    },
+    {
+      "path": "backend/pipeline/automatic.py",
+      "size_bytes": 36403,
+      "sha256": "1a36171e000c50b90eb2621ec87431ba7e9fbfc6627946d48e23f86e3b9da61d"
+    },
+    {
+      "path": "backend/pipeline/sector_factors.py",
+      "size_bytes": 11512,
+      "sha256": "b6725e0fe31af0061092b86e4affe62e272f77554b87bc3c9a4015390e03930c"
+    },
+    {
+      "path": "backend/pipeline/sector_library.py",
+      "size_bytes": 6635,
+      "sha256": "bbbe352d6cc2db62124c8eab7d813e97b2d3cc2dc767a85a3228166f55e0026a"
+    },
+    {
+      "path": "backend/presentation/__init__.py",
+      "size_bytes": 101,
+      "sha256": "d371c68aa2d25f4a96f58e9278438d29b45d91c076701b93b01590919743612c"
+    },
+    {
+      "path": "backend/presentation/detail_language.py",
+      "size_bytes": 79810,
+      "sha256": "419d934bac06c8cf6113752921a1b8651e1dbf978be687474d35e8bae0343f52"
+    },
+    {
+      "path": "backend/presentation/plain_language.py",
+      "size_bytes": 27920,
+      "sha256": "f20f44b23707bd41c9eff24986175cb62b778c0fa7579ee0b78d81ef33c39a8e"
+    },
+    {
+      "path": "backend/reporting/__init__.py",
+      "size_bytes": 41,
+      "sha256": "9a00b282930a30bc5eedaf30780b651d32ce659044921e5888eaf2dc7626721f"
+    },
+    {
+      "path": "backend/reporting/customer_pdf.py",
+      "size_bytes": 49296,
+      "sha256": "f446046ba1ba73351949616ca728670c8b5da1c48416d2eae5ef24c1b3f99112"
+    },
+    {
+      "path": "backend/reporting/fonts/NotoSansBengali.ttf",
+      "size_bytes": 463668,
+      "sha256": "dcd42978094e584a849c84a51450eeac40c8826057d566ea6d4b9627a403a05a"
+    },
+    {
+      "path": "backend/reporting/fonts/NotoSansDevanagari.ttf",
+      "size_bytes": 647144,
+      "sha256": "9ce7b04f60e363d8870e5997744cf85cf69d38a4d7d129d364d92a3b14b461d7"
+    },
+    {
+      "path": "backend/reporting/fonts/OFL-NotoSansBengali.txt",
+      "size_bytes": 4382,
+      "sha256": "f3ad80e1db16c6d3e13347f0e1aabfe9d353c502643bb4cdc295eb1e62051818"
+    },
+    {
+      "path": "backend/reporting/fonts/OFL-NotoSansDevanagari.txt",
+      "size_bytes": 4385,
+      "sha256": "2fc8248c8a907cb845b1317c824b975109e4e4a89bc917810575c1fd1d11861f"
+    },
+    {
+      "path": "backend/service.py",
+      "size_bytes": 45020,
+      "sha256": "c976487d440d4aa064c078c8384987654adf16c8146a0e4fcec3793a5ebe414b"
+    },
+    {
+      "path": "backend/spatial/__init__.py",
+      "size_bytes": 52,
+      "sha256": "678ca258e11ba00a408d325530c9eb8a2741fcc2a86edfe0a49371ce7473c72d"
+    },
+    {
+      "path": "backend/spatial/osm_store.py",
+      "size_bytes": 10215,
+      "sha256": "2ba9ca150c10b281d8c223fe644b143047a87740ccf3eb2e72102b5e53a16f6f"
+    },
+    {
+      "path": "config/asuse_2023_24_mapping.json",
+      "size_bytes": 1699,
+      "sha256": "37b784875f12ec6e0610c24b2fc5f3b5f22e7b40d7e373cab8a5fdd06bcb1496"
+    },
+    {
+      "path": "config/asuse_2025_mapping.json",
+      "size_bytes": 2160,
+      "sha256": "a7c72b7a4e98dfa59d666e946c58a0df81af82463531f8ae47a469ba0171a9e7"
+    },
+    {
+      "path": "config/asuse_mapping.example.json",
+      "size_bytes": 696,
+      "sha256": "8342ddca37ac76a17a912c3354acf3848697f3f517aff71730a4c99c870e914e"
+    },
+    {
+      "path": "config/hces_2022_23_mapping.json",
+      "size_bytes": 1249,
+      "sha256": "82d6ca0e97b15b6f71165a27e633ba82f7c2efc98428f205058c43a39c49dc24"
+    },
+    {
+      "path": "config/hces_2023_24_mapping.json",
+      "size_bytes": 1424,
+      "sha256": "3977e41313e7e1cf24fdf35563539624d7194431a8c94145755516dea5354d34"
+    },
+    {
+      "path": "config/hces_mapping.example.json",
+      "size_bytes": 880,
+      "sha256": "c91a2a2c764b58f1962f03b082ae5ead500cb22ee29fdb3bb6462315b7ae192b"
+    },
+    {
+      "path": "config/wb_milk_production_2024_25.json",
+      "size_bytes": 1309,
+      "sha256": "c34f087455f8ec1acf23a108df85ab4c2e4f1e630896a3e710d4ee45e81d7a9a"
+    },
+    {
+      "path": "data/sih26091_phase2.sqlite",
+      "size_bytes": 790601728,
+      "sha256": "0ab26717381bb2b8abf515ab4d0b8bd8a2582d38958dbbbef7138c6a16bb4063"
+    },
+    {
+      "path": "data/west_bengal_osm.sqlite",
+      "size_bytes": 532041728,
+      "sha256": "14256e7dbc239284e28b00488a733abb971036031526d4cf74ce3cc51ea9ca64"
+    },
+    {
+      "path": "database/schema.sql",
+      "size_bytes": 2100,
+      "sha256": "f9b8ffc3f41cea2da0e782f722ddbb99303de73ec3c80927f6de97c8aa969b47"
+    },
+    {
+      "path": "deploy/assets/gramartha_runtime.sqlite.gz",
+      "size_bytes": 28423182,
+      "sha256": "9b7b8cbf21c16c37821f14a4c154be7680f0c0edaf22a6cc14815ee6016e6b54"
+    },
+    {
+      "path": "deploy/assets/west_bengal_osm_poi.sqlite.gz",
+      "size_bytes": 1546474,
+      "sha256": "3415b5d3e3e9df2746a0db3ff25e93449e1acc33f576a838e911cf8f56156c20"
+    },
+    {
+      "path": "deploy/prepare_runtime.py",
+      "size_bytes": 1106,
+      "sha256": "fb0082df7de043bb67026bbc95ac2189927d52a59a050905c03d9142795425a7"
+    },
+    {
+      "path": "deploy/requirements.txt",
+      "size_bytes": 128,
+      "sha256": "8f543aa918f29972257ac634647c614885faba86d3ceaa0fe5c1ed15cc843d6d"
+    },
+    {
+      "path": "deploy/start.sh",
+      "size_bytes": 362,
+      "sha256": "d284b3e696618251bd74e6c08a515a194eb75c006ee894ef21a5e7d8d61895de"
+    },
+    {
+      "path": "docs/API.md",
+      "size_bytes": 562,
+      "sha256": "a3cb534549efdbab6c3a6f748389a1daf403bd88c0546bbacb310aaf53cd022a"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "size_bytes": 607,
+      "sha256": "dd9281faeae291cba33298917ab14d43564d88cae41b6ee870e518cd408ab583"
+    },
+    {
+      "path": "docs/BOTTLENECK_MODEL.md",
+      "size_bytes": 371,
+      "sha256": "ed3c3422ee58a0acb81b80b483dc09dd078fd9a84f7c255fa0f149fe4c1c0f3f"
+    },
+    {
+      "path": "docs/CATCHMENT_ROUTING.md",
+      "size_bytes": 489,
+      "sha256": "4223694f3a97ccaf54b8a4ea00548f648a66a743bc2b8f58874487ff420c8544"
+    },
+    {
+      "path": "docs/COMPETITOR_CAPACITY.md",
+      "size_bytes": 335,
+      "sha256": "d6678e9910ee1c410a8c9920159f8e6ff6150f2a9c9cb9e890dfb0404cdd7abf"
+    },
+    {
+      "path": "docs/DATA_ARCHITECTURE.md",
+      "size_bytes": 1250,
+      "sha256": "2118c209ad656acd9d4000d594d9bd1310573d63918f0d6a1a1fda46326f0948"
+    },
+    {
+      "path": "docs/DATA_GAPS.md",
+      "size_bytes": 885,
+      "sha256": "d31e24d227f37a129aa603d36512f338453960a7a1dfb71ed9fc4ebdf43f3bc1"
+    },
+    {
+      "path": "docs/DATA_SOURCES_ACQUIRED.md",
+      "size_bytes": 1775,
+      "sha256": "2f3cb74bbfb465e584497ad9f48612aebbda4c75de490cb2d5dc7c92123b2f66"
+    },
+    {
+      "path": "docs/DEMAND_MODEL.md",
+      "size_bytes": 496,
+      "sha256": "46adeabf81c8440a0a2f5a9ed955e6783671933e11fd2d3c4ebd54ce6f7b5965"
+    },
+    {
+      "path": "docs/DIGITAL_TWIN.md",
+      "size_bytes": 383,
+      "sha256": "8443a3588c0f74180a3a5e8b0d805972eb9dbe8858c21a27ffe4a9d81594b575"
+    },
+    {
+      "path": "docs/EXISTING_REPOSITORY_AUDIT.md",
+      "size_bytes": 4875,
+      "sha256": "c767befd42c6b3fcb38af5095d5850b18f359662f995925a338050fdf162746e"
+    },
+    {
+      "path": "docs/FINAL_COMPLETION_REPORT_V0.3.0.md",
+      "size_bytes": 8150,
+      "sha256": "d61706a094661314738c19ea66e4c698bfa7e8106df32eaf926b95babe2e4bdf"
+    },
+    {
+      "path": "docs/FINAL_POLISH_REQUIREMENT_AUDIT_V0.7.0.md",
+      "size_bytes": 5215,
+      "sha256": "7ccf73c57d5b45d89ec2979fc19076c195701e4b470428aa0179fb904be2593f"
+    },
+    {
+      "path": "docs/FINANCE_ENGINE.md",
+      "size_bytes": 351,
+      "sha256": "917c29a5787d0b724aa0ef10ee3c2f89b527cf378146ede14680a6c0eff15814"
+    },
+    {
+      "path": "docs/FINANCE_RULES.md",
+      "size_bytes": 1777,
+      "sha256": "6829bfec60852ed72026304b2010384e84bad64018b0ca7f3490c7b5dd0a9056"
+    },
+    {
+      "path": "docs/FLOW_MODEL.md",
+      "size_bytes": 625,
+      "sha256": "cd2a66ba5e6e6a58adfb50b8ecb57c8796f39a732f9007870c7cbee012a825c0"
+    },
+    {
+      "path": "docs/FULL_DETAIL_LOCALIZATION_AUDIT_V0.7.1.md",
+      "size_bytes": 3761,
+      "sha256": "8005c0528a958db9c714ece273806e0f504ae731b2ce07b5a311532cbb676364"
+    },
+    {
+      "path": "docs/GRAMARTHA_DEEP_ENGINE_REPORT_V0.5.0.md",
+      "size_bytes": 29488,
+      "sha256": "90a827398ab8eac3ef8afdf616211392c08663c6724071b5f02162de51b2c7ee"
+    },
+    {
+      "path": "docs/GRAMARTHA_MASTER_TECHNICAL_REPORT_V0.6.0.md",
+      "size_bytes": 38528,
+      "sha256": "4ca73df79872451a59c6913294d6561f84306f75c0cb52d48d2057ec41adbe55"
+    },
+    {
+      "path": "docs/IMPLEMENTATION_STATUS.md",
+      "size_bytes": 4524,
+      "sha256": "3fa85b38a08955199f0e4f4b31eb84cbd2e326b8ea15743b384670554b7545c6"
+    },
+    {
+      "path": "docs/INTERNAL_GAP_MATRIX_V0.6.0.md",
+      "size_bytes": 5242,
+      "sha256": "481e28dc13f3b82b4620f3b2291083f14fcab15a4b9c71a4386ccf85fa9c18f9"
+    },
+    {
+      "path": "docs/LIMITATIONS.md",
+      "size_bytes": 1859,
+      "sha256": "5ee5daac25910795a9aff9836f6e91bb3e4d2674be33dc22c2f3c4b028c32bb4"
+    },
+    {
+      "path": "docs/MICRODATA_IMPORT.md",
+      "size_bytes": 2300,
+      "sha256": "09bf0e4819e18154d7d4709dc7243c02b720fcd003aa0d680e1118d72b4d8c00"
+    },
+    {
+      "path": "docs/MVV_ALGORITHM.md",
+      "size_bytes": 399,
+      "sha256": "b590ddcdc9e52797d2d8cec4f22833ffaf41cacf91887e08b0027399421f1462"
+    },
+    {
+      "path": "docs/PERFORMANCE.md",
+      "size_bytes": 300,
+      "sha256": "1e0b39a0f2695afe0ec613581376377c8ccea01f60ae64dc6ccff31e77d197fd"
+    },
+    {
+      "path": "docs/PHASE2_CURRENT_STATE_AUDIT.md",
+      "size_bytes": 7152,
+      "sha256": "ede1ae7e208fd1c924162c3fe06ca87cee7bc11c4f8ba1996cf867627c0d06b1"
+    },
+    {
+      "path": "docs/PRICE_MODEL.md",
+      "size_bytes": 307,
+      "sha256": "e0e9b1a506069dd1c7c918f23e41dbc085848373321231cd6c8cc95daeb31fe5"
+    },
+    {
+      "path": "docs/PRIVATE_APPLICANT_FILES_MANIFEST.md",
+      "size_bytes": 1271,
+      "sha256": "08ff450b62e48dd2302bddab3aa06f6f66387584162cbea89fb06c63c80b61f1"
+    },
+    {
+      "path": "docs/PRODUCTIZATION_V0.4.0.md",
+      "size_bytes": 5322,
+      "sha256": "5f61d90bf50970e3d1a104cb095676e9d48758f6f3fdc15ae3174d4949f39ef0"
+    },
+    {
+      "path": "docs/REQUIREMENT_AUDIT_V0.6.0.md",
+      "size_bytes": 8974,
+      "sha256": "d21b66dd61056da23f0426f7020c85174ea18806b28a218292edc115de9d8ea0"
+    },
+    {
+      "path": "docs/ROBUST_SELECTION.md",
+      "size_bytes": 278,
+      "sha256": "30ffd3e6876bf232de3d437cc1440bf30f1ae94a9a3b603a1cba8cd2f6e56327"
+    },
+    {
+      "path": "docs/SHARE_PACKAGE_INDEX.md",
+      "size_bytes": 3887,
+      "sha256": "19bf8ba98ed16fcc4843c26c05d630eacc565d91f96b39adf29f01aefcab9e11"
+    },
+    {
+      "path": "docs/STRESS_ENGINE.md",
+      "size_bytes": 382,
+      "sha256": "55788f8f27bab70f32637a0d5225b36e5b62a677484d91775aed532566f2a0b3"
+    },
+    {
+      "path": "docs/SUPPLY_MODEL.md",
+      "size_bytes": 355,
+      "sha256": "ed865c16e23c3d8b2c6e0b4bb9660b9db5a62fce510ebd380ded202968cf7267"
+    },
+    {
+      "path": "docs/VALIDATION.md",
+      "size_bytes": 1407,
+      "sha256": "0bf2c1770ee526851873849d53d72f34f9d7f9f4946d5b346136ec93a67df485"
+    },
+    {
+      "path": "docs/VENTURE_GENERATION.md",
+      "size_bytes": 391,
+      "sha256": "8bd5c09c7ce88d16ca316585fd8036d664557af359dc11d8bc536e551297bcc9"
+    },
+    {
+      "path": "docs/WEST_BENGAL_DATA_IMPLEMENTATION_PLAN.md",
+      "size_bytes": 3263,
+      "sha256": "82529a9183277c0dbe8c472d2c67fae7190f343c02e0163f33eb1296c309d17d"
+    },
+    {
+      "path": "docs/WEST_BENGAL_GEO_CROSSWALK.md",
+      "size_bytes": 1140,
+      "sha256": "8d098ccebdf1624be4164034a1a0324ecb3026cfd5b8d5a63ff50e8d61db189b"
+    },
+    {
+      "path": "frontend/app.js",
+      "size_bytes": 46091,
+      "sha256": "68ce73ef288b67ec2e1644f55570b759fb5f78c274465ba1088c8a9b7a07331f"
+    },
+    {
+      "path": "frontend/fixes.css",
+      "size_bytes": 3675,
+      "sha256": "0fe90a7bbd8afcceaa85e712f294655ac100786d33698b973fba8945cb70f2e6"
+    },
+    {
+      "path": "frontend/index.html",
+      "size_bytes": 7304,
+      "sha256": "2f8e1114e01241fa1d469551f9b0e37de3416812d056ef8ea4314c6dad59ecfd"
+    },
+    {
+      "path": "frontend/styles.css",
+      "size_bytes": 14739,
+      "sha256": "80167d099605c2d6585d4f5aa7692c14e182cb83340afc8a1c25792e0a261c56"
+    },
+    {
+      "path": "frontend/version.css",
+      "size_bytes": 189,
+      "sha256": "5146e359e121dce4acf4a536634c64443b3a30d1dc208eaf3ea4e3a821bd09e5"
+    },
+    {
+      "path": "output/pdf/GramArtha_Master_Technical_Report_v0.6.0.pdf",
+      "size_bytes": 47127,
+      "sha256": "3ff64e0c20cecc2a9a51a7647ef5adf440ee7fa4eee640827936f85bbcd72b9f"
+    },
+    {
+      "path": "output/pdf/GramArtha_Puapur_Transport_Business_Plan_v0.7.1_bn.pdf",
+      "size_bytes": 216511,
+      "sha256": "6a3e27ef29aae23a9c00b458b740726a9803f7064d1c7ed1f3c77c1be307db5f"
+    },
+    {
+      "path": "output/pdf/GramArtha_Puapur_Transport_Business_Plan_v0.7.1_en.pdf",
+      "size_bytes": 43988,
+      "sha256": "0baf00150021407167ca3a46f749cae512c8c91144750529c2ee0fccb1c33081"
+    },
+    {
+      "path": "output/pdf/GramArtha_Puapur_Transport_Business_Plan_v0.7.1_hi.pdf",
+      "size_bytes": 152385,
+      "sha256": "0e06b0c8b8a7467c62246b8cef03b94aff2a31e2aeb66b35dacd20812ee1f68a"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/DATA_FRESHNESS_AUDIT.json",
+      "size_bytes": 9667,
+      "sha256": "6123580703f4944ae149f6b3b5c3440c65fa24e62a2f70710f3450aed1895f16"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/FINAL_TECHNICAL_AUDIT.json",
+      "size_bytes": 2435,
+      "sha256": "b6d1d7ac1b2d7e4cfa3b4e0b40450a6d8f88d174f7ca5e565aef556ecd35b9fc"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/WEST_BENGAL_GEOGRAPHY_AUDIT.json",
+      "size_bytes": 17374,
+      "sha256": "deb6e9cdfb88d7f01e9b042999a126462f1932e10b708f659dc2c30ef68dfd4d"
+    },
+    {
+      "path": "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/models/model_registry.json",
+      "size_bytes": 75609,
+      "sha256": "3edbe8e3109012b97eb54ac4ec14489055d6366d319b71d3ea248ea07d7d3f10"
+    },
+    {
+      "path": "outputs/e2e/v0.6.0/WEST_BENGAL_E2E_AND_PROFILE_VALIDATION.json",
+      "size_bytes": 7660,
+      "sha256": "f7ea02f7e9a57c0267256b048edf45f80931f8dfee5b428048c5f1f3968e7860"
+    },
+    {
+      "path": "outputs/e2e/v0.6.0/WEST_BENGAL_E2E_AND_PROFILE_VALIDATION.md",
+      "size_bytes": 1287,
+      "sha256": "d7bafd2ba2214db0f07014e102d8f3929f9b566c110c279b1bb678a45fff3c27"
+    },
+    {
+      "path": "pyproject.toml",
+      "size_bytes": 969,
+      "sha256": "f79d202f829b630b6dd8bcc24abd4cdadd30eb5a210780f53bbd44c9243352de"
+    },
+    {
+      "path": "render.yaml",
+      "size_bytes": 309,
+      "sha256": "718d426d9e0fa0052240a92d064012cb97ac492db628e0b7fd3ebc48be2b8d6c"
+    },
+    {
+      "path": "scripts/audit_current_geography.py",
+      "size_bytes": 8946,
+      "sha256": "a9bdee67fc4b2b08d005a6cb80bc8fc261a69e2134aaa17f0bfe7520208dfe1e"
+    },
+    {
+      "path": "scripts/audit_data_freshness.py",
+      "size_bytes": 7693,
+      "sha256": "81e3f0631391b0b0262592b9bfe45a55af5f79996491b21307479f1026b72521"
+    },
+    {
+      "path": "scripts/audit_statewide_osm.py",
+      "size_bytes": 5425,
+      "sha256": "2ca1c2dc2290199a4e5c21b96e2dff8c540e566d10e49e1b94607e91a35b1299"
+    },
+    {
+      "path": "scripts/benchmark_flow.py",
+      "size_bytes": 2804,
+      "sha256": "dbfb3d532d8bb9828a8df56d4030c323fb73be7b3da0b23ead5ff89806033956"
+    },
+    {
+      "path": "scripts/build_current_geography.py",
+      "size_bytes": 1418,
+      "sha256": "61ba1c7678ab0e3effb16c0f42eed39ac4d90b39c9bc0937b981ff470f3f84d5"
+    },
+    {
+      "path": "scripts/build_deployment_assets.py",
+      "size_bytes": 2462,
+      "sha256": "0392b90a06c55972535147381a596d2621e27aba9c5610287c5e07ba44e271e9"
+    },
+    {
+      "path": "scripts/build_phase2_registry.py",
+      "size_bytes": 10485,
+      "sha256": "662c6c1be2f4421f0cb9518e9e6892a0f06610e34448d3d8f46e96f86ddcb400"
+    },
+    {
+      "path": "scripts/build_product_package.py",
+      "size_bytes": 2425,
+      "sha256": "c4ec29cd0cfa31b7ba565e4165e776961023dfda36995b7cd736a3ebe89e0cc5"
+    },
+    {
+      "path": "scripts/build_public_package.py",
+      "size_bytes": 4777,
+      "sha256": "a843a2bc9c04a1de5ae23dd02d0033640dc556b553d5d408596b5cf2fbc76189"
+    },
+    {
+      "path": "scripts/build_v050_package.py",
+      "size_bytes": 4865,
+      "sha256": "e270995b75dc99d6483f21f0b47137cdd84cab571c53cd2ae12a3425024414f5"
+    },
+    {
+      "path": "scripts/build_v060_package.py",
+      "size_bytes": 5248,
+      "sha256": "c536d970553281b955ecbccd56f5948b8d0d21ca71e3b32e998d770d3251cbc0"
+    },
+    {
+      "path": "scripts/build_v070_package.py",
+      "size_bytes": 4790,
+      "sha256": "91e2020f8fd178cf192f6d96ebba32e3c15702b57dfca9a188233c21d5ed112e"
+    },
+    {
+      "path": "scripts/build_v071_package.py",
+      "size_bytes": 5119,
+      "sha256": "f73850d10174d5802746fc0f45a898250f009baa72c3932c2d5f8dfd2223a2ef"
+    },
+    {
+      "path": "scripts/build_wb_census_crosswalk.py",
+      "size_bytes": 9329,
+      "sha256": "a1c723d6dc5eab730ce3ed612f9edfede9c706cecaa01731f4a1241900667736"
+    },
+    {
+      "path": "scripts/create_deep_engine_report.py",
+      "size_bytes": 11238,
+      "sha256": "73c9f90612606f976503bf44ad1aeae42f29b60745d0e920f2da6dee46f998ec"
+    },
+    {
+      "path": "scripts/create_final_pdf.py",
+      "size_bytes": 8402,
+      "sha256": "1fad7e29f872d8bf455837c402ec4371f336d8d75edf2d6bf2c192894df3c4d1"
+    },
+    {
+      "path": "scripts/create_master_report_v060.py",
+      "size_bytes": 13138,
+      "sha256": "177f29e32e425ff253357a3533446b8fdc2807aa6eaab5a814810f7de9a82e70"
+    },
+    {
+      "path": "scripts/download_wb_census_pca.py",
+      "size_bytes": 3476,
+      "sha256": "55683afe0667eea89dd2ddf8d8e52696909ca6a509a548c5fa486ecf7c3b2447"
+    },
+    {
+      "path": "scripts/enrich_geographies_osm.py",
+      "size_bytes": 10603,
+      "sha256": "0d32ff2f441f68a885f29300e6fd51bb9d9cacb866ee59597f104f02e2826150"
+    },
+    {
+      "path": "scripts/extract_wb_livestock.py",
+      "size_bytes": 5047,
+      "sha256": "e87aef56534b170a66d903e9a4a9a46bdbee0358e6349fdabca61280d8266211"
+    },
+    {
+      "path": "scripts/extract_wb_osm.py",
+      "size_bytes": 12249,
+      "sha256": "fb68aad2388b1a8fd13d681ea47ee4e3bdc5253d563f4ceb5890fe03426cff48"
+    },
+    {
+      "path": "scripts/final_audit.py",
+      "size_bytes": 6821,
+      "sha256": "4ad53d9e741d30ac80b0b8ef37cafbdb622e847c88bd6e60be83fbfd6dc49840"
+    },
+    {
+      "path": "scripts/import_asuse.py",
+      "size_bytes": 12657,
+      "sha256": "be6536773cc1358d8593779a853e8f47c59f3ee939a40d90249ee930e9406c0a"
+    },
+    {
+      "path": "scripts/import_hces.py",
+      "size_bytes": 10496,
+      "sha256": "e92778650828bf37e35033956c0bb550dc3a388625686e63344c24b9209039fa"
+    },
+    {
+      "path": "scripts/ingest_survey_priors.py",
+      "size_bytes": 11077,
+      "sha256": "14161bc739a8695124296b55bc2cea658b1651422e9a7e34203af862e42387a1"
+    },
+    {
+      "path": "scripts/ingest_wb_census_pca.py",
+      "size_bytes": 6907,
+      "sha256": "2637639b05fcf07dbfe7fa0b2af747e22c0da35928dea556c335ebae5f5bde99"
+    },
+    {
+      "path": "scripts/run_all_district_smoke.py",
+      "size_bytes": 2091,
+      "sha256": "cfc74c483b97d4a2a6fd39567e3be226c9b5e188f2592a49370b78ba30752112"
+    },
+    {
+      "path": "scripts/run_product_e2e.py",
+      "size_bytes": 3969,
+      "sha256": "04807cce54063634f6556ebe0970b085304aa37f141f1e8cd4e2e48c9eb12df7"
+    },
+    {
+      "path": "scripts/run_v060_validation.py",
+      "size_bytes": 5575,
+      "sha256": "0a0b2db3e05d093613a391530a3d8e356469e1045ca25ac33db0aa8d596768fd"
+    },
+    {
+      "path": "scripts/run_wb_e2e.py",
+      "size_bytes": 4190,
+      "sha256": "c57706dc986c26ab9f2327bf1e7fef7a7086d49b3b89a71d1b408842b814ebec"
+    },
+    {
+      "path": "scripts/train_survey_models.py",
+      "size_bytes": 17135,
+      "sha256": "fdbb2cff0f7a7662ff38ec04e3b0bf8b6806a49d89a06b108dd4190a6556f028"
+    },
+    {
+      "path": "sources/official/current/WB_ARD_District_Milk_Production_2024-25.pdf",
+      "size_bytes": 478221,
+      "sha256": "90dd49c11389f61d9618fe63a58f214aee82bb28ef43f0702fe68328d2e510d5"
+    },
+    {
+      "path": "tests/__init__.py",
+      "size_bytes": 37,
+      "sha256": "1636707dc9b315aee9dff71ef5efb6e717a34e6955eecf9f915af0c33d3c2026"
+    },
+    {
+      "path": "tests/conftest.py",
+      "size_bytes": 2093,
+      "sha256": "95dc072f4038af2f2cbb7b3992aa789c937f0fe810bae283ba04670e1bd6e286"
+    },
+    {
+      "path": "tests/test_api.py",
+      "size_bytes": 2748,
+      "sha256": "872b032d0236e33a97ac64f2b59a636f6ce1e9311cc7c31d96c1922d248aff8e"
+    },
+    {
+      "path": "tests/test_automatic_freshness.py",
+      "size_bytes": 2297,
+      "sha256": "4bedc13c3f612b0b4f1f4e6e3b3cbf23b57168181f7fc26a2a0e6978701ea99f"
+    },
+    {
+      "path": "tests/test_baselines_and_robust.py",
+      "size_bytes": 1941,
+      "sha256": "d676d91676f9dd6d0cb135b10e7152ca58ed1197895f420d8cf14d2c62ac2fde"
+    },
+    {
+      "path": "tests/test_census_pca.py",
+      "size_bytes": 2404,
+      "sha256": "fe114d7b12bdea43a6fa8bb990c91dca9406ab89068dc0c7302cf3b6d8cf9518"
+    },
+    {
+      "path": "tests/test_current_geography.py",
+      "size_bytes": 2822,
+      "sha256": "dcf94a593502f7541d16b88ad76f68cc2fa4d67e3992350afe1319382da85e5e"
+    },
+    {
+      "path": "tests/test_finance.py",
+      "size_bytes": 3440,
+      "sha256": "60b43de2e0bc37cfd373b5a62c1d5de3cd027798632ebbe9060e0164496b7542"
+    },
+    {
+      "path": "tests/test_finance_rules.py",
+      "size_bytes": 1795,
+      "sha256": "a0359c512c261d33c58f40cfba18b5f3095de4cb6730ce38dbfed81062129521"
+    },
+    {
+      "path": "tests/test_flow_engine.py",
+      "size_bytes": 4949,
+      "sha256": "caba266c7d784cfa58b75c06d61d3388e7abe89fbe991a405d3b4c6c4ca747de"
+    },
+    {
+      "path": "tests/test_freshness.py",
+      "size_bytes": 1912,
+      "sha256": "bdf97538f2bfcbda6bf39419d85ac0fe9ae7f8c87b3ef59a8514228d054eb75d"
+    },
+    {
+      "path": "tests/test_geography_resolver.py",
+      "size_bytes": 1580,
+      "sha256": "1082092d49679ff0d1528734db92989c2e13be2224b102c5f210cfff80ffdfd2"
+    },
+    {
+      "path": "tests/test_livestock_adapter.py",
+      "size_bytes": 1462,
+      "sha256": "c37c52a4b44ccc76074931334312a1e471b1d6446941ed6e071c80439e00fd24"
+    },
+    {
+      "path": "tests/test_multilingual_presentation.py",
+      "size_bytes": 5624,
+      "sha256": "ccc4eb5695f534534caf075a033ee330c31411306596ca407479aeac68667d44"
+    },
+    {
+      "path": "tests/test_osm_spatial.py",
+      "size_bytes": 6179,
+      "sha256": "683441687a883b78e7cd2aa4a45078f7a0fd391d6f6bc3f359adcea80461f87c"
+    },
+    {
+      "path": "tests/test_sector_adapters.py",
+      "size_bytes": 2356,
+      "sha256": "3ef7bdf4cfe30ab44d3e0220b3f30f6ae12cfb22c34bc6cee004faef93c5d8c0"
+    },
+    {
+      "path": "tests/test_survey_imports.py",
+      "size_bytes": 6504,
+      "sha256": "58e681c9da00d503511b3d1ca17253c5581a0bf90e75e02055dbb275256a5790"
+    },
+    {
+      "path": "tests/test_uncertainty_engine.py",
+      "size_bytes": 2472,
+      "sha256": "8e36e60a98f4c6b19b8fd4c54917c6622f37911df44bd9f5fe1cb04301936d90"
+    },
+    {
+      "path": "tests/test_venture_engines.py",
+      "size_bytes": 3420,
+      "sha256": "0e7c494c9a5288601be5fae872dfe5740050423bbcaa590a67c9f9c54020bd8a"
+    }
+  ]
+}

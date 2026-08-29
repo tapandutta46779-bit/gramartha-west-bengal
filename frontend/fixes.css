@@ -1,4 +1,4 @@
-/* v0.7.0: entrepreneur-first multilingual presentation layer. */
+/* v0.7.1: full-detail multilingual presentation layer. */
 .two-col {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 }

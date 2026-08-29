@@ -49,6 +49,12 @@ class PlainLanguagePresentation(BaseModel):
     labels: dict[str, str] = Field(default_factory=dict)
 
 
+class DetailedLanguagePresentation(BaseModel):
+    language: str
+    labels: dict[str, str] = Field(default_factory=dict)
+    translations: dict[str, str] = Field(default_factory=dict)
+
+
 class PlainLanguageSummary(BaseModel):
     analysis_id: str
     conclusion_status: ConclusionStatus
@@ -76,4 +82,5 @@ class PlainLanguageSummary(BaseModel):
     data_confidence: str
     conclusion_text: str
     presentations: dict[str, PlainLanguagePresentation]
-    method_version: str = "plain-language-summary-v1"
+    detailed_presentations: dict[str, DetailedLanguagePresentation] = Field(default_factory=dict)
+    method_version: str = "plain-language-summary-v2-full-detail"

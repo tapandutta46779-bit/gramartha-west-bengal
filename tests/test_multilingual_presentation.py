@@ -137,7 +137,10 @@ def test_plain_language_summary_is_one_numeric_contract_with_three_text_views():
     )
     assert "ছোট" in summary.presentations["bn"].recommended_venture_name
     assert "छोटी" in summary.presentations["hi"].recommended_venture_name
-    assert summary.method_version == "plain-language-summary-v1"
+    assert summary.method_version == "plain-language-summary-v2-full-detail"
+    assert set(summary.detailed_presentations) == {"en", "bn", "hi"}
+    assert summary.detailed_presentations["bn"].labels["market"] == "স্থানীয় বাজার"
+    assert summary.detailed_presentations["hi"].labels["finance"] == "वित्त"
 
 
 def test_multilingual_pdfs_preserve_page_count_and_analysis_id():

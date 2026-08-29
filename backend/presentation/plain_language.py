@@ -5,10 +5,12 @@ from backend.models.decision import DecisionStatus, VentureDecision
 from backend.models.presentation import (
     CompetitionSummary,
     ConclusionStatus,
+    DetailedLanguagePresentation,
     PlainLanguagePresentation,
     PlainLanguageSummary,
     SummaryRange,
 )
+from backend.presentation.detail_language import DETAIL_LABELS, build_translation_map
 
 _SECTOR_NAMES = {
     "en": {
@@ -319,6 +321,24 @@ def build_plain_language_summary(decision: VentureDecision) -> PlainLanguageSumm
             labels=text["labels"],
         )
     english = localized["en"]
+    detail_values = sorted(
+        _string_leaves(decision.model_dump(exclude={"plain_language_summary"}))
+        | set(DETAIL_LABELS["en"].values())
+    )
+    detailed = {
+        language: DetailedLanguagePresentation(
+            language=language,
+            labels=DETAIL_LABELS[language],
+            translations={
+                **build_translation_map(detail_values, language),
+                **{
+                    english_label: DETAIL_LABELS[language][key]
+                    for key, english_label in DETAIL_LABELS["en"].items()
+                },
+            },
+        )
+        for language in ("en", "bn", "hi")
+    }
     return PlainLanguageSummary(
         analysis_id=decision.analysis_id,
         conclusion_status=conclusion,
@@ -359,4 +379,22 @@ def build_plain_language_summary(decision: VentureDecision) -> PlainLanguageSumm
         data_confidence=english.data_confidence,
         conclusion_text=english.conclusion_text,
         presentations=localized,
+        detailed_presentations=detailed,
     )
+
+
+def _string_leaves(value) -> set[str]:
+    if isinstance(value, str):
+        return {value}
+    if isinstance(value, dict):
+        result: set[str] = set()
+        for key, item in value.items():
+            result.add(str(key))
+            result.update(_string_leaves(item))
+        return result
+    if isinstance(value, (list, tuple, set)):
+        result: set[str] = set()
+        for item in value:
+            result.update(_string_leaves(item))
+        return result
+    return set()

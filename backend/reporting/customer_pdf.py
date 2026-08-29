@@ -1,3 +1,4 @@
+# ruff: noqa: E501 - dense multilingual report rows are easier to review intact.
 from __future__ import annotations
 
 from io import BytesIO
@@ -22,6 +23,7 @@ from reportlab.platypus import (
 
 from backend.models.decision import VentureDecision
 from backend.presentation import build_plain_language_summary
+from backend.presentation.detail_language import translate_detail_text
 
 GREEN = colors.HexColor("#123B31")
 ORANGE = colors.HexColor("#D96F2B")
@@ -35,7 +37,7 @@ def build_customer_pdf(decision: VentureDecision, language: str = "en") -> bytes
     selected_language = language if language in {"en", "bn", "hi"} else "en"
     summary = decision.plain_language_summary or build_plain_language_summary(decision)
     first_page = _build_plain_language_page(decision, summary, selected_language)
-    technical_pages = _build_technical_pdf(decision)
+    technical_pages = _build_localized_technical_pdf(decision, selected_language)
     writer = PdfWriter()
     writer.append(PdfReader(BytesIO(first_page)))
     writer.append(PdfReader(BytesIO(technical_pages)))
@@ -49,6 +51,255 @@ def build_customer_pdf(decision: VentureDecision, language: str = "en") -> bytes
     output = BytesIO()
     writer.write(output)
     return output.getvalue()
+
+
+def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> bytes:
+    """Build the complete seven-page technical layer in the selected language.
+
+    The canonical VentureDecision is never mutated.  Locality names, official
+    dataset names, URLs, analysis identifiers and numerical values are preserved.
+    """
+    summary = decision.plain_language_summary or build_plain_language_summary(decision)
+    detail = summary.detailed_presentations[language]
+    labels = detail.labels
+    translations = detail.translations
+    pdf = FPDF(format="A4", unit="mm")
+    pdf.set_margins(13, 11, 13)
+    pdf.set_auto_page_break(False)
+    if language == "bn":
+        pdf.add_font("GramArthaUnicode", fname=str(FONT_DIR / "NotoSansBengali.ttf"))
+        family = "GramArthaUnicode"
+    elif language == "hi":
+        pdf.add_font("GramArthaUnicode", fname=str(FONT_DIR / "NotoSansDevanagari.ttf"))
+        family = "GramArthaUnicode"
+    else:
+        pdf.add_font("GramArthaUnicode", fname=str(FONT_DIR / "NotoSansBengali.ttf"))
+        family = "GramArthaUnicode"
+    if language != "en":
+        pdf.set_text_shaping(True)
+
+    def label(key: str) -> str:
+        return labels.get(key, DETAIL_FALLBACK.get(key, key.replace("_", " ").title()))
+
+    def tr(value) -> str:
+        if value is None:
+            return "-"
+        text = str(value)
+        return translations.get(text, translate_detail_text(text, language))
+
+    geography = decision.geography
+    venture = decision.selected_venture
+    primitive = venture.primitives[0] if venture else None
+    twin = decision.digital_twin
+    month_12 = twin.months[min(11, len(twin.months) - 1)] if twin and twin.months else None
+    presentation = summary.presentations[language]
+
+    def add_page(title: str, page_number: int):
+        pdf.add_page()
+        pdf.set_fill_color(18, 59, 49)
+        pdf.rect(0, 0, 210, 19, style="F")
+        pdf.set_text_color(255, 255, 255)
+        pdf.set_font(family, size=7)
+        pdf.set_xy(13, 5)
+        pdf.cell(60, 4, "GRAMARTHA")
+        pdf.set_xy(63, 5)
+        pdf.set_font(family, size=11)
+        pdf.cell(134, 5, title, align="R")
+        pdf.set_y(24)
+        pdf.set_text_color(23, 35, 29)
+        pdf.set_draw_color(220, 229, 223)
+        pdf.line(13, 282, 197, 282)
+        pdf.set_xy(13, 284)
+        pdf.set_text_color(102, 113, 104)
+        pdf.set_font(family, size=5.8)
+        pdf.cell(130, 4, f"GramArtha | {decision.analysis_id}")
+        pdf.cell(54, 4, f"{label('page')} {page_number}", align="R")
+        pdf.set_y(24)
+        pdf.set_text_color(23, 35, 29)
+
+    def heading(title: str):
+        pdf.set_text_color(18, 59, 49)
+        pdf.set_font(family, size=10)
+        pdf.multi_cell(184, 5.2, title)
+        pdf.set_text_color(23, 35, 29)
+
+    def paragraph(text: str, *, muted: bool = False):
+        pdf.set_text_color(*(102, 113, 104) if muted else (23, 35, 29))
+        pdf.set_font(family, size=6.5)
+        pdf.multi_cell(184, 3.4, text)
+        pdf.ln(1)
+
+    def rows(values):
+        for key, value in values:
+            pdf.set_fill_color(247, 249, 247)
+            pdf.set_text_color(18, 59, 49)
+            pdf.set_font(family, size=6.1)
+            pdf.set_x(13)
+            pdf.cell(62, 5.2, str(key), fill=True)
+            pdf.set_text_color(23, 35, 29)
+            pdf.cell(122, 5.2, str(value), fill=True)
+            pdf.ln(5.6)
+        pdf.ln(1)
+
+    def bullets(title: str, values, limit: int | None = None):
+        if not values:
+            return
+        pdf.set_text_color(18, 59, 49)
+        pdf.set_font(family, size=7.2)
+        pdf.multi_cell(184, 4, title)
+        pdf.set_text_color(23, 35, 29)
+        pdf.set_font(family, size=6.1)
+        selected = list(values) if limit is None else list(values)[:limit]
+        for item in selected:
+            pdf.set_x(16)
+            pdf.multi_cell(181, 3.2, f"- {tr(item)}")
+        pdf.ln(1)
+
+    # Page 2: recommendation, geography and market evidence.
+    add_page(label("recommendation"), 2)
+    heading(presentation.recommended_venture_name)
+    paragraph(presentation.why_recommended + " " + presentation.why_here)
+    rows([
+        (label("canonical_locality"), f"{geography.locality}, {geography.district}" if geography else "-"),
+        (label("locality_type"), tr(geography.locality_type if geography else None)),
+        (label("project_cost"), _money(venture.investment if venture else None)),
+        (label("own_capital"), _money(decision.prudent_financing.get("own_capital_deployed"))),
+        (label("finance_required"), _money(decision.prudent_financing.get("illustrative_financing_requirement"))),
+        (label("confidence"), tr(decision.confidence.value)),
+        (label("demand_opportunity"), _localized_interval(decision.demand, language, tr)),
+        (label("reachable_supply"), _localized_interval(decision.supply, language, tr)),
+        (label("price"), _localized_interval(decision.price, language, tr)),
+        (label("planning_radius"), f"{_number(decision.catchment.get('radius_km'))} {_localized_unit('km', language)}"),
+    ])
+    paragraph(presentation.data_confidence, muted=True)
+    bullets(label("customer_segments"), decision.sector_intelligence.get("customer_segments", []))
+    bullets(label("supplier_plan"), decision.sector_intelligence.get("supplier_types", []))
+
+    # Page 3: competition, catchment and operating context.
+    add_page(label("competition"), 3)
+    rows([
+        (label("direct_inside"), decision.competition.get("direct_count", tr("UNKNOWN"))),
+        (label("indirect_inside"), decision.competition.get("indirect_count", tr("UNKNOWN"))),
+        (label("competition_intensity"), tr(decision.competition.get("competition_intensity", "UNKNOWN"))),
+        (label("coordinates_quality"), tr(decision.competition.get("coordinate_quality", "UNKNOWN"))),
+        (label("nearest_market"), (decision.catchment.get("nearest_market") or {}).get("name", tr("UNKNOWN"))),
+        (label("nearest_institution"), (decision.sector_intelligence.get("institutional_buyer_candidates") or [{}])[0].get("name", tr("UNKNOWN"))),
+    ])
+    paragraph(tr(decision.competition.get("caveat", "")), muted=True)
+    _localized_entity_list(pdf, family, label("all_direct"), decision.competition.get("likely_direct_competitors", []), label, tr, language)
+    _localized_entity_list(pdf, family, label("all_indirect"), decision.competition.get("likely_indirect_competitors", []), label, tr, language)
+    bullets(label("channels"), [f"{tr(item.get('role'))}: {tr(item.get('channel'))} ({tr(item.get('confidence'))})" for item in decision.sector_intelligence.get("distribution_channels", [])])
+    bullets(label("operational_factors"), decision.sector_intelligence.get("operational_factors", []))
+    bullets(label("weather"), decision.sector_intelligence.get("weather_factors", []))
+
+    # Page 4: minimum viable setup and cost structure.
+    add_page(label("business_setup"), 4)
+    if primitive:
+        rows([
+            (label("equipment_setup"), _money(primitive.capex)),
+            (label("working_capital"), _money(primitive.working_capital)),
+            (label("monthly_opex"), _money(primitive.monthly_opex)),
+            (label("people"), primitive.staff),
+            (label("space"), f"{_number(primitive.space_sqft)} {_localized_unit('sq ft', language)}"),
+            (label("service_radius"), f"{_number(primitive.service_radius_km)} {_localized_unit('km', language)}"),
+            (label("inventory_days"), primitive.inventory_days),
+            (label("receivable_days"), primitive.receivable_days),
+            (label("payable_days"), primitive.payable_days),
+        ])
+        bullets(label("equipment"), primitive.equipment)
+        bullets(label("quality_controls"), primitive.quality_controls)
+        bullets(label("licences"), primitive.licence_assumptions)
+    heading(label("costs"))
+    rows([(tr(key.replace("_", " ").title()), _money(value)) for key, value in decision.prudent_financing.get("capex_breakdown", {}).items()])
+    bullets(label("insurance"), decision.sector_intelligence.get("insurance_options", []))
+
+    # Page 5: finance, metrics, schemes and 36-month checkpoints.
+    add_page(label("finance_cash"), 5)
+    metrics = decision.prudent_financing.get("financial_metrics", {})
+    rows([
+        (label("monthly_revenue"), _money(month_12.revenue if month_12 else None)),
+        (label("operating_cash"), _money(month_12.operating_cash_flow if month_12 else None)),
+        (label("operating_be"), _localized_month(twin.operating_break_even_month if twin else None, language)),
+        (label("cash_be"), _localized_month(twin.cash_break_even_month if twin else None, language)),
+        (label("payback"), _localized_month(twin.investment_payback_month if twin else None, language)),
+        (label("npv"), _money(metrics.get("npv_36_month_at_12pct"))),
+        (label("irr"), _percent(metrics.get("irr_annualized"))),
+        (label("break_even_volume"), _number(metrics.get("break_even_volume_month"))),
+    ])
+    if twin:
+        checkpoints = [m for m in twin.months if m.month % 3 == 0]
+        bullets(label("cash36"), [f"{label('month')} {m.month}: {label('revenue')} {_money(m.revenue)}; {label('operating_cash')} {_money(m.operating_cash_flow)}; {label('closing_cash')} {_money(m.closing_cash)}" for m in checkpoints])
+    bullets(label("finance_fit"), [f"{item.scheme_name}: {tr(item.status_wording)}" for item in decision.official_finance])
+
+    # Page 6: scenarios, sensitivity, SWOT and failure boundaries.
+    add_page(label("risk_scenarios"), 6)
+    scenario = next((item for item in decision.robust_comparison.get("candidate_summaries", []) if venture and item.get("candidate_id") == venture.candidate_id), {})
+    rows([
+        (label("scenarios"), scenario.get("scenario_count", label("quick_plan"))),
+        (label("remain_solvent"), _percent(scenario.get("scenario_survival_rate"))),
+        (label("payback36"), _percent(scenario.get("payback_within_36_months_rate"))),
+        (label("p10_cash"), _money(scenario.get("minimum_cash_p10"))),
+        (label("cvar"), _money(scenario.get("cvar95_loss"))),
+    ])
+    paragraph(label("scenario_caveat"), muted=True)
+    for key in ("strengths", "weaknesses", "opportunities", "threats"):
+        bullets(tr(key.upper()), decision.swot.get(key, []), 4)
+    bullets(label("failure_boundaries"), [f"{tr(item.get('variable'))}: {_number(item.get('threshold'))} {_localized_unit(item.get('unit', ''), language)} - {tr(item.get('interpretation'))}" for item in decision.failure_boundaries])
+    bullets(label("sensitivity"), [f"{tr(item.get('variable'))}: {tr('LOW')} {_money(item.get('profit_low'))}; {tr('MEDIUM')} {_money(item.get('profit_central'))}; {tr('HIGH')} {_money(item.get('profit_high'))}" for item in decision.sensitivity_analysis])
+
+    # Page 7: pre-mortem and every staged action.
+    add_page(label("actions"), 7)
+    bullets(label("premortem"), [f"{tr(item.get('cause'))} {tr(item.get('prevention'))}" for item in decision.premortem])
+    action_keys = {"before_starting":"before_starting","day_1_7":"week1","first_30_days":"month1","months_2_3":"months23","months_4_6":"months46","stop_or_reconsider":"stop_reconsider"}
+    for key, values in decision.action_plan.items():
+        bullets(label(action_keys.get(key, key)), values)
+    bullets(label("actions"), decision.staged_plan)
+
+    # Page 8: evidence freshness, limitations and provenance.
+    add_page(label("evidence"), 8)
+    rows([
+        (label("confidence"), tr(decision.confidence.value)),
+        (label("status"), tr(decision.status.value)),
+        (label("decision_chain"), decision.methodology_version),
+        ("Analysis ID", decision.analysis_id),
+    ])
+    for item in decision.evidence:
+        paragraph(f"{tr(item.variable)} | {item.source_dataset} | {item.observation_date or tr('UNKNOWN')} | {tr(item.freshness_status.value)} | {tr(item.confidence.value)}", muted=False)
+    bullets(label("limitations"), decision.limitations)
+    bullets(label("sources"), decision.sources)
+    return bytes(pdf.output())
+
+
+DETAIL_FALLBACK = {"page": "Page"}
+
+
+def _localized_interval(value, language, tr):
+    if value is None or value.central is None:
+        return "-"
+    return f"{_number(value.lower)} - {_number(value.upper)} {_localized_unit(value.unit, language)} ({tr(value.status)})"
+
+
+def _localized_month(value, language):
+    if value is None:
+        return {"bn": "৩৬ মাসের পরে / অর্জিত নয়", "hi": "36 माह के बाद / प्राप्त नहीं"}.get(language, "Beyond 36 months / not reached")
+    return {"bn": f"মাস {value}", "hi": f"माह {value}"}.get(language, f"Month {value}")
+
+
+def _localized_entity_list(pdf, family, title, entities, label, tr, language):
+    if not entities:
+        return
+    pdf.set_text_color(18, 59, 49)
+    pdf.set_font(family, size=7.2)
+    pdf.multi_cell(184, 4, title)
+    pdf.set_text_color(23, 35, 29)
+    pdf.set_font(family, size=6.1)
+    for item in entities[:12]:
+        name = item.get("name") or label("unnamed")
+        category = tr(item.get("category") or label("mapped_place"))
+        distance = f"{_number(item.get('straight_line_distance_km'))} {_localized_unit('km', language)}"
+        pdf.set_x(16)
+        pdf.multi_cell(181, 3.2, f"- {name} | {category} | {distance}")
+    pdf.ln(1)
 
 
 def _build_technical_pdf(decision: VentureDecision) -> bytes:
@@ -623,6 +874,14 @@ def _localized_unit(unit, language):
             "units/month": "ইউনিট/মাস",
             "INR/litre": "টাকা/লিটার",
             "INR/month": "টাকা/মাস",
+            "km": "কিমি",
+            "sq ft": "বর্গফুট",
+            "days": "দিন",
+            "planning revenue units/month": "পরিকল্পিত আয় একক/মাস",
+            "share of central planning price": "কেন্দ্রীয় পরিকল্পিত দামের অংশ",
+            "multiple of central variable cost": "কেন্দ্রীয় পরিবর্তনশীল খরচের গুণিতক",
+            "multiple of central fixed OPEX": "কেন্দ্রীয় স্থির পরিচালন ব্যয়ের গুণিতক",
+            "INR opening cash after startup investment": "প্রারম্ভিক বিনিয়োগের পর উদ্বোধনী নগদ (INR)",
         },
         "hi": {
             "litres/month": "लीटर/माह",
@@ -630,6 +889,14 @@ def _localized_unit(unit, language):
             "units/month": "इकाई/माह",
             "INR/litre": "रुपये/लीटर",
             "INR/month": "रुपये/माह",
+            "km": "किमी",
+            "sq ft": "वर्ग फुट",
+            "days": "दिन",
+            "planning revenue units/month": "योजना आय इकाई/माह",
+            "share of central planning price": "केंद्रीय योजना मूल्य का हिस्सा",
+            "multiple of central variable cost": "केंद्रीय परिवर्ती लागत का गुणक",
+            "multiple of central fixed OPEX": "केंद्रीय स्थिर परिचालन व्यय का गुणक",
+            "INR opening cash after startup investment": "प्रारंभिक निवेश के बाद आरंभिक नकदी (INR)",
         },
     }
     return maps.get(language, {}).get(unit, unit)
