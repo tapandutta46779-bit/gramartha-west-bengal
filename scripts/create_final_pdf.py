@@ -221,9 +221,7 @@ def build_story() -> list:
             story.append(Paragraph(rich(line[4:]), style_map["h3"]))
         elif line.startswith("- "):
             flush_paragraph()
-            story.append(
-                Paragraph(rich(line[2:]), style_map["bullet"], bulletText="\u2022")
-            )
+            story.append(Paragraph(rich(line[2:]), style_map["bullet"], bulletText="\u2022"))
         elif not line.strip():
             flush_paragraph()
         elif not line.startswith("# "):
@@ -253,9 +251,7 @@ def main() -> None:
         document.height,
         id="content",
     )
-    document.addPageTemplates(
-        [PageTemplate(id="report", frames=[frame], onPageEnd=header_footer)]
-    )
+    document.addPageTemplates([PageTemplate(id="report", frames=[frame], onPageEnd=header_footer)])
     document.build(build_story())
     print(OUTPUT)
 

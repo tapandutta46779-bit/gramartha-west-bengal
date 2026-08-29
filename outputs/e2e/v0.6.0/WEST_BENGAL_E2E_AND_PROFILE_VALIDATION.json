@@ -1,0 +1,240 @@
+{
+  "version": "v0.6.0-validation-v1",
+  "executed_at": "2026-08-29T04:11:43.538980+00:00",
+  "case_count": 12,
+  "runtime": {
+    "minimum_seconds": 0.01490558300019984,
+    "median_seconds": 0.18264579199967557,
+    "maximum_seconds": 0.18936724999957733
+  },
+  "cases": [
+    {
+      "case": 1,
+      "district": "Kolkata",
+      "locality": "Kolkata (M Corp.) - Ward No.1",
+      "geo_id": "DS057:WB:URBAN:ea82a96f624f",
+      "sector": "kirana",
+      "profile": {},
+      "status": "CONDITIONAL",
+      "selected_candidate": "DS057:WB:URBAN:ea82a96f624f:kirana:micro-v1",
+      "blocking_gates": [],
+      "binding_constraints": [],
+      "maximum_income_current_funding": 4341.433315492222,
+      "additional_own_capital_needed": 0,
+      "scenario_count": 512,
+      "failure_boundary_count": 5,
+      "sensitivity_count": 4,
+      "runtime_seconds": 0.18315037499996834
+    },
+    {
+      "case": 2,
+      "district": "North 24 Parganas",
+      "locality": "Abhirampur (P)",
+      "geo_id": "DS057:WB:RURAL:3cd6134287b7",
+      "sector": "dairy",
+      "profile": {},
+      "status": "CONDITIONAL",
+      "selected_candidate": "DS057:WB:RURAL:3cd6134287b7:dairy:rented-delivery-v2",
+      "blocking_gates": [],
+      "binding_constraints": [],
+      "maximum_income_current_funding": 4449.801834236115,
+      "additional_own_capital_needed": 0,
+      "scenario_count": 512,
+      "failure_boundary_count": 5,
+      "sensitivity_count": 4,
+      "runtime_seconds": 0.1808778749996236
+    },
+    {
+      "case": 3,
+      "district": "Nadia",
+      "locality": "Abhaynagar",
+      "geo_id": "DS057:WB:RURAL:3840f5ee73f7",
+      "sector": "dairy",
+      "profile": {
+        "acceptable_debt": 0
+      },
+      "status": "CONDITIONAL",
+      "selected_candidate": "DS057:WB:RURAL:3840f5ee73f7:dairy:collection-chilling-v2",
+      "blocking_gates": [],
+      "binding_constraints": [],
+      "maximum_income_current_funding": 295.63574131258395,
+      "additional_own_capital_needed": 0,
+      "scenario_count": 512,
+      "failure_boundary_count": 5,
+      "sensitivity_count": 4,
+      "runtime_seconds": 0.18303141600017625
+    },
+    {
+      "case": 4,
+      "district": "Darjeeling",
+      "locality": "Abhiram",
+      "geo_id": "DS057:WB:RURAL:08d4e98c3299",
+      "sector": "dairy",
+      "profile": {
+        "mobility_km": 12
+      },
+      "status": "CONDITIONAL",
+      "selected_candidate": "DS057:WB:RURAL:08d4e98c3299:dairy:micro-collection-v2",
+      "blocking_gates": [],
+      "binding_constraints": [],
+      "maximum_income_current_funding": 13217.545475459208,
+      "additional_own_capital_needed": 0,
+      "scenario_count": 512,
+      "failure_boundary_count": 5,
+      "sensitivity_count": 4,
+      "runtime_seconds": 0.18396195800005444
+    },
+    {
+      "case": 5,
+      "district": "Bankura",
+      "locality": "Abantika",
+      "geo_id": "DS057:WB:RURAL:5cd07cc85bc9",
+      "sector": "dairy",
+      "profile": {},
+      "status": "NOT_FEASIBLE",
+      "selected_candidate": null,
+      "blocking_gates": [],
+      "binding_constraints": [
+        "MINIMUM_INCOME_NOT_MET"
+      ],
+      "maximum_income_current_funding": -263.73603249475207,
+      "additional_own_capital_needed": null,
+      "scenario_count": 0,
+      "failure_boundary_count": 0,
+      "sensitivity_count": 0,
+      "runtime_seconds": 0.016545458000109647
+    },
+    {
+      "case": 6,
+      "district": "Purulia",
+      "locality": "Akarbad",
+      "geo_id": "DS057:WB:RURAL:e3116f3aeaa0",
+      "sector": "food processing",
+      "profile": {
+        "assets": [
+          "shop"
+        ]
+      },
+      "status": "CONDITIONAL",
+      "selected_candidate": "DS057:WB:RURAL:e3116f3aeaa0:food_processing:micro-v1",
+      "blocking_gates": [],
+      "binding_constraints": [],
+      "maximum_income_current_funding": 2889.8248036409414,
+      "additional_own_capital_needed": 0,
+      "scenario_count": 512,
+      "failure_boundary_count": 5,
+      "sensitivity_count": 4,
+      "runtime_seconds": 0.18887362500026939
+    },
+    {
+      "case": 7,
+      "district": "Malda",
+      "query": "Abhirampur",
+      "sector": "fishery",
+      "result": "LOCALITY_NOT_FOUND"
+    },
+    {
+      "case": 8,
+      "district": "Purba Bardhaman",
+      "locality": "Abhirampur",
+      "geo_id": "DS057:WB:RURAL:87ed7cc8dc10",
+      "sector": "mustard oil",
+      "profile": {},
+      "status": "CONDITIONAL",
+      "selected_candidate": "DS057:WB:RURAL:87ed7cc8dc10:mustard_oil:micro-v1",
+      "blocking_gates": [],
+      "binding_constraints": [],
+      "maximum_income_current_funding": 599.4138063245182,
+      "additional_own_capital_needed": 0,
+      "scenario_count": 512,
+      "failure_boundary_count": 5,
+      "sensitivity_count": 4,
+      "runtime_seconds": 0.18936724999957733
+    },
+    {
+      "case": 9,
+      "district": "South 24 Parganas",
+      "locality": "Abad Bhagabanpur",
+      "geo_id": "DS057:WB:RURAL:65ad13d15ca9",
+      "sector": "transport",
+      "profile": {},
+      "status": "CONDITIONAL",
+      "selected_candidate": "DS057:WB:RURAL:65ad13d15ca9:rural_distribution:micro-v1",
+      "blocking_gates": [],
+      "binding_constraints": [],
+      "maximum_income_current_funding": 3302.5522447420176,
+      "additional_own_capital_needed": 0,
+      "scenario_count": 512,
+      "failure_boundary_count": 5,
+      "sensitivity_count": 4,
+      "runtime_seconds": 0.18264579199967557
+    },
+    {
+      "case": 10,
+      "district": "North 24 Parganas",
+      "locality": "Abhirampur (P)",
+      "geo_id": "DS057:WB:RURAL:3cd6134287b7",
+      "sector": "kirana",
+      "profile": {
+        "minimum_monthly_income": 15000
+      },
+      "status": "NOT_FEASIBLE",
+      "selected_candidate": null,
+      "blocking_gates": [],
+      "binding_constraints": [
+        "MINIMUM_INCOME_NOT_MET"
+      ],
+      "maximum_income_current_funding": 2392.634354450272,
+      "additional_own_capital_needed": null,
+      "scenario_count": 0,
+      "failure_boundary_count": 0,
+      "sensitivity_count": 0,
+      "runtime_seconds": 0.015903542000160087
+    },
+    {
+      "case": 11,
+      "district": "North 24 Parganas",
+      "locality": "Abhirampur (P)",
+      "geo_id": "DS057:WB:RURAL:3cd6134287b7",
+      "sector": "kirana",
+      "profile": {
+        "minimum_monthly_income": 1000000,
+        "acceptable_debt": 0
+      },
+      "status": "NOT_FEASIBLE",
+      "selected_candidate": null,
+      "blocking_gates": [],
+      "binding_constraints": [
+        "MINIMUM_INCOME_NOT_MET"
+      ],
+      "maximum_income_current_funding": 2392.634354450272,
+      "additional_own_capital_needed": null,
+      "scenario_count": 0,
+      "failure_boundary_count": 0,
+      "sensitivity_count": 0,
+      "runtime_seconds": 0.01490558300019984
+    },
+    {
+      "case": 12,
+      "district": "North 24 Parganas",
+      "locality": "Abhirampur (P)",
+      "geo_id": "DS057:WB:RURAL:3cd6134287b7",
+      "sector": "transport",
+      "profile": {
+        "time_availability_hours_week": 10,
+        "family_labour": 0
+      },
+      "status": "CONDITIONAL",
+      "selected_candidate": "DS057:WB:RURAL:3cd6134287b7:rural_distribution:expanded-v1",
+      "blocking_gates": [],
+      "binding_constraints": [],
+      "maximum_income_current_funding": 1508.2700254821207,
+      "additional_own_capital_needed": 0,
+      "scenario_count": 512,
+      "failure_boundary_count": 5,
+      "sensitivity_count": 4,
+      "runtime_seconds": 0.17991845799997463
+    }
+  ],
+  "truth_policy": "Conditional outputs are planning estimates. No case is interpreted as guaranteed income, observed complete locality demand, lender approval or calibrated success probability."
+}

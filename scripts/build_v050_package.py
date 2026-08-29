@@ -27,16 +27,11 @@ def files() -> list[Path]:
         ROOT / "output/pdf/GramArtha_Deep_Engine_Product_Report_v0.5.0.pdf",
         ROOT / "output/screenshots/v0.5.0/gramartha_summary_kolkata.png",
         ROOT / "output/screenshots/v0.5.0/gramartha_finance_kolkata.png",
-        ROOT
-        / "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/models/model_registry.json",
-        ROOT
-        / "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/FINAL_TECHNICAL_AUDIT.json",
-        ROOT
-        / "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/DATA_FRESHNESS_AUDIT.json",
-        ROOT
-        / "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/DATA_FRESHNESS_AUDIT.md",
-        ROOT
-        / "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/FLOW_PERFORMANCE.json",
+        ROOT / "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/models/model_registry.json",
+        ROOT / "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/FINAL_TECHNICAL_AUDIT.json",
+        ROOT / "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/DATA_FRESHNESS_AUDIT.json",
+        ROOT / "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/DATA_FRESHNESS_AUDIT.md",
+        ROOT / "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS/FLOW_PERFORMANCE.json",
     ]
     for tree in trees:
         selected.extend(path for path in (ROOT / tree).rglob("*") if allowed(path))
@@ -100,16 +95,12 @@ def main() -> None:
     with zipfile.ZipFile(
         ZIP_PATH, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6
     ) as archive:
-        archive.writestr(
-            f"{NAME}/PACKAGE_MANIFEST.json", json.dumps(manifest, indent=2) + "\n"
-        )
+        archive.writestr(f"{NAME}/PACKAGE_MANIFEST.json", json.dumps(manifest, indent=2) + "\n")
         archive.writestr(f"{NAME}/README_FIRST.md", readme.read_text(encoding="utf-8"))
         for path in selected:
             archive.write(path, f"{NAME}/{path.relative_to(ROOT)}")
     checksum = sha256(ZIP_PATH)
-    (PACKAGE_DIR / "SHA256SUM.txt").write_text(
-        f"{checksum}  {ZIP_PATH.name}\n", encoding="utf-8"
-    )
+    (PACKAGE_DIR / "SHA256SUM.txt").write_text(f"{checksum}  {ZIP_PATH.name}\n", encoding="utf-8")
     print(
         json.dumps(
             {

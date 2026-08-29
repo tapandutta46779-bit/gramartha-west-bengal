@@ -4,6 +4,7 @@ import json
 from datetime import UTC, date, datetime
 from pathlib import Path
 
+from backend.evidence.districts import canonical_district
 from backend.evidence.store import EvidenceStore
 from backend.models.evidence import (
     ConfidenceLevel,
@@ -113,9 +114,7 @@ def ingest_hces(store: EvidenceStore, year: str, production: bool) -> int:
                     "observation_period": year.replace("_", "-"),
                     "interval_method": prior["interval_method"],
                 },
-                observation_date=(
-                    date(2024, 7, 31) if year == "2023_24" else date(2023, 7, 31)
-                ),
+                observation_date=(date(2024, 7, 31) if year == "2023_24" else date(2023, 7, 31)),
                 freshness_status=(
                     FreshnessStatus.RECENT
                     if year == "2023_24"
@@ -183,6 +182,76 @@ def ingest_asuse(store: EvidenceStore) -> int:
     return count
 
 
+def _district_population_anchors(store: EvidenceStore) -> dict[str, float]:
+    rows = store.connection.execute(
+        """
+        SELECT c.current_district AS district,
+               SUM(CAST(json_extract(e.payload, '$.value') AS REAL)) AS population
+        FROM current_geo_entity c
+        JOIN evidence_record e ON e.geo_id = c.source_geo_id
+        WHERE c.payload IS NOT NULL AND e.variable = 'population_observed_2011'
+        GROUP BY c.current_district
+        """
+    ).fetchall()
+    return {row["district"]: float(row["population"]) for row in rows if row["population"]}
+
+
+def ingest_wb_milk_production(store: EvidenceStore) -> int:
+    path = ROOT / "config/wb_milk_production_2024_25.json"
+    payload = json.loads(path.read_text())
+    population_anchors = _district_population_anchors(store)
+    count = 0
+    for current_name, production in payload["districts"].items():
+        district = canonical_district(current_name)
+        if district is None:
+            continue
+        for sector in ("1", "2"):
+            record = EvidenceRecord(
+                id=f"WBARD:MILK:2024-25:{current_name}:{sector}",
+                variable="district_annual_milk_production_kg",
+                value=production,
+                unit="kg/year",
+                geography=f"{current_name}; sector {sector}",
+                geo_id=f"REGION:WB:{current_name}:SECTOR:{sector}",
+                source_id="WB-ARD-MILK-2024-25",
+                source_url=payload["source_url"],
+                source_dataset=payload["dataset"],
+                observation_date=date(2025, 3, 31),
+                retrieved_at=datetime.now(UTC),
+                evidence_type=EvidenceType.ESTIMATED,
+                confidence=ConfidenceLevel.MEDIUM,
+                data_change_class=DataChangeClass.TIME_SENSITIVE_FAST_CHANGING,
+                freshness_status=FreshnessStatus.RECENT,
+                freshness_as_of=AS_OF,
+                quality_flags=[
+                    "OFFICIAL_DISTRICT_ANNUAL_PRODUCTION_ESTIMATE",
+                    "NOT_LOCALITY_REACHABLE_SUPPLY",
+                    "MARKETED_SURPLUS_AND_ACCESSIBILITY_MUST_BE_MODELLED",
+                ],
+                methodology_version="wb-ard-district-production-direct-v1",
+                raw_reference=payload["raw_file"],
+                attributes={
+                    "observation_period": payload["observation_period"],
+                    "raw_sha256": payload["raw_sha256"],
+                    "raw_size_bytes": payload["raw_size_bytes"],
+                    "district_population_observed_2011": population_anchors.get(current_name),
+                    "state_population_observed_2011": payload["state_population_observed_2011"],
+                    "state_total_kg": payload["state_total_kg"],
+                    "population_anchor_method": (
+                        "sum of exact linked current-product localities"
+                        if current_name in population_anchors
+                        else (
+                            "state per-capita fallback because current-district "
+                            "crosswalk is incomplete"
+                        )
+                    ),
+                },
+            )
+            store.put_regional_prior(record, district=district, sector=sector)
+            count += 1
+    return count
+
+
 def main() -> None:
     store = EvidenceStore(DATABASE)
     with store.transaction():
@@ -190,12 +259,14 @@ def main() -> None:
         hces_2022 = ingest_hces(store, "2022_23", production=False)
         hces_2023 = ingest_hces(store, "2023_24", production=True)
         asuse_2025 = ingest_asuse(store)
+        milk_2024 = ingest_wb_milk_production(store)
     print(
         json.dumps(
             {
                 "hces_2022_23_records": hces_2022,
                 "hces_2023_24_records": hces_2023,
                 "asuse_2025_records": asuse_2025,
+                "wb_ard_milk_2024_25_records": milk_2024,
                 "database": str(DATABASE.relative_to(ROOT)),
             },
             indent=2,

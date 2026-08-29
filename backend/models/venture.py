@@ -38,6 +38,13 @@ class VenturePrimitive(BaseModel):
     lifetime_months: int | None = Field(default=None, gt=0)
     residual_value: NonNegativeFloat = 0
     licence_assumptions: list[str] = Field(default_factory=list)
+    equipment: list[str] = Field(default_factory=list)
+    supplier_types: list[str] = Field(default_factory=list)
+    customer_types: list[str] = Field(default_factory=list)
+    quality_controls: list[str] = Field(default_factory=list)
+    insurance_options: list[str] = Field(default_factory=list)
+    operational_factors: list[str] = Field(default_factory=list)
+    weather_factors: list[str] = Field(default_factory=list)
     added_nodes: list[EconomicNode] = Field(default_factory=list)
     added_edges: list[EconomicEdge] = Field(default_factory=list)
     assumption_labels: list[str] = Field(default_factory=list)
@@ -79,3 +86,7 @@ class MVVResult(BaseModel):
     exact: bool = True
     evaluated_count: int = 0
     objective: str = "minimum investment subject to configured feasibility constraints"
+    binding_constraints: list[str] = Field(default_factory=list)
+    inverse_analysis: dict = Field(default_factory=dict)
+    constraint_relaxation: dict = Field(default_factory=dict)
+    candidate_metrics: list[dict] = Field(default_factory=list)

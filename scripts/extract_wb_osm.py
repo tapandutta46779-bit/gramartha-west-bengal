@@ -169,11 +169,7 @@ class Extractor(osmium.SimpleHandler):
         self._flush_if_needed()
 
     def _flush_if_needed(self) -> None:
-        if (
-            len(self.entities) >= 5_000
-            or len(self.roads) >= 5_000
-            or len(self.admin_areas) >= 500
-        ):
+        if len(self.entities) >= 5_000 or len(self.roads) >= 5_000 or len(self.admin_areas) >= 500:
             self.flush()
 
     def flush(self) -> None:

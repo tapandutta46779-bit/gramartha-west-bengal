@@ -43,9 +43,7 @@ def _normalize_code(value: str) -> str:
     return normalized.rstrip("0").rstrip(".") if "." in normalized else normalized
 
 
-def _key(
-    row: dict[str, str], columns: list[str], normalize_codes: bool = False
-) -> tuple[str, ...]:
+def _key(row: dict[str, str], columns: list[str], normalize_codes: bool = False) -> tuple[str, ...]:
     normalizer = _normalize_code if normalize_codes else str.strip
     return tuple(normalizer(row[column]) for column in columns)
 
@@ -71,9 +69,7 @@ def build_hces_priors(input_path: Path, mapping_path: Path, output_path: Path) -
                 )
             )
         return stack.enter_context(
-            (input_path / spec["file"]).open(
-                newline="", encoding=spec.get("encoding", "utf-8-sig")
-            )
+            (input_path / spec["file"]).open(newline="", encoding=spec.get("encoding", "utf-8-sig"))
         )
 
     households = {}
@@ -119,12 +115,12 @@ def build_hces_priors(input_path: Path, mapping_path: Path, output_path: Path) -
             if recall_days <= 0:
                 raise ValueError("recall days must be positive")
             monthly_factor = 30 / recall_days
-            household_amounts[(household_key, category)]["quantity"] += _number(
-                row, item_spec.get("quantity_column")
-            ) * monthly_factor
-            household_amounts[(household_key, category)]["expenditure"] += _number(
-                row, item_spec.get("expenditure_column")
-            ) * monthly_factor
+            household_amounts[(household_key, category)]["quantity"] += (
+                _number(row, item_spec.get("quantity_column")) * monthly_factor
+            )
+            household_amounts[(household_key, category)]["expenditure"] += (
+                _number(row, item_spec.get("expenditure_column")) * monthly_factor
+            )
     totals = defaultdict(lambda: defaultdict(float))
     sample_households: dict[tuple, int] = defaultdict(int)
     for household_key, household in households.items():
@@ -146,9 +142,7 @@ def build_hces_priors(input_path: Path, mapping_path: Path, output_path: Path) -
             totals[group]["weighted_quantity"] += person_weight * quantity_per_capita
             totals[group]["weighted_expenditure"] += person_weight * expenditure_per_capita
             totals[group]["sum_weight_squared"] += person_weight**2
-            totals[group]["sum_weighted_quantity_squared"] += (
-                person_weight * quantity_per_capita**2
-            )
+            totals[group]["sum_weighted_quantity_squared"] += person_weight * quantity_per_capita**2
             totals[group]["sum_weighted_expenditure_squared"] += (
                 person_weight * expenditure_per_capita**2
             )

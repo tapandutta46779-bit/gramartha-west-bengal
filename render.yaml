@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: gramartha-west-bengal
+    runtime: python
+    plan: free
+    buildCommand: pip install -r deploy/requirements.txt
+    startCommand: bash deploy/start.sh
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8

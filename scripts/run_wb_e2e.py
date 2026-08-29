@@ -86,9 +86,7 @@ def run() -> dict:
         ),
     }
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    (OUTPUT / "WEST_BENGAL_MULTI_DISTRICT_E2E.json").write_text(
-        json.dumps(report, indent=2) + "\n"
-    )
+    (OUTPUT / "WEST_BENGAL_MULTI_DISTRICT_E2E.json").write_text(json.dumps(report, indent=2) + "\n")
     return report
 
 

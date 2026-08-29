@@ -69,6 +69,10 @@ class VentureDecision(BaseModel):
     supply: EstimateInterval | None = None
     price: EstimateInterval | None = None
     competition: dict[str, Any] = Field(default_factory=dict)
+    sector_intelligence: dict[str, Any] = Field(default_factory=dict)
+    entry_difficulty: dict[str, Any] = Field(default_factory=dict)
+    premortem: list[dict[str, Any]] = Field(default_factory=list)
+    action_plan: dict[str, list[str]] = Field(default_factory=dict)
     catchment: dict[str, Any] = Field(default_factory=dict)
     generated_graph: EconomicGraph | None = None
     economic_graph_summary: dict[str, Any] = Field(default_factory=dict)
@@ -77,6 +81,7 @@ class VentureDecision(BaseModel):
     selected_venture: VentureCandidate | None = None
     counterfactual: CounterfactualResult | None = None
     mvv: MVVResult | None = None
+    constraint_analysis: dict[str, Any] = Field(default_factory=dict)
     loan_terms: LoanTerms | None = None
     official_finance: list[SchemeEligibility] = Field(default_factory=list)
     prudent_financing: dict[str, Any] = Field(default_factory=dict)
@@ -85,6 +90,7 @@ class VentureDecision(BaseModel):
     investment_payback: int | None = None
     stress: StressResult | None = None
     failure_boundaries: list[Any] = Field(default_factory=list)
+    sensitivity_analysis: list[dict[str, Any]] = Field(default_factory=list)
     robust_comparison: dict[str, Any] = Field(default_factory=dict)
     alternatives: list[VentureCandidate] = Field(default_factory=list)
     candidate_ventures: list[VentureCandidate] = Field(default_factory=list)

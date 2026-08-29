@@ -48,9 +48,7 @@ def audit() -> dict:
         with zipfile.ZipFile(ROOT / item["local_path"]) as archive:
             bad_member = archive.testzip()
             if bad_member:
-                zip_failures.append(
-                    {"dataset_id": item["dataset_id"], "bad_member": bad_member}
-                )
+                zip_failures.append({"dataset_id": item["dataset_id"], "bad_member": bad_member})
     checks.append(
         {
             "check": "restricted_zip_crc_integrity",
@@ -128,8 +126,7 @@ def audit() -> dict:
     for prior in asuse["priors"]:
         metrics = prior["weighted_metric_summaries"]
         if all(
-            name in metrics
-            for name in ("annual_output_inr", "annual_input_inr", "annual_gva_inr")
+            name in metrics for name in ("annual_output_inr", "annual_input_inr", "annual_gva_inr")
         ):
             residuals.append(
                 abs(

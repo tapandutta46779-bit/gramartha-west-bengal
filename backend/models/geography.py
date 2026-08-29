@@ -36,6 +36,41 @@ class GeographicIdentity(BaseModel):
     osm_ids: list[str] = Field(default_factory=list)
 
 
+class CurrentGeoEntity(BaseModel):
+    canonical_current_id: str
+    canonical_name: str
+    entity_type: str
+    parent_current_id: str | None = None
+    district_current_id: str
+    current_district: str
+    official_code: str | None = None
+    effective_from: str | None = None
+    effective_to: str | None = None
+    source_geo_id: str | None = None
+    source: str
+    payload: GeographicIdentity | None = None
+
+
+class HistoricalGeoEntity(BaseModel):
+    source: str
+    source_geo_id: str
+    source_name: str
+    source_parent: str | None = None
+    source_district: str
+    observation_year: int
+
+
+class GeoCrosswalk(BaseModel):
+    source: str
+    source_geo_id: str
+    canonical_current_id: str
+    relation: str
+    confidence: float = Field(ge=0, le=1)
+    effective_from: str | None = None
+    effective_to: str | None = None
+    notes: str
+
+
 class GeographicResolution(BaseModel):
     query_state: str
     query_district: str | None = None

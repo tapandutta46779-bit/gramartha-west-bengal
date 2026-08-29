@@ -55,13 +55,9 @@ def test_hces_weighted_prior_is_per_capita_and_month_normalized(tmp_path: Path) 
 
 def test_hces_zero_consumption_household_remains_in_denominator(tmp_path: Path) -> None:
     (tmp_path / "households.csv").write_text(
-        "id,state,district,region,sector,weight,size\n"
-        "01,19,D,R,rural,1,2\n"
-        "2,19,D,R,rural,1,2\n"
+        "id,state,district,region,sector,weight,size\n01,19,D,R,rural,1,2\n2,19,D,R,rural,1,2\n"
     )
-    (tmp_path / "items.csv").write_text(
-        "id,item,quantity,expenditure,days\n1.0,milk,14,140,7\n"
-    )
+    (tmp_path / "items.csv").write_text("id,item,quantity,expenditure,days\n1.0,milk,14,140,7\n")
     mapping = {
         "dataset_id": "HCES-ZERO-TEST",
         "dataset_version": "test",
@@ -113,17 +109,13 @@ def test_asuse_weighted_sector_prior(tmp_path: Path) -> None:
             "2,1,01,01,191,16,2,47,47212,2,6,100\n"
             "3,1,01,01,181,01,2,47,47211,1,12,9900\n"
         ),
-        "LEVEL - 03.csv": (
-            f"{key},ref_period_type\n1,1,01,01,1\n2,1,01,01,1\n3,1,01,01,1\n"
-        ),
+        "LEVEL - 03.csv": (f"{key},ref_period_type\n1,1,01,01,1\n2,1,01,01,1\n3,1,01,01,1\n"),
         "LEVEL - 08.csv": (
             f"{key},item_no,value_rs\n"
             "1,1,01,01,765,50\n1,1,01,01,766,150\n1,1,01,01,769,100\n"
             "2,1,01,01,765,100\n2,1,01,01,766,500\n2,1,01,01,769,400\n"
         ),
-        "LEVEL - 09.csv": (
-            f"{key},item_no,total_workers\n1,1,01,01,789,2\n2,1,01,01,789,5\n"
-        ),
+        "LEVEL - 09.csv": (f"{key},item_no,total_workers\n1,1,01,01,789,2\n2,1,01,01,789,5\n"),
         "LEVEL - 11.csv": (
             f"{key},item_no,mv_assets_owned\n"
             "1,1,01,01,1001,10\n1,1,01,01,1003,20\n1,1,01,01,1019,40\n"

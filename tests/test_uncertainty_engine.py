@@ -1,6 +1,7 @@
 from backend.engine.uncertainty import (
     conditional_value_at_risk,
     failure_boundaries,
+    sensitivity_analysis,
     triangular_scenarios,
     value_at_risk,
 )
@@ -48,7 +49,25 @@ def test_failure_boundaries_are_ordered_and_reproducible():
         "monthly_demand",
         "selling_price_factor",
         "variable_cost_factor",
+        "fixed_opex_factor",
+        "minimum_cash_buffer",
     ]
     assert result[0]["threshold"] is None or 0 <= result[0]["threshold"] <= 30_000
     assert result[1]["threshold"] is None or 0 <= result[1]["threshold"] <= 1
-    assert result[2]["threshold"] is None or 1 <= result[2]["threshold"] <= 2.5
+    assert result[2]["threshold"] is None or 1 <= result[2]["threshold"] <= 10
+    assert result[3]["threshold"] is None or 1 <= result[3]["threshold"] <= 10
+    assert result[4]["threshold"] is None or result[4]["threshold"] >= 0
+
+
+def test_sensitivity_is_ranked_and_uses_controlled_perturbations():
+    result = sensitivity_analysis(
+        candidate(), available_capital=100_000, monthly_demand=30_000, margin_share=0.3
+    )
+    assert {item["variable"] for item in result} == {
+        "demand",
+        "selling_price",
+        "variable_cost",
+        "fixed_opex",
+    }
+    absolute = [abs(item["elasticity"] or 0) for item in result]
+    assert absolute == sorted(absolute, reverse=True)

@@ -29,12 +29,15 @@
           <label>Analysis<select id="analysis-mode"><option value="deep" selected>Deep — 512 scenarios</option><option value="quick">Quick — central estimate</option></select></label>
           <label>Language<select id="language"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option></select></label>
           <details class="advanced"><summary>Optional entrepreneur profile</summary><div class="advanced-grid">
-            <label>Desired monthly income (₹)<input id="income-target" type="number" min="0" value="0" /></label>
+            <label>Desired monthly income (₹)<input id="income-target" type="number" min="0" placeholder="Optional" /></label>
             <label>Maximum acceptable debt (₹)<input id="max-debt" type="number" min="0" /></label>
             <label>Experience (years)<input id="experience" type="number" min="0" value="0" /></label>
             <label>Risk tolerance<select id="risk-tolerance"><option>LOW</option><option selected>MEDIUM</option><option>HIGH</option></select></label>
             <label>Existing assets<input id="assets" placeholder="shop, land, vehicle" /></label>
             <label>Skills<input id="skills" placeholder="sales, bookkeeping, food handling" /></label>
+            <label>Mobility limit (km)<input id="mobility" type="number" min="0" placeholder="Optional" /></label>
+            <label>Time available (hours/week)<input id="time-available" type="number" min="0" placeholder="Optional" /></label>
+            <label>Family labour available<input id="family-labour" type="number" min="0" value="0" /></label>
           </div></details>
           <button class="primary" type="submit" disabled id="analyze-button">Select your area first</button>
         </form>

@@ -64,9 +64,7 @@ def _category_baseline(
     test_categories: list[str],
 ) -> np.ndarray:
     totals: dict[str, list[float]] = defaultdict(lambda: [0.0, 0.0])
-    for category, value, weight in zip(
-        train_categories, train_target, train_weight, strict=True
-    ):
+    for category, value, weight in zip(train_categories, train_target, train_weight, strict=True):
         totals[category][0] += float(value * weight)
         totals[category][1] += float(weight)
     fallback = float(np.average(train_target, weights=train_weight))
@@ -318,9 +316,7 @@ def load_asuse_2025_training_rows() -> tuple[
 
 def model_templates(seed: int = 26091) -> dict[str, Pipeline]:
     return {
-        "ridge_one_hot": Pipeline(
-            [("features", DictVectorizer()), ("model", Ridge(alpha=10.0))]
-        ),
+        "ridge_one_hot": Pipeline([("features", DictVectorizer()), ("model", Ridge(alpha=10.0))]),
         "random_forest": Pipeline(
             [
                 ("features", DictVectorizer()),

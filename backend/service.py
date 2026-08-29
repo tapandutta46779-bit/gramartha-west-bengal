@@ -10,7 +10,11 @@ from backend.api.contracts import AnalyzeRequest
 from backend.engine.bottleneck import rank_capacity_bottlenecks
 from backend.engine.flow_engine import solve_min_cost_flow
 from backend.engine.mvv import select_minimum_viable_venture
-from backend.engine.uncertainty import compare_candidates_under_uncertainty, failure_boundaries
+from backend.engine.uncertainty import (
+    compare_candidates_under_uncertainty,
+    failure_boundaries,
+    sensitivity_analysis,
+)
 from backend.evidence.geography_resolver import resolve_locality
 from backend.evidence.store import EvidenceStore
 from backend.explanation import deterministic_explanation
@@ -32,6 +36,7 @@ from backend.models.evidence import ConfidenceLevel, EvidenceType
 from backend.models.geography import GeographicResolution, ResolutionMethod
 from backend.models.profile import EntrepreneurProfile
 from backend.pipeline.automatic import build_automatic_inputs
+from backend.pipeline.sector_factors import sector_factors
 from backend.spatial.osm_store import OsmEntity, OsmSpatialStore, haversine_km
 
 
@@ -73,10 +78,12 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
     baseline = solve_min_cost_flow(graph) if graph else None
     bottlenecks = rank_capacity_bottlenecks(graph, baseline) if graph and baseline else []
     automatic_margin = (
-        float(automatic.price.central)
-        if automatic.price.unit == "gross margin share" and automatic.price.central is not None
+        float(automatic.contribution_margin_per_unit)
+        if automatic.contribution_margin_per_unit is not None
         else request.contribution_margin_per_unit
     )
+    automatic_unit_price = float(automatic.unit_price or 1.0)
+    automatic_variable_cost = max(0.0, automatic_unit_price - automatic_margin)
     mvv = None
     if graph and candidates:
         mvv = select_minimum_viable_venture(
@@ -106,9 +113,9 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
             opening_cash=max(float(entrepreneur.available_capital) - selected.investment, 0),
             monthly_demand=float(automatic.demand.central),
             capacity=float(selected.total_capacity),
-            unit_price=1.0,
-            variable_cost_per_unit=min(0.92, max(0.05, 1 - automatic_margin)),
-            fixed_monthly_cost=float(selected.monthly_opex) * 0.15,
+            unit_price=automatic_unit_price,
+            variable_cost_per_unit=automatic_variable_cost,
+            fixed_monthly_cost=float(selected.monthly_opex),
             growth_rate=0.003,
             ramp_months=6,
             initial_investment=float(selected.investment),
@@ -154,12 +161,13 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         }
     robust_analysis = {}
     computed_boundaries = []
+    computed_sensitivities = []
     if (
         request.analysis_mode == "deep"
         and selected
         and candidates
         and automatic.demand.central
-        and automatic.price.unit == "gross margin share"
+        and automatic_margin > 0
     ):
         robust_analysis = compare_candidates_under_uncertainty(
             candidates,
@@ -167,13 +175,25 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
             monthly_demand=float(automatic.demand.central),
             margin_share=automatic_margin,
             seed_key=f"{geography.geo_id}:{sector}:deep-v1",
-            minimum_monthly_income=float(entrepreneur.minimum_monthly_income),
+            unit_price=automatic_unit_price,
+            variable_cost_per_unit=automatic_variable_cost,
+            minimum_monthly_income=float(entrepreneur.minimum_monthly_income or 0),
         )
         computed_boundaries = failure_boundaries(
             selected,
             available_capital=float(entrepreneur.available_capital),
             monthly_demand=float(automatic.demand.central),
             margin_share=automatic_margin,
+            unit_price=automatic_unit_price,
+            variable_cost_per_unit=automatic_variable_cost,
+        )
+        computed_sensitivities = sensitivity_analysis(
+            selected,
+            available_capital=float(entrepreneur.available_capital),
+            monthly_demand=float(automatic.demand.central),
+            margin_share=automatic_margin,
+            unit_price=automatic_unit_price,
+            variable_cost_per_unit=automatic_variable_cost,
         )
     finance_screen = screen_pmmy(
         sector=sector,
@@ -199,12 +219,31 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
     )
     confidence = _decision_confidence(resolution, evidence, blocking, synthetic_only)
     limitations = [gate.message for gate in gates]
-    swot = _derive_swot(evidence, spatial, baseline, bottlenecks, gates)
+    intelligence = _sector_intelligence(sector, spatial, selected)
+    entry_difficulty = _entry_difficulty(selected, entrepreneur, confidence, intelligence)
+    premortem = _premortem(
+        selected,
+        twin,
+        computed_sensitivities,
+        spatial["competition"],
+        automatic.demand,
+    )
+    swot = _derive_swot(
+        selected,
+        twin,
+        automatic,
+        spatial,
+        baseline,
+        bottlenecks,
+        computed_sensitivities,
+        gates,
+    )
+    action_plan = _action_plan(selected, automatic, computed_boundaries, premortem)
     decision = VentureDecision(
         analysis_id=analysis_id,
         created_at=now,
         status=status,
-        methodology_version="decision-v5",
+        methodology_version="decision-v6",
         geography=geography,
         geo_resolution=resolution,
         entrepreneur=entrepreneur,
@@ -224,6 +263,10 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         supply=automatic.supply,
         price=automatic.price,
         competition=spatial["competition"],
+        sector_intelligence=intelligence,
+        entry_difficulty=entry_difficulty,
+        premortem=premortem,
+        action_plan=action_plan,
         catchment=spatial["catchment"],
         generated_graph=graph if request.graph is None else None,
         economic_graph_summary=(
@@ -240,17 +283,38 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         selected_venture=selected,
         counterfactual=mvv.counterfactual if mvv else None,
         mvv=mvv,
+        constraint_analysis=(
+            {
+                "binding_constraints": mvv.binding_constraints,
+                "inverse_analysis": mvv.inverse_analysis,
+                "minimum_relaxation": mvv.constraint_relaxation,
+                "interpretation": (
+                    "Exact only over the generated candidate configurations; debt is a ceiling, "
+                    "not a target."
+                ),
+            }
+            if mvv
+            else {}
+        ),
         loan_terms=loan_terms,
         official_finance=[finance_screen, ahidf_screen],
         prudent_financing=(
             {
                 "estimated_project_cost": selected.investment,
                 "available_own_capital": float(entrepreneur.available_capital),
+                "own_capital_deployed": min(
+                    selected.investment, float(entrepreneur.available_capital)
+                ),
+                "capital_preserved_as_reserve": max(
+                    float(entrepreneur.available_capital) - selected.investment, 0
+                ),
                 "illustrative_financing_requirement": max(
                     selected.investment - float(entrepreneur.available_capital), 0
                 ),
+                "maximum_acceptable_debt": entrepreneur.acceptable_debt,
                 "wording": "Potentially eligible / illustrative structure; not lender approval.",
                 "financial_metrics": financial_metrics,
+                **_cost_breakdowns(selected, twin, sector),
             }
             if selected
             else {}
@@ -261,6 +325,7 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         alternatives=[candidate for candidate in candidates if candidate != selected],
         candidate_ventures=candidates,
         failure_boundaries=computed_boundaries,
+        sensitivity_analysis=computed_sensitivities,
         robust_comparison=(
             {
                 "best_base_case": selected.candidate_id,
@@ -274,18 +339,7 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
             if selected and candidates
             else {}
         ),
-        staged_plan=(
-            [
-                "Stage 1: start the selected minimum-capital configuration and preserve the "
-                "modelled cash buffer.",
-                "Stage 2 trigger: expand after three consecutive months above 70% capacity "
-                "with non-negative closing cash.",
-                "Stage 3 trigger: consider owned assets after reserves cover three months of "
-                "operating cost.",
-            ]
-            if selected
-            else []
-        ),
+        staged_plan=_staged_plan(selected, twin, computed_boundaries),
         swot=swot,
         explanation=deterministic_explanation(
             request.language, gates=gates, has_selection=bool(selected and not blocking)
@@ -426,7 +480,7 @@ def _refusal(
         analysis_id=analysis_id,
         created_at=now,
         status=DecisionStatus.INSUFFICIENT_EVIDENCE,
-        methodology_version="decision-v5",
+        methodology_version="decision-v6",
         geo_resolution=resolution,
         sector=request.business_category,
         confidence=ConfidenceLevel.INSUFFICIENT,
@@ -483,7 +537,7 @@ def _spatial_context(geography, radius_km: float, sector: str) -> dict:
         radius_km,
         limit=50_000,
     )
-    competitors = _sector_competitors(radial.entities, sector)
+    direct_competitors, indirect_competitors = _sector_competitors(radial.entities, sector)
     institutions = [
         item
         for item in radial.entities
@@ -499,6 +553,12 @@ def _spatial_context(geography, radius_km: float, sector: str) -> dict:
     ]
     markets = [item for item in radial.entities if item.category == "MARKET"]
     nearest_market = _nearest_entity(geography.latitude, geography.longitude, markets)
+    nearest_institutions = sorted(
+        institutions,
+        key=lambda item: haversine_km(
+            geography.latitude, geography.longitude, item.latitude, item.longitude
+        ),
+    )[:10]
     route = None
     if nearest_market:
         route = store.route(
@@ -529,11 +589,39 @@ def _spatial_context(geography, radius_km: float, sector: str) -> dict:
         },
         "competition": {
             "sector": sector,
-            "osm_proxy_count": len(competitors),
-            "categories": sorted({item.category for item in competitors}),
+            "osm_proxy_count": len(direct_competitors) + len(indirect_competitors),
+            "direct_count": len(direct_competitors),
+            "indirect_count": len(indirect_competitors),
+            "categories": sorted(
+                {item.category for item in [*direct_competitors, *indirect_competitors]}
+            ),
+            "likely_direct_competitors": [
+                _entity_summary(geography.latitude, geography.longitude, item)
+                for item in _nearest_entities(
+                    geography.latitude,
+                    geography.longitude,
+                    direct_competitors,
+                    12,
+                )
+            ],
+            "likely_indirect_competitors": [
+                _entity_summary(geography.latitude, geography.longitude, item)
+                for item in _nearest_entities(
+                    geography.latitude,
+                    geography.longitude,
+                    indirect_competitors,
+                    12,
+                )
+            ],
             "capacity": None,
             "capacity_confidence": "UNKNOWN",
-            "caveat": ("OSM count is an incomplete proxy; it is not incumbent capacity or sales."),
+            "competition_intensity": _competition_intensity(len(direct_competitors), radius_km),
+            "intensity_confidence": "LOW_OSM_PROXY",
+            "hhi": None,
+            "caveat": (
+                "OSM candidates are deduplicated direct/indirect proxies; capacity, sales and "
+                "market shares remain unknown, so HHI is not calculated."
+            ),
         },
         "limitations": [radial.caveat],
         "sources": {"https://geo2day.com/asia/india/west_bengal.pbf"},
@@ -541,16 +629,53 @@ def _spatial_context(geography, radius_km: float, sector: str) -> dict:
             "DS071-OSM": metadata.get("source_sha256", "UNKNOWN"),
             "osm_extractor": metadata.get("extractor_version", "UNKNOWN"),
         },
+        "institutions": [
+            _entity_summary(geography.latitude, geography.longitude, item)
+            for item in nearest_institutions
+        ],
+        "markets": [
+            _entity_summary(geography.latitude, geography.longitude, item)
+            for item in _nearest_entities(geography.latitude, geography.longitude, markets, 10)
+        ],
     }
 
 
-def _sector_competitors(entities: list[OsmEntity], sector: str) -> list[OsmEntity]:
-    sector = sector.casefold()
-    if sector in {"dairy", "milk"}:
-        categories = {"DAIRY", "FOOD_SHOP", "SUPERMARKET", "GENERAL_SHOP"}
-    else:
-        categories = {"GENERAL_SHOP", "MARKET"}
-    return [entity for entity in entities if entity.category in categories]
+def _sector_competitors(
+    entities: list[OsmEntity], sector: str
+) -> tuple[list[OsmEntity], list[OsmEntity]]:
+    factors = sector_factors(sector)
+    direct_categories = factors.direct_osm_categories if factors else frozenset()
+    indirect_categories = factors.indirect_osm_categories if factors else frozenset()
+    direct = [entity for entity in entities if entity.category in direct_categories]
+    indirect = [
+        entity
+        for entity in entities
+        if entity.category in indirect_categories and entity.category not in direct_categories
+    ]
+    return direct, indirect
+
+
+def _nearest_entities(
+    latitude: float,
+    longitude: float,
+    entities: list[OsmEntity],
+    limit: int,
+) -> list[OsmEntity]:
+    return sorted(
+        entities,
+        key=lambda item: haversine_km(latitude, longitude, item.latitude, item.longitude),
+    )[:limit]
+
+
+def _competition_intensity(direct_count: int, radius_km: float) -> str:
+    density = direct_count / max(3.14159 * radius_km * radius_km, 1)
+    if direct_count == 0:
+        return "NO_OSM_DIRECT_CANDIDATE_FOUND"
+    if density < 0.03:
+        return "LOW_PROXY_DENSITY"
+    if density < 0.12:
+        return "MEDIUM_PROXY_DENSITY"
+    return "HIGH_PROXY_DENSITY"
 
 
 def _nearest_entity(latitude: float, longitude: float, entities: list[OsmEntity]):
@@ -576,34 +701,321 @@ def _entity_summary(latitude: float, longitude: float, entity: OsmEntity | None)
     }
 
 
-def _derive_swot(evidence, spatial, baseline, bottlenecks, gates):
+def _sector_intelligence(sector: str, spatial: dict, selected) -> dict:
+    factors = sector_factors(sector)
+    if factors is None:
+        return {}
+    channels = []
+    for index, channel in enumerate(factors.channels):
+        channels.append(
+            {
+                "channel": channel,
+                "rank": index + 1,
+                "role": "PRIMARY" if index == 0 else "SECONDARY",
+                "score_basis": (
+                    "sector-logic comparison of reach, margin, working capital, reliability "
+                    "and operating complexity; no local channel transaction data"
+                ),
+                "confidence": "LOW_ASSUMPTION_BASED",
+            }
+        )
+    return {
+        "factor_registry_version": "sector-factor-registry-v1",
+        "customer_segments": list(factors.customer_segments),
+        "supplier_types": list(factors.supplier_types),
+        "distribution_channels": channels,
+        "operational_factors": list(factors.operational_factors),
+        "weather_factors": list(factors.weather_factors),
+        "insurance_options": list(factors.insurance),
+        "nearest_markets": spatial.get("markets", []),
+        "institutional_buyer_candidates": spatial.get("institutions", []),
+        "selected_equipment": selected.primitives[0].equipment if selected else [],
+        "segmentation_caveat": (
+            "Segments are defensible sector groups, not measured local percentage shares."
+        ),
+    }
+
+
+def _entry_difficulty(selected, profile, confidence, intelligence: dict) -> dict:
+    if selected is None:
+        return {}
+    primitive = selected.primitives[0]
+    score = 0
+    reasons = []
+    capital_ratio = selected.investment / max(float(profile.available_capital), 1)
+    if capital_ratio > 1:
+        score += 2
+        reasons.append("requires financing above own capital")
+    elif capital_ratio > 0.65:
+        score += 1
+        reasons.append("uses a large share of available capital")
+    if primitive.cash_conversion_cycle_days > 25:
+        score += 2
+        reasons.append("long cash-conversion cycle")
+    elif primitive.cash_conversion_cycle_days > 14:
+        score += 1
+        reasons.append("moderate inventory/receivable cycle")
+    if len(primitive.licence_assumptions) >= 2:
+        score += 1
+        reasons.append("multiple approvals must be verified")
+    if primitive.staff > 2:
+        score += 1
+        reasons.append("multi-person operating requirement")
+    if confidence != ConfidenceLevel.HIGH:
+        score += 1
+        reasons.append("important locality inputs remain benchmark-adjusted")
+    label = "LOW" if score <= 2 else "MEDIUM" if score <= 5 else "HIGH"
+    return {
+        "label": label,
+        "score": score,
+        "scale": "0-8 rule-based planning score",
+        "reasons": reasons,
+        "confidence": "MEDIUM_RULE_BASED" if intelligence else "LOW",
+    }
+
+
+def _premortem(selected, twin, sensitivities, competition, demand) -> list[dict]:
+    if selected is None:
+        return []
+    causes = []
+    prevention = {
+        "demand": "Pilot weekly sales before fixed-asset purchase and stop below the sales floor.",
+        "selling_price": "Validate current customer prices and negotiate supplier terms first.",
+        "variable_cost": "Obtain two supplier quotes and cap procurement cost per unit.",
+        "fixed_opex": "Avoid a long lease until three months of demand are demonstrated.",
+    }
+    for item in sensitivities[:3]:
+        variable = item["variable"]
+        causes.append(
+            {
+                "rank": len(causes) + 1,
+                "cause": f"Adverse {variable.replace('_', ' ')} moved cash below plan.",
+                "evidence": (
+                    f"Controlled +/-{item['perturbation'] * 100:.0f}% perturbation; "
+                    f"elasticity {item['elasticity']:.2f}."
+                    if item["elasticity"] is not None
+                    else "Controlled perturbation around the central planning case."
+                ),
+                "prevention": prevention[variable],
+            }
+        )
+    if competition.get("direct_count", 0) > 0:
+        causes.append(
+            {
+                "rank": len(causes) + 1,
+                "cause": "Customer acquisition was slower because nearby alternatives existed.",
+                "evidence": (
+                    f"{competition['direct_count']} direct OSM proxy candidates in the catchment; "
+                    "capacity remains unknown."
+                ),
+                "prevention": (
+                    "Interview customers and differentiate channel/service before launch."
+                ),
+            }
+        )
+    if demand.status == "MODELLED_BENCHMARK":
+        causes.append(
+            {
+                "rank": len(causes) + 1,
+                "cause": "The regional benchmark did not translate into real locality sales.",
+                "evidence": (
+                    "Demand is modelled from a regional survey prior, not transaction data."
+                ),
+                "prevention": (
+                    "Run a small paid pilot and replace the benchmark with observed sales."
+                ),
+            }
+        )
+    return causes[:5]
+
+
+def _derive_swot(
+    selected,
+    twin,
+    automatic,
+    spatial,
+    baseline,
+    bottlenecks,
+    sensitivities,
+    gates,
+):
     strengths = []
-    weaknesses = [gate.message for gate in gates if gate.blocking]
+    weaknesses = []
     opportunities = []
     threats = []
-    observed = [item for item in evidence if item.evidence_type == EvidenceType.OBSERVED]
-    if observed:
-        strengths.append(f"{len(observed)} source-linked observed records are attached.")
-    if spatial["catchment"]:
-        strengths.append(
-            f"Indexed OSM catchment contains {spatial['catchment']['entity_count']} proxy entities."
-        )
-        if spatial["competition"].get("capacity") is None:
-            threats.append("Competitor capacity is unknown; OSM count cannot replace it.")
+    if selected and twin:
+        primitive = selected.primitives[0]
+        if twin.investment_payback_month and twin.investment_payback_month <= 24:
+            strengths.append(f"Central planning payback is {twin.investment_payback_month} months.")
+        if primitive.cash_conversion_cycle_days <= 14:
+            strengths.append(
+                f"The modelled cash-conversion cycle is short at "
+                f"{primitive.cash_conversion_cycle_days:g} days."
+            )
+        if twin.months[11].operating_cash_flow > 0:
+            strengths.append("Month-12 operating cash flow is positive in the central model.")
+        if selected.investment > 0 and primitive.working_capital / selected.investment > 0.5:
+            weaknesses.append("More than half of project cost is tied up in working capital.")
+        if primitive.staff > 2:
+            weaknesses.append(f"The starting configuration coordinates {primitive.staff} people.")
+    if automatic.demand.status == "MODELLED_BENCHMARK":
+        weaknesses.append("Local demand is a regional benchmark, not observed locality sales.")
     if baseline and baseline.unserved_demand > 0:
         opportunities.append(
-            f"The exact flow model measures {baseline.unserved_demand:g} units of unserved demand."
+            f"The planning graph contains {baseline.unserved_demand:g} units of unserved flow."
+        )
+    factors = sector_factors(selected.primitives[0].sector_compatibility[0]) if selected else None
+    if factors and len(factors.channels) > 1:
+        opportunities.append(
+            f"A secondary {factors.channels[1]} channel can diversify the primary route."
         )
     if bottlenecks:
-        opportunities.append(
-            f"{len(bottlenecks)} source-linked marginal capacity repairs were evaluated."
-        )
+        opportunities.append(f"{len(bottlenecks)} marginal capacity repair options were evaluated.")
+    if sensitivities:
+        top = sensitivities[0]
+        label = top["variable"].replace("_", " ").title()
+        elasticity = top.get("elasticity")
+        if elasticity is None:
+            threats.append(f"{label} is the strongest tested cash driver.")
+        else:
+            threats.append(
+                f"{label} is the strongest tested cash driver (elasticity {elasticity:.2f})."
+            )
+    if spatial["competition"].get("capacity") is None:
+        threats.append("Competitor capacity and market shares remain unknown.")
+    threats.extend(gate.message for gate in gates if gate.blocking)
     return {
         "strengths": strengths,
         "weaknesses": weaknesses,
         "opportunities": opportunities,
         "threats": threats,
     }
+
+
+def _cost_breakdowns(selected, twin, sector: str) -> dict:
+    if selected is None:
+        return {}
+    primitive = selected.primitives[0]
+    factors = sector_factors(sector)
+    capex = float(primitive.capex)
+    capex_breakdown = {
+        "equipment_and_fixtures": capex * 0.70,
+        "installation_and_setup": capex * 0.15,
+        "premises_deposit_and_basic_fitout": capex * 0.10,
+        "licensing_and_contingency": capex * 0.05,
+    }
+    fixed_total = float(primitive.monthly_opex)
+    variable_total = twin.months[11].variable_cost if twin else None
+    fixed_breakdown = (
+        {name: fixed_total * share for name, share in factors.fixed_cost_shares}
+        if factors
+        else {"fixed_overhead": fixed_total}
+    )
+    variable_breakdown = (
+        {name: variable_total * share for name, share in factors.variable_cost_shares}
+        if factors and variable_total is not None
+        else {}
+    )
+    return {
+        "capex_breakdown": capex_breakdown,
+        "monthly_opex_breakdown": {
+            "fixed": fixed_breakdown,
+            "variable_month_12": variable_breakdown,
+            "note": (
+                "Benchmark-adjusted allocation of ASUSE-derived cost totals; obtain current "
+                "local quotes before spending."
+            ),
+        },
+        "working_capital": {
+            "minimum_modelled": float(primitive.working_capital),
+            "recommended_with_15pct_buffer": float(primitive.working_capital) * 1.15,
+            "cash_conversion_cycle_days": primitive.cash_conversion_cycle_days,
+        },
+        "cost_basis": {
+            "status": "BENCHMARK_ADJUSTED",
+            "source": "ASUSE calendar-2025 district/sector/NIC2 prior",
+            "confidence": "LOW",
+            "current_quote_required": True,
+        },
+    }
+
+
+def _action_plan(selected, automatic, boundaries, premortem) -> dict[str, list[str]]:
+    if selected is None:
+        return {}
+    primitive = selected.primitives[0]
+    demand_boundary = next(
+        (item for item in boundaries if item["variable"] == "monthly_demand"), None
+    )
+    return {
+        "before_starting": [
+            "Validate at least two current supplier quotations and one customer selling price.",
+            "Confirm premises, power/water/internet needs and every listed licence with authority.",
+            f"Ring-fence at least INR {primitive.working_capital:,.0f} as working capital.",
+        ],
+        "day_1_7": [
+            "Interview at least ten target customers and record purchase frequency and price.",
+            "Run a paid micro-pilot before buying the full equipment configuration.",
+        ],
+        "first_30_days": [
+            (
+                "Track daily sales, contribution margin, inventory days, cash and "
+                "rejected/wasted stock."
+            ),
+            "Reconcile supplier invoices and customer receipts weekly.",
+        ],
+        "months_2_3": [
+            "Continue only if contribution margin and closing cash remain non-negative.",
+            "Add the secondary channel only after the primary channel repeats reliably.",
+        ],
+        "months_4_6": [
+            "Compare realized sales with the model interval and recalibrate before expansion.",
+            "Build at least two active suppliers and avoid single-buyer dependence.",
+        ],
+        "stop_or_reconsider": [
+            (
+                f"Reconsider if monthly sales remain below {demand_boundary['threshold']:,.0f}."
+                if demand_boundary and demand_boundary["threshold"] is not None
+                else "Use the tested demand-deterioration statement as the sales stop rule."
+            ),
+            *(item["prevention"] for item in premortem[:2]),
+        ],
+    }
+
+
+def _staged_plan(selected, twin, boundaries) -> list[str]:
+    if selected is None or twin is None:
+        return []
+    primitive = selected.primitives[0]
+    reserve_target = max(float(primitive.monthly_opex) * 3, float(primitive.working_capital) * 0.25)
+    stable_month = next(
+        (
+            month.month
+            for month in twin.months
+            if month.closing_cash >= reserve_target
+            and month.sales_volume >= float(selected.total_capacity) * 0.70
+        ),
+        None,
+    )
+    boundary_note = next(
+        (item["interpretation"] for item in boundaries if item["variable"] == "monthly_demand"),
+        "Demand boundary was not computed in Quick mode.",
+    )
+    return [
+        "Stage 0: validate prices, suppliers and paid demand using shared/rented assets.",
+        (
+            "Stage 1: deploy the selected configuration and preserve "
+            f"INR {reserve_target:,.0f} reserve."
+        ),
+        (
+            f"Stage 2: the central model first supports a 70% utilization plus reserve trigger "
+            f"in month {stable_month}."
+            if stable_month
+            else "Stage 2: do not expand within 36 months because the reserve/utilization trigger "
+            "is not reached."
+        ),
+        f"Stop-rule context: {boundary_note}",
+    ]
 
 
 def _git_commit() -> str:

@@ -52,8 +52,7 @@ def district_targets(value: str) -> tuple[str, ...]:
 
 def district_context_matches(tags: dict[str, str], district: str) -> bool:
     contextual = " ".join(
-        str(tags.get(key, ""))
-        for key in ("addr:district", "is_in:district", "district", "is_in")
+        str(tags.get(key, "")) for key in ("addr:district", "is_in:district", "district", "is_in")
     )
     normalized_context = normalize_district(contextual)
     return bool(contextual) and any(
@@ -71,14 +70,10 @@ def enrich(evidence_database: Path, osm_database: Path, report_path: Path) -> di
     ):
         places[normalize(row["name"])].append(row)
     district_areas: dict[str, list] = defaultdict(list)
-    for row in osm.execute(
-        "SELECT name, geometry_wkt FROM admin_area WHERE admin_level = 5"
-    ):
+    for row in osm.execute("SELECT name, geometry_wkt FROM admin_area WHERE admin_level = 5"):
         district_areas[normalize_district(row["name"])].append(wkt.loads(row["geometry_wkt"]))
     subdistrict_areas: dict[str, list] = defaultdict(list)
-    for row in osm.execute(
-        "SELECT name, geometry_wkt FROM admin_area WHERE admin_level = 6"
-    ):
+    for row in osm.execute("SELECT name, geometry_wkt FROM admin_area WHERE admin_level = 6"):
         subdistrict_areas[normalize(row["name"])].append(wkt.loads(row["geometry_wkt"]))
 
     store = EvidenceStore(evidence_database)
@@ -153,9 +148,7 @@ def enrich(evidence_database: Path, osm_database: Path, report_path: Path) -> di
                     if geography_unit_counts[unit_key] > 1:
                         continue
                     if any(geometry.covers(point) for geometry in unit_geometries):
-                        contextual_matches.append(
-                            (candidate, "EXACT_NAME_IN_SUBDISTRICT_BOUNDARY")
-                        )
+                        contextual_matches.append((candidate, "EXACT_NAME_IN_SUBDISTRICT_BOUNDARY"))
                 elif district_tag_match:
                     contextual_matches.append((candidate, "EXACT_NAME_AND_OSM_DISTRICT"))
                 else:

@@ -58,8 +58,11 @@ def test_sector_adapter_builds_traceable_candidate_and_graph(sector: str, nic: s
         ),
     )
     assert result.graph is not None
-    assert len(result.candidates) == 3
+    assert len(result.candidates) == 5
     assert result.demand.status == "MODELLED_BENCHMARK"
     assert result.demand.lower < result.demand.central < result.demand.upper
-    assert all(candidate.investment <= 100_000 for candidate in result.candidates)
+    assert min(candidate.investment for candidate in result.candidates) <= 100_000
+    investments = [candidate.investment for candidate in result.candidates]
+    assert investments == sorted(investments)
+    assert len(set(investments)) == 5
     assert result.gates[0].blocking is False

@@ -52,9 +52,7 @@ def package_files() -> list[Path]:
         files.extend(path for path in (ROOT / directory).rglob("*") if allowed(path))
     output = ROOT / "outputs/SIH26091_WEST_BENGAL_ALL_DISTRICTS"
     files.extend(
-        path
-        for path in output.rglob("*")
-        if allowed(path) and path.name != "model_registry.json"
+        path for path in output.rglob("*") if allowed(path) and path.name != "model_registry.json"
     )
     files.append(output / "models/model_registry.json")
     return sorted(set(files))

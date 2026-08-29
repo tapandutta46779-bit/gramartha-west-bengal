@@ -4,16 +4,17 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from backend.api.contracts import AnalyzeRequest, CompareRequest, StressRequest
 from backend.evidence.store import EvidenceStore
 from backend.finance.digital_twin import project_monthly_cashflow
 from backend.finance.stress import find_failure_boundary, summarize_stress
+from backend.reporting.customer_pdf import build_customer_pdf
 from backend.service import analyze
 
-app = FastAPI(title="SIH26091 Hyperlocal Network Repair", version="0.5.0")
+app = FastAPI(title="SIH26091 Hyperlocal Network Repair", version="0.6.0")
 store = EvidenceStore(os.environ.get("SIH26091_SQLITE_PATH", ":memory:"))
 frontend_path = Path(__file__).resolve().parents[2] / "frontend"
 if frontend_path.exists():
@@ -27,7 +28,7 @@ def root():
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "methodology_version": "decision-v5"}
+    return {"status": "ok", "methodology_version": "decision-v6"}
 
 
 @app.get("/localities/search")
@@ -35,8 +36,9 @@ def search_localities(
     q: str = Query(min_length=1),
     limit: int = Query(20, ge=1, le=100),
     district: str | None = None,
+    locality_type: str | None = None,
 ):
-    return store.search_geographies(q, limit, district)
+    return store.search_geographies(q, limit, district, locality_type)
 
 
 @app.get("/districts")
@@ -47,6 +49,18 @@ def districts():
 @app.get("/evidence/{geo_id}")
 def evidence(geo_id: str):
     return {"geo_id": geo_id, "records": store.get_evidence(geo_id)}
+
+
+@app.get("/geography/{geo_id}/crosswalk")
+def geography_crosswalk(geo_id: str):
+    geography = store.get_geography(geo_id)
+    if geography is None:
+        raise HTTPException(404, "geography not found")
+    return {
+        "geo_id": geo_id,
+        "current_geography": geography,
+        "historical_crosswalks": store.get_crosswalks(geo_id),
+    }
 
 
 @app.post("/analyze")
@@ -113,3 +127,18 @@ def get_analysis(analysis_id: str):
     if decision is None:
         raise HTTPException(404, "analysis not found")
     return decision
+
+
+@app.get("/analysis/{analysis_id}/pdf")
+def get_analysis_pdf(analysis_id: str):
+    decision = store.get_analysis(analysis_id)
+    if decision is None:
+        raise HTTPException(404, "analysis not found")
+    if decision.selected_venture is None:
+        raise HTTPException(409, "analysis has no selected venture to report")
+    filename = f"GramArtha_{analysis_id}_business_plan.pdf"
+    return Response(
+        content=build_customer_pdf(decision),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )

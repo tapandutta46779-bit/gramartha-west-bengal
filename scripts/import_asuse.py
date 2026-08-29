@@ -34,9 +34,7 @@ def _enterprise_key(row: dict[str, str]) -> tuple[str, str, str, str]:
                 "sss",
             ],
         ),
-        _value(
-            row, ["sample_est_no", "sample_estab_no", "Sample_Establishment_No", "estno"]
-        ),
+        _value(row, ["sample_est_no", "sample_estab_no", "Sample_Establishment_No", "estno"]),
     )
 
 
@@ -104,9 +102,7 @@ def build_asuse_priors(input_path: Path, mapping_path: Path, output_path: Path) 
                 "nature_of_operation": row[
                     columns.get("nature_of_operation", "nature_of_operation")
                 ].strip(),
-                "months_operated": _number(
-                    row, columns.get("months_operated", "months_operated")
-                ),
+                "months_operated": _number(row, columns.get("months_operated", "months_operated")),
                 "weight": weight,
                 "metrics": {},
             }
@@ -122,9 +118,7 @@ def build_asuse_priors(input_path: Path, mapping_path: Path, output_path: Path) 
     financial_codes = {value: name for name, value in mapping["financial_item_codes"].items()}
     with ExitStack() as stack:
         for row in csv.DictReader(open_csv(stack, "financials")):
-            metric = financial_codes.get(
-                row[columns.get("financial_item", "item_no")].strip()
-            )
+            metric = financial_codes.get(row[columns.get("financial_item", "item_no")].strip())
             if not metric:
                 continue
             enterprise = enterprises.get(_enterprise_key(row))

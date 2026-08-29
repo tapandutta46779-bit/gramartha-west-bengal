@@ -143,7 +143,7 @@ def screen_ahidf(
             "The 3% figure is interest subvention, not the borrower's final lending rate.",
         ],
         missing_for_financing=[
-            *( ["source-linked project cost and finance requirement"] if amount is None else []),
+            *(["source-linked project cost and finance requirement"] if amount is None else []),
             "live AHIDF portal application-window confirmation",
             "lender-specific gross and net interest rate",
             "eligible project-cost verification and borrower margin",

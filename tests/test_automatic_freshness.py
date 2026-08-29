@@ -49,14 +49,18 @@ def test_stale_dynamic_values_cannot_unlock_graph_or_venture() -> None:
         geo_id="WB:test", available_capital=10_000, business_category="dairy"
     )
     stale = build_automatic_inputs(
-        geo_id="WB:test", sector="dairy", evidence=inputs(FreshnessStatus.STALE_FOR_DECISION),
+        geo_id="WB:test",
+        sector="dairy",
+        evidence=inputs(FreshnessStatus.STALE_FOR_DECISION),
         profile=profile,
     )
     assert stale.graph is None
     assert not stale.candidates
 
     current = build_automatic_inputs(
-        geo_id="WB:test", sector="dairy", evidence=inputs(FreshnessStatus.CURRENT),
+        geo_id="WB:test",
+        sector="dairy",
+        evidence=inputs(FreshnessStatus.CURRENT),
         profile=profile,
     )
     assert current.graph is not None

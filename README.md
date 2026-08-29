@@ -1,4 +1,4 @@
-# SIH26091 Hyper-Local Economic Network Repair
+# GramArtha v0.6.0 — West Bengal Hyper-Local Economic Network Repair
 
 Deterministic decision backend for evidence-backed micro-enterprise analysis across West Bengal.
 
@@ -30,10 +30,21 @@ SIH26091_OSM_SQLITE_PATH=data/west_bengal_osm.sqlite \
 Open `http://127.0.0.1:8000/ui/` for the evidence browser and
 `http://127.0.0.1:8000/docs` for the API contract.
 
+The current product is visually identifiable by its seven stages: **Setup, Local market,
+Opportunities, Risk, Plan, Finance and Action**. The v0.6.0 requirement audit is in
+`docs/REQUIREMENT_AUDIT_V0.6.0.md`.
+
+## Production deployment
+
+`render.yaml` defines the permanent HTTPS web service and automatic deployment on commits. The
+deployment assets in `deploy/assets/` are public-safe compressed runtime databases: they exclude
+restricted respondent microdata, private fitted model artifacts and the full 511 MB road archive.
+Run `bash deploy/start.sh` to reproduce the hosted runtime locally.
+
 ## Verify
 
 ```sh
-.venv/bin/ruff check backend scripts tests
+.venv/bin/ruff check backend scripts tests deploy
 .venv/bin/pytest
 ```
 
