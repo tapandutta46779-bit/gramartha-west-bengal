@@ -162,7 +162,8 @@ async function downloadPdf(decision,language,button){
     const restored=await fetch("/analysis/restore",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(decision)});
     if(!restored.ok)throw new Error(`PDF preparation failed (${restored.status})`);
     const href=`/analysis/${encodeURIComponent(decision.analysis_id)}/pdf?language=${language}&download=${Date.now()}`;
-    window.location.assign(href);
+    const link=document.createElement("a"); link.href=href; link.download=`GramArtha_${decision.analysis_id}_business_plan_${language}.pdf`; link.style.display="none";
+    document.body.appendChild(link); link.click(); link.remove();
     button.textContent=language==="bn"?"ডাউনলোড হয়েছে":language==="hi"?"डाउनलोड हुआ":"Downloaded";
   }catch(error){button.textContent=language==="bn"?"আবার চেষ্টা করুন":language==="hi"?"फिर प्रयास करें":"Try again"; button.title=error.message;}
   finally{button.disabled=false; setTimeout(()=>{button.textContent=original;},2500);}

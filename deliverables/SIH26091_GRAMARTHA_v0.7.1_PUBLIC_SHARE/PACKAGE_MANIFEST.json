@@ -1,9 +1,9 @@
 {
   "package": "SIH26091_GRAMARTHA_v0.7.1_PUBLIC_SHARE",
   "status": "VERIFIED_CONDITIONAL_PLANNING_PRODUCT",
-  "created_at": "2026-08-29T20:05:49.707059+00:00",
+  "created_at": "2026-08-29T20:09:42.068555+00:00",
   "file_count": 175,
-  "uncompressed_size_bytes": 1356153800,
+  "uncompressed_size_bytes": 1356154013,
   "verified": {
     "pytest": "58 passed",
     "ruff": "passed",
@@ -448,8 +448,8 @@
     },
     {
       "path": "docs/FULL_DETAIL_LOCALIZATION_AUDIT_V0.7.1.md",
-      "size_bytes": 4169,
-      "sha256": "1a0cd7ddfefc6146e9370ad4be043a820872d4d2031107fd7ec72a07b3209ae8"
+      "size_bytes": 4182,
+      "sha256": "c7e026ea7e3beb9802fb6008a9d073fc2c6415bd6937ef4e9d58eafce7e037e6"
     },
     {
       "path": "docs/GRAMARTHA_DEEP_ENGINE_REPORT_V0.5.0.md",
@@ -558,8 +558,8 @@
     },
     {
       "path": "frontend/app.js",
-      "size_bytes": 48044,
-      "sha256": "a4b231265ec1046841c301a230c32cbb87e4cf0dcb95dfdef66aef1785258555"
+      "size_bytes": 48244,
+      "sha256": "704198e6673b9875d8d8df7da0f7e79ec5926c4d651e78b55d1ea21668247370"
     },
     {
       "path": "frontend/fixes.css",
@@ -569,7 +569,7 @@
     {
       "path": "frontend/index.html",
       "size_bytes": 7314,
-      "sha256": "8b42cca1e3921df1c538b36cbab26dee3e2893b7232fd9e37496a28022f12c15"
+      "sha256": "38e273b7ed2a4e8c4c0c659d8ce6f52c10e045931ae05e80ebdf47d86205e5d6"
     },
     {
       "path": "frontend/styles.css",
