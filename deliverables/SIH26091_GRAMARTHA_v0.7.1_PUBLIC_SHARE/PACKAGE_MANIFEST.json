@@ -1,9 +1,9 @@
 {
   "package": "SIH26091_GRAMARTHA_v0.7.1_PUBLIC_SHARE",
   "status": "VERIFIED_CONDITIONAL_PLANNING_PRODUCT",
-  "created_at": "2026-08-29T19:44:16.464810+00:00",
+  "created_at": "2026-08-29T19:49:26.722598+00:00",
   "file_count": 175,
-  "uncompressed_size_bytes": 1356148642,
+  "uncompressed_size_bytes": 1356148756,
   "verified": {
     "pytest": "57 passed",
     "ruff": "passed",
@@ -237,8 +237,8 @@
     },
     {
       "path": "backend/presentation/detail_language.py",
-      "size_bytes": 88277,
-      "sha256": "6f0d072f23c69eec68d9984fc01d2894578c43880e0adb62db2eb643a5ac1c13"
+      "size_bytes": 88391,
+      "sha256": "8a0c3e55a40209ab6faec6a7e92357a8305afa37f5990011ed941d91d091b77b"
     },
     {
       "path": "backend/presentation/plain_language.py",
