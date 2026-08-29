@@ -155,6 +155,13 @@ def build_analysis_pdf(
     return _pdf_response(decision, language)
 
 
+@app.post("/analysis/restore")
+def restore_analysis(decision: VentureDecision):
+    """Restore the browser's unchanged canonical decision before a normal download."""
+    store.put_analysis(decision)
+    return {"analysis_id": decision.analysis_id, "restored": True}
+
+
 def _pdf_response(decision: VentureDecision, language: str) -> Response:
     if decision.selected_venture is None:
         raise HTTPException(409, "analysis has no selected venture to report")

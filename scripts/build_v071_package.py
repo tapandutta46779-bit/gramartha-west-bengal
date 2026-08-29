@@ -75,8 +75,8 @@ def main() -> None:
                 "capacity caveat rendered in the tested public flow"
             ),
             "pdf_downloads": (
-                "same-tab blob download with a restart-safe POST fallback; English, Bengali "
-                "and Hindi use application/pdf attachment responses"
+                "same-page attachment download after restart-safe canonical-decision restore; "
+                "English, Bengali and Hindi use application/pdf attachment responses"
             ),
         },
         "exclusions": [

@@ -193,3 +193,14 @@ def test_pdf_download_headers_and_restart_safe_post_fallback():
         assert len(PdfReader(BytesIO(fallback.content)).pages) == len(
             PdfReader(BytesIO(direct.content)).pages
         )
+
+    store.connection.execute("DELETE FROM analysis WHERE analysis_id = ?", (decision.analysis_id,))
+    store.connection.commit()
+    assert client.get(f"/analysis/{decision.analysis_id}").status_code == 404
+    restored = client.post(
+        "/analysis/restore",
+        json=decision.model_dump(mode="json"),
+    )
+    assert restored.status_code == 200
+    assert restored.json() == {"analysis_id": decision.analysis_id, "restored": True}
+    assert client.get(f"/analysis/{decision.analysis_id}").status_code == 200

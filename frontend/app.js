@@ -159,13 +159,10 @@ function bindPdfDownloads(decision){document.querySelectorAll("[data-pdf-languag
 async function downloadPdf(decision,language,button){
   const original=button.textContent; button.disabled=true; button.textContent=language==="bn"?"তৈরি হচ্ছে…":language==="hi"?"तैयार हो रहा है…":"Preparing…";
   try{
-    let response=await fetch(`/analysis/${encodeURIComponent(decision.analysis_id)}/pdf?language=${language}`,{cache:"no-store"});
-    if(response.status===404){response=await fetch(`/analysis/pdf?language=${language}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(decision)});}
-    if(!response.ok)throw new Error(`PDF request failed (${response.status})`);
-    const blob=await response.blob(); if(blob.type!=="application/pdf")throw new Error("The server did not return a PDF.");
-    const disposition=response.headers.get("content-disposition")||""; const headerName=disposition.match(/filename="([^"]+)"/)?.[1];
-    const filename=headerName||`GramArtha_${decision.analysis_id}_business_plan_${language}.pdf`; const objectUrl=URL.createObjectURL(blob); const link=document.createElement("a");
-    link.href=objectUrl; link.download=filename; link.style.display="none"; document.body.appendChild(link); link.click(); link.remove(); setTimeout(()=>URL.revokeObjectURL(objectUrl),30000);
+    const restored=await fetch("/analysis/restore",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(decision)});
+    if(!restored.ok)throw new Error(`PDF preparation failed (${restored.status})`);
+    const href=`/analysis/${encodeURIComponent(decision.analysis_id)}/pdf?language=${language}&download=${Date.now()}`;
+    window.location.assign(href);
     button.textContent=language==="bn"?"ডাউনলোড হয়েছে":language==="hi"?"डाउनलोड हुआ":"Downloaded";
   }catch(error){button.textContent=language==="bn"?"আবার চেষ্টা করুন":language==="hi"?"फिर प्रयास करें":"Try again"; button.title=error.message;}
   finally{button.disabled=false; setTimeout(()=>{button.textContent=original;},2500);}
