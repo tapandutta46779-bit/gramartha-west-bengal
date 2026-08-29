@@ -5,6 +5,7 @@ import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
+from statistics import median
 
 from backend.models.decision import VentureDecision
 from backend.models.evidence import EvidenceRecord
@@ -267,6 +268,50 @@ class EvidenceStore:
             (geo_id, geo_id, geo_id),
         ).fetchall()
         return [EvidenceRecord.model_validate_json(row["payload"]) for row in rows]
+
+    def get_locality_spatial_proxy(self, item: GeographicIdentity) -> dict | None:
+        """Return a bounded parent-area proxy without altering canonical geography.
+
+        Exact coordinates always belong on the identity itself.  For an unresolved
+        ward/village, two or more coordinate-linked siblings in the same block or
+        municipality can provide a planning proxy.  A wide sibling cloud is rejected
+        because it is not precise enough for local competitor discovery.
+        """
+        parent_field = "municipality" if item.municipality else "block"
+        parent_value = item.municipality or item.block
+        if not parent_value:
+            return None
+        rows = self.connection.execute(
+            "SELECT payload FROM current_geo_entity "
+            "WHERE current_district = ? AND payload IS NOT NULL",
+            (item.district,),
+        ).fetchall()
+        coordinates: list[tuple[float, float]] = []
+        for row in rows:
+            sibling = GeographicIdentity.model_validate_json(row["payload"])
+            if getattr(sibling, parent_field) != parent_value:
+                continue
+            if sibling.latitude is None or sibling.longitude is None:
+                continue
+            coordinates.append((float(sibling.latitude), float(sibling.longitude)))
+        if len(coordinates) < 2:
+            return None
+        latitude = median(value[0] for value in coordinates)
+        longitude = median(value[1] for value in coordinates)
+        # About 22 km latitude/longitude at West Bengal latitudes.  Wider parent
+        # clouds are unsuitable for a hyper-local competitor scan.
+        if any(
+            abs(lat - latitude) > 0.20 or abs(lon - longitude) > 0.22 for lat, lon in coordinates
+        ):
+            return None
+        return {
+            "latitude": latitude,
+            "longitude": longitude,
+            "coordinate_quality": f"{parent_field.upper()}_SIBLING_MEDIAN_PROXY",
+            "coordinate_reference_count": len(coordinates),
+            "coordinate_parent": parent_value,
+            "source_url": "https://www.openstreetmap.org/copyright",
+        }
 
     def put_regional_prior(self, record: EvidenceRecord, *, district: str, sector: str) -> None:
         self.connection.execute(

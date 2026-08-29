@@ -39,6 +39,17 @@ from backend.pipeline.automatic import build_automatic_inputs
 from backend.pipeline.sector_factors import sector_factors
 from backend.spatial.osm_store import OsmEntity, OsmSpatialStore, haversine_km
 
+_OFFICIAL_LOCALITY_COORDINATE_PROXIES = {
+    # West Bengal Bangla Sahayata Kendra listing: ERAL GP, VILL+PO Abhirampur.
+    # This is a locality service-centre proxy, not a surveyed village centroid.
+    "DS057:WB:RURAL:87ed7cc8dc10": {
+        "latitude": 23.439724,
+        "longitude": 87.640485,
+        "coordinate_quality": "OFFICIAL_BSK_LOCALITY_SERVICE_CENTRE_PROXY",
+        "source_url": "https://sukantamahavidyalaya.ac.in/wp-content/uploads/2024/06/listofbsk.pdf",
+    }
+}
+
 
 def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
     analysis_id = str(uuid4())
@@ -66,7 +77,7 @@ def analyze(request: AnalyzeRequest, store: EvidenceStore) -> VentureDecision:
         evidence=evidence,
         profile=entrepreneur,
     )
-    spatial = _spatial_context(geography, request.catchment_radius_km, sector)
+    spatial = _spatial_context(geography, request.catchment_radius_km, sector, store)
     graph = request.graph or automatic.graph
     candidates = request.candidates or automatic.candidates
     gates = [*location_gates, *automatic.gates]
@@ -516,7 +527,12 @@ def _data_versions(evidence) -> dict[str, str]:
     return versions
 
 
-def _spatial_context(geography, radius_km: float, sector: str) -> dict:
+def _spatial_context(
+    geography,
+    radius_km: float,
+    sector: str,
+    evidence_store: EvidenceStore | None = None,
+) -> dict:
     empty = {
         "catchment": {},
         "competition": {},
@@ -524,7 +540,8 @@ def _spatial_context(geography, radius_km: float, sector: str) -> dict:
         "sources": set(),
         "data_versions": {},
     }
-    if geography.latitude is None or geography.longitude is None:
+    coordinate = _spatial_coordinate(geography, evidence_store)
+    if coordinate is None:
         empty["limitations"] = [
             "No verified/proxy coordinate is attached, so spatial catchment was not computed."
         ]
@@ -536,13 +553,34 @@ def _spatial_context(geography, radius_km: float, sector: str) -> dict:
         ]
         return empty
     store = OsmSpatialStore(path)
+    latitude = coordinate["latitude"]
+    longitude = coordinate["longitude"]
     radial = store.radial_catchment(
-        geography.latitude,
-        geography.longitude,
+        latitude,
+        longitude,
         radius_km,
         limit=50_000,
     )
     direct_competitors, indirect_competitors = _sector_competitors(radial.entities, sector)
+    direct_competitors = _deduplicate_entities(direct_competitors, latitude, longitude)
+    indirect_competitors = _deduplicate_entities(indirect_competitors, latitude, longitude)
+    discovery_radius_km = radius_km
+    displayed_direct = direct_competitors
+    displayed_indirect = indirect_competitors
+    if not direct_competitors and not indirect_competitors and radius_km < 30:
+        # A zero in-radius result should not become the misleading "Not mapped".
+        # Search a bounded wider ring for named context, while preserving the
+        # planning-catchment counts at zero and labelling every outside entity.
+        discovery_radius_km = 30.0
+        discovery = store.radial_catchment(
+            latitude,
+            longitude,
+            discovery_radius_km,
+            limit=50_000,
+        )
+        displayed_direct, displayed_indirect = _sector_competitors(discovery.entities, sector)
+        displayed_direct = _deduplicate_entities(displayed_direct, latitude, longitude)
+        displayed_indirect = _deduplicate_entities(displayed_indirect, latitude, longitude)
     institutions = [
         item
         for item in radial.entities
@@ -557,18 +595,16 @@ def _spatial_context(geography, radius_km: float, sector: str) -> dict:
         }
     ]
     markets = [item for item in radial.entities if item.category == "MARKET"]
-    nearest_market = _nearest_entity(geography.latitude, geography.longitude, markets)
+    nearest_market = _nearest_entity(latitude, longitude, markets)
     nearest_institutions = sorted(
         institutions,
-        key=lambda item: haversine_km(
-            geography.latitude, geography.longitude, item.latitude, item.longitude
-        ),
+        key=lambda item: haversine_km(latitude, longitude, item.latitude, item.longitude),
     )[:10]
     route = None
     if nearest_market:
         route = store.route(
-            geography.latitude,
-            geography.longitude,
+            latitude,
+            longitude,
             nearest_market.latitude,
             nearest_market.longitude,
             corridor_km=max(2.0, radius_km / 4),
@@ -577,18 +613,14 @@ def _spatial_context(geography, radius_km: float, sector: str) -> dict:
     return {
         "catchment": {
             "center": {
-                "latitude": geography.latitude,
-                "longitude": geography.longitude,
-                "coordinate_quality": "OSM_PLACE_PROXY",
+                **coordinate,
             },
             "radius_km": radius_km,
             "method": radial.methodology,
             "category_counts": radial.category_counts,
             "entity_count": len(radial.entities),
             "institution_count": len(institutions),
-            "nearest_market": _entity_summary(
-                geography.latitude, geography.longitude, nearest_market
-            ),
+            "nearest_market": _entity_summary(latitude, longitude, nearest_market),
             "nearest_market_route": route.__dict__ if route else None,
             "caveat": radial.caveat,
         },
@@ -601,23 +633,24 @@ def _spatial_context(geography, radius_km: float, sector: str) -> dict:
                 {item.category for item in [*direct_competitors, *indirect_competitors]}
             ),
             "likely_direct_competitors": [
-                _entity_summary(geography.latitude, geography.longitude, item)
+                _entity_summary(latitude, longitude, item, radius_km)
                 for item in _nearest_entities(
-                    geography.latitude,
-                    geography.longitude,
-                    direct_competitors,
+                    latitude,
+                    longitude,
+                    displayed_direct,
                     12,
                 )
             ],
             "likely_indirect_competitors": [
-                _entity_summary(geography.latitude, geography.longitude, item)
+                _entity_summary(latitude, longitude, item, radius_km)
                 for item in _nearest_entities(
-                    geography.latitude,
-                    geography.longitude,
-                    indirect_competitors,
+                    latitude,
+                    longitude,
+                    displayed_indirect,
                     12,
                 )
             ],
+            "competitor_discovery_radius_km": discovery_radius_km,
             "capacity": None,
             "capacity_confidence": "UNKNOWN",
             "competition_intensity": _competition_intensity(len(direct_competitors), radius_km),
@@ -629,20 +662,35 @@ def _spatial_context(geography, radius_km: float, sector: str) -> dict:
             ),
         },
         "limitations": [radial.caveat],
-        "sources": {"https://geo2day.com/asia/india/west_bengal.pbf"},
+        "sources": {
+            "https://geo2day.com/asia/india/west_bengal.pbf",
+            *([coordinate["source_url"]] if coordinate.get("source_url") else []),
+        },
         "data_versions": {
             "DS071-OSM": metadata.get("source_sha256", "UNKNOWN"),
             "osm_extractor": metadata.get("extractor_version", "UNKNOWN"),
         },
         "institutions": [
-            _entity_summary(geography.latitude, geography.longitude, item)
-            for item in nearest_institutions
+            _entity_summary(latitude, longitude, item) for item in nearest_institutions
         ],
         "markets": [
-            _entity_summary(geography.latitude, geography.longitude, item)
-            for item in _nearest_entities(geography.latitude, geography.longitude, markets, 10)
+            _entity_summary(latitude, longitude, item)
+            for item in _nearest_entities(latitude, longitude, markets, 10)
         ],
     }
+
+
+def _spatial_coordinate(geography, evidence_store: EvidenceStore | None = None) -> dict | None:
+    if geography.latitude is not None and geography.longitude is not None:
+        return {
+            "latitude": geography.latitude,
+            "longitude": geography.longitude,
+            "coordinate_quality": "OSM_PLACE_PROXY",
+        }
+    official_proxy = _OFFICIAL_LOCALITY_COORDINATE_PROXIES.get(geography.geo_id)
+    if official_proxy:
+        return official_proxy
+    return evidence_store.get_locality_spatial_proxy(geography) if evidence_store else None
 
 
 def _sector_competitors(
@@ -658,6 +706,21 @@ def _sector_competitors(
         if entity.category in indirect_categories and entity.category not in direct_categories
     ]
     return direct, indirect
+
+
+def _deduplicate_entities(
+    entities: list[OsmEntity], latitude: float, longitude: float
+) -> list[OsmEntity]:
+    nearest_by_identity: dict[tuple[str, str], OsmEntity] = {}
+    for entity in entities:
+        name = " ".join((entity.name or "").casefold().split())
+        identity = (entity.category, name or f"{entity.osm_type}/{entity.osm_id}")
+        previous = nearest_by_identity.get(identity)
+        if previous is None or haversine_km(
+            latitude, longitude, entity.latitude, entity.longitude
+        ) < haversine_km(latitude, longitude, previous.latitude, previous.longitude):
+            nearest_by_identity[identity] = entity
+    return list(nearest_by_identity.values())
 
 
 def _nearest_entities(
@@ -691,17 +754,24 @@ def _nearest_entity(latitude: float, longitude: float, entities: list[OsmEntity]
     )
 
 
-def _entity_summary(latitude: float, longitude: float, entity: OsmEntity | None):
+def _entity_summary(
+    latitude: float,
+    longitude: float,
+    entity: OsmEntity | None,
+    planning_radius_km: float | None = None,
+):
     if entity is None:
         return None
+    distance = haversine_km(latitude, longitude, entity.latitude, entity.longitude)
     return {
         "osm_id": f"{entity.osm_type}/{entity.osm_id}",
         "name": entity.name,
         "category": entity.category,
         "latitude": entity.latitude,
         "longitude": entity.longitude,
-        "straight_line_distance_km": haversine_km(
-            latitude, longitude, entity.latitude, entity.longitude
+        "straight_line_distance_km": distance,
+        "outside_planning_catchment": (
+            distance > planning_radius_km if planning_radius_km is not None else False
         ),
     }
 
