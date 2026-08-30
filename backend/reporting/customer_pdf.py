@@ -23,7 +23,7 @@ from reportlab.platypus import (
 
 from backend.models.decision import VentureDecision
 from backend.presentation import build_plain_language_summary
-from backend.presentation.detail_language import translate_detail_text
+from backend.reporting.pdf_language import translate_pdf_text
 
 GREEN = colors.HexColor("#123B31")
 ORANGE = colors.HexColor("#D96F2B")
@@ -63,17 +63,20 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
     summary = decision.plain_language_summary or build_plain_language_summary(decision)
     detail = summary.detailed_presentations[language]
     labels = detail.labels
-    translations = detail.translations
     pdf = FPDF(format="A4", unit="mm")
     pdf.set_margins(14, 12, 14)
     pdf.set_auto_page_break(False)
-    pdf.add_font("GramArthaBengali", fname=str(FONT_DIR / "NotoSansBengali.ttf"))
+    pdf.add_font("GramArthaBengali", fname=str(FONT_DIR / "NotoSerifBengali-Regular.ttf"))
+    pdf.add_font("GramArthaLatin", fname=str(FONT_DIR / "NotoSansBengali.ttf"))
     pdf.add_font("GramArthaDevanagari", fname=str(FONT_DIR / "NotoSansDevanagari.ttf"))
     if language == "hi":
         family = "GramArthaDevanagari"
         pdf.set_fallback_fonts(["GramArthaBengali"], exact_match=False)
-    else:
+    elif language == "bn":
         family = "GramArthaBengali"
+        pdf.set_fallback_fonts(["GramArthaDevanagari"], exact_match=False)
+    else:
+        family = "GramArthaLatin"
         pdf.set_fallback_fonts(["GramArthaDevanagari"], exact_match=False)
     # OSM names may use Bengali or Devanagari regardless of the report language.
     pdf.set_text_shaping(True)
@@ -85,7 +88,7 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
         if value is None:
             return "-"
         text = str(value)
-        return translations.get(text, translate_detail_text(text, language))
+        return translate_pdf_text(text, language)
 
     geography = decision.geography
     venture = decision.selected_venture
@@ -107,7 +110,7 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
         },
         "bn": {
             "appendix": "OSM প্রতিযোগী প্রমাণের পরিশিষ্ট",
-            "appendix_note": "সীমিত খাতভিত্তিক অনুসন্ধানে পাওয়া সব নামযুক্ত OSM প্রার্থী। দূরত্ব সরলরেখায় পরিকল্পনামূলক দূরত্ব; এগুলি বিক্রয়, সক্ষমতা বা বাজারের অংশ পরিমাপ করে না।",
+            "appendix_note": "সীমিত খাতভিত্তিক অনুসন্ধানে পাওয়া সব নামযুক্ত OSM প্রার্থী এখানে দেওয়া হয়েছে। দূরত্ব সরলরেখায় মাপা পরিকল্পনামূলক দূরত্ব। এগুলি বিক্রয়, সক্ষমতা বা বাজারের অংশ পরিমাপ করে না।",
             "continued": "চলমান",
             "direct": "সরাসরি",
             "indirect": "পরোক্ষ",
@@ -297,7 +300,7 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
             ),
         ]
     )
-    paragraph(presentation.data_confidence, muted=True)
+    paragraph(tr(presentation.data_confidence), muted=True)
     bullets(label("customer_segments"), decision.sector_intelligence.get("customer_segments", []))
     bullets(label("supplier_plan"), decision.sector_intelligence.get("supplier_types", []))
     guidance_panels()
