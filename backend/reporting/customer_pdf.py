@@ -67,17 +67,16 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
     pdf = FPDF(format="A4", unit="mm")
     pdf.set_margins(14, 12, 14)
     pdf.set_auto_page_break(False)
-    if language == "bn":
-        pdf.add_font("GramArthaUnicode", fname=str(FONT_DIR / "NotoSansBengali.ttf"))
-        family = "GramArthaUnicode"
-    elif language == "hi":
-        pdf.add_font("GramArthaUnicode", fname=str(FONT_DIR / "NotoSansDevanagari.ttf"))
-        family = "GramArthaUnicode"
+    pdf.add_font("GramArthaBengali", fname=str(FONT_DIR / "NotoSansBengali.ttf"))
+    pdf.add_font("GramArthaDevanagari", fname=str(FONT_DIR / "NotoSansDevanagari.ttf"))
+    if language == "hi":
+        family = "GramArthaDevanagari"
+        pdf.set_fallback_fonts(["GramArthaBengali"], exact_match=False)
     else:
-        pdf.add_font("GramArthaUnicode", fname=str(FONT_DIR / "NotoSansBengali.ttf"))
-        family = "GramArthaUnicode"
-    if language != "en":
-        pdf.set_text_shaping(True)
+        family = "GramArthaBengali"
+        pdf.set_fallback_fonts(["GramArthaDevanagari"], exact_match=False)
+    # OSM names may use Bengali or Devanagari regardless of the report language.
+    pdf.set_text_shaping(True)
 
     def label(key: str) -> str:
         return labels.get(key, DETAIL_FALLBACK.get(key, key.replace("_", " ").title()))
