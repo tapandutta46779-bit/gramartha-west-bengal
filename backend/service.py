@@ -679,7 +679,7 @@ def _spatial_context(
                         for entity in displayed_direct
                         if _entity_display_name(entity)[0]
                     ],
-                    12,
+                    len(displayed_direct),
                 )
             ],
             "likely_indirect_competitors": [
@@ -692,7 +692,7 @@ def _spatial_context(
                         for entity in displayed_indirect
                         if _entity_display_name(entity)[0]
                     ],
-                    12,
+                    len(displayed_indirect),
                 )
             ],
             "competitor_discovery_radius_km": discovery_radius_km,

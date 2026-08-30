@@ -8,29 +8,119 @@ let searchTimer = null;
 let searchSequence = 0;
 let currentDecision = null;
 let currentAlternatives = [];
+let districtOptions = [];
 
+$("#district-retry")?.addEventListener("click", initializeDistricts);
+$("#district-trigger")?.addEventListener("click", toggleDistrictMenu);
+$("#district-trigger")?.addEventListener("keydown", handleDistrictTriggerKeydown);
+$("#district-menu")?.addEventListener("keydown", handleDistrictMenuKeydown);
+document.addEventListener("pointerdown", (event) => {
+  if (!event.target.closest("#district-picker")) closeDistrictMenu();
+});
 initializeDistricts();
+initializeVisualExperience();
 
 $("#language").addEventListener("change", () => {
   if (currentDecision) renderDecision(currentDecision, currentAlternatives, true);
 });
 
 async function initializeDistricts() {
-  try {
-    const response = await fetch("/districts");
-    if (!response.ok) throw new Error(`District service returned ${response.status}`);
-    const payload = await response.json();
-    $("#district").innerHTML = '<option value="">Select district…</option>' + payload.districts.map((district) => `<option value="${safe(district)}">${safe(displayDistrict(district))}</option>`).join("");
-  } catch (error) {
-    $("#district").innerHTML = '<option value="">Districts unavailable</option>';
-    $("#status").textContent = error.message;
+  const select = $("#district"); const retry = $("#district-retry"); const trigger = $("#district-trigger");
+  closeDistrictMenu(); districtOptions = [];
+  select.disabled = true; select.setAttribute("aria-busy", "true"); retry?.classList.add("hidden");
+  trigger.disabled = true; trigger.querySelector("span").textContent = "Loading supported districts…"; trigger.classList.remove("hidden");
+  select.innerHTML = '<option value="">Loading supported districts…</option>';
+  let lastError = null;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    if (attempt) await new Promise(resolve => setTimeout(resolve, 500 * (attempt + 1)));
+    try {
+      const response = await fetch(`/districts?ui_retry=${attempt}`, {cache:"no-store"});
+      if (!response.ok) throw new Error(`District service returned ${response.status}`);
+      const payload = await response.json();
+      if (!Array.isArray(payload.districts) || !payload.districts.length) throw new Error("District service returned no supported districts");
+      districtOptions = payload.districts.map((district) => ({value: district, label: displayDistrict(district)}));
+      select.innerHTML = '<option value="">Select district…</option>' + payload.districts.map((district) => `<option value="${safe(district)}">${safe(displayDistrict(district))}</option>`).join("");
+      select.disabled = false; select.removeAttribute("aria-busy");
+      buildDistrictMenu(); trigger.disabled = false; trigger.querySelector("span").textContent = "Select district…";
+      $("#district-picker").classList.add("enhanced");
+      if ($("#status").textContent.includes("district list")) $("#status").textContent = "Select a district before searching.";
+      return;
+    } catch (error) { lastError = error; }
+  }
+  select.innerHTML = '<option value="">District list unavailable</option>';
+  select.removeAttribute("aria-busy");
+  trigger.disabled = true; trigger.querySelector("span").textContent = "District list unavailable";
+  $("#status").textContent = `${lastError?.message || "District list unavailable"}. Use Retry district list.`;
+  retry?.classList.remove("hidden");
+}
+
+function buildDistrictMenu() {
+  const menu = $("#district-menu");
+  menu.replaceChildren();
+  districtOptions.forEach((district, index) => {
+    const option = document.createElement("button");
+    option.type = "button"; option.className = "district-option"; option.role = "option";
+    option.dataset.value = district.value; option.id = `district-option-${index}`;
+    option.setAttribute("aria-selected", "false"); option.textContent = district.label;
+    option.addEventListener("click", () => chooseDistrict(district.value));
+    menu.append(option);
+  });
+}
+
+function toggleDistrictMenu() {
+  const trigger = $("#district-trigger");
+  if (trigger.disabled) return;
+  if (trigger.getAttribute("aria-expanded") === "true") closeDistrictMenu();
+  else openDistrictMenu();
+}
+
+function openDistrictMenu(focusSelected = false) {
+  const menu = $("#district-menu"); const trigger = $("#district-trigger");
+  trigger.setAttribute("aria-expanded", "true"); menu.classList.remove("hidden");
+  const selected = menu.querySelector('[aria-selected="true"]');
+  if (focusSelected) (selected || menu.querySelector(".district-option"))?.focus();
+}
+
+function closeDistrictMenu(returnFocus = false) {
+  const menu = $("#district-menu"); const trigger = $("#district-trigger");
+  if (!menu || !trigger) return;
+  trigger.setAttribute("aria-expanded", "false"); menu.classList.add("hidden");
+  if (returnFocus) trigger.focus();
+}
+
+function chooseDistrict(value) {
+  const select = $("#district"); const selected = districtOptions.find((district) => district.value === value);
+  if (!selected) return;
+  select.value = value;
+  $("#district-trigger span").textContent = selected.label;
+  $("#district-menu").querySelectorAll(".district-option").forEach((option) => option.setAttribute("aria-selected", String(option.dataset.value === value)));
+  closeDistrictMenu(true);
+  select.dispatchEvent(new Event("change", {bubbles: true}));
+}
+
+function handleDistrictTriggerKeydown(event) {
+  if (["ArrowDown", "ArrowUp", "Enter", " "].includes(event.key)) {
+    event.preventDefault(); openDistrictMenu(true);
+  }
+}
+
+function handleDistrictMenuKeydown(event) {
+  const options = [...$("#district-menu").querySelectorAll(".district-option")];
+  const index = options.indexOf(document.activeElement);
+  if (event.key === "Escape") { event.preventDefault(); closeDistrictMenu(true); return; }
+  if (event.key === "Enter" || event.key === " ") { event.preventDefault(); document.activeElement?.click(); return; }
+  if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+    event.preventDefault();
+    const direction = event.key === "ArrowDown" ? 1 : -1;
+    options[(index + direction + options.length) % options.length]?.focus();
   }
 }
 
 $("#district").addEventListener("change", () => {
   selectedLocality = null; $("#selected-geo-id").value = ""; $("#results").replaceChildren();
   $("#identity").className = "identity empty"; $("#identity").textContent = "No canonical locality selected yet.";
-  $("#analyze-button").disabled = true; $("#analyze-button").textContent = "Select your area first";
+  $("#analyze-button").disabled = true; setAnalyzeButtonLabel("Select your area first");
+  setJourneyStep(1);
   $("#query").value = ""; $("#status").textContent = $("#district").value ? `Now type a locality inside ${displayDistrict($("#district").value)}.` : "Select a district before searching.";
 });
 
@@ -65,29 +155,33 @@ async function searchLocalities() {
 function selectLocality(row) {
   selectedLocality = row; $("#selected-geo-id").value = row.geo_id;
   $("#identity").className = "identity selected";
-  $("#identity").innerHTML = `<span>Selected</span><strong>${safe(row.locality)}</strong><small>${safe(hierarchy(row))} · ${safe(friendlyType(row.locality_type))}</small>`;
+  $("#identity").innerHTML = `<i class="ph ph-check-circle" aria-hidden="true"></i><span>Selected</span><strong>${safe(row.locality)}</strong><small>${safe(hierarchy(row))} · ${safe(friendlyType(row.locality_type))}</small>`;
   $("#results").replaceChildren(); $("#status").textContent = "Canonical locality selected.";
-  $("#analyze-button").disabled = false; $("#analyze-button").textContent = "Analyze my local opportunity";
+  $("#analyze-button").disabled = false; setAnalyzeButtonLabel("Analyze my local opportunity");
+  setJourneyStep(2);
 }
 
 $("#analysis-form").addEventListener("submit", async (event) => {
   event.preventDefault(); if (!selectedLocality) return;
   $("#progress-panel").classList.remove("hidden"); $("#decision").classList.add("hidden"); $("#analyze-button").disabled = true;
+  document.body.classList.add("is-analyzing"); setJourneyStep(3);
   const started = performance.now(); const timer = setInterval(() => { $("#elapsed").textContent = `Elapsed: ${((performance.now() - started) / 1000).toFixed(1)} seconds`; }, 100);
   const requested = $("#sector").value;
   try {
     const payloads = [];
     if (requested === "best") { for (const sector of sectors) { $("#analysis-status").textContent = `Testing ${labelSector(sector)}…`; payloads.push(await runAnalysis(sector)); } }
     else { $("#analysis-status").textContent = `Analyzing ${labelSector(requested)}…`; payloads.push(await runAnalysis(requested)); }
-    const usable = payloads.filter((item) => item.selected_venture && item.digital_twin);
-    const ranked = (usable.length ? usable : payloads).sort(scoreDecision);
+    const usable = payloads.filter((item) => item.selected_venture && item.digital_twin).sort(scoreDecision);
+    const ranked = (usable.length ? usable : [...payloads].sort(scoreDecision));
     currentDecision = ranked[0];
-    currentAlternatives = requested === "best" ? ranked.slice(1, 5) : [];
+    currentAlternatives = requested === "best"
+      ? [...payloads].sort(scoreDecision).filter((item) => item !== currentDecision)
+      : [];
     renderDecision(currentDecision, currentAlternatives);
     $("#analysis-status").textContent = "Analysis complete";
   } catch (error) {
     $("#decision").classList.remove("hidden"); $("#decision").innerHTML = `<div class="notice"><h2>We could not complete this estimate</h2><p>${safe(error.message)}</p></div>`;
-  } finally { clearInterval(timer); $("#elapsed").textContent = `Completed in ${((performance.now() - started) / 1000).toFixed(2)} seconds`; $("#progress-panel").classList.add("hidden"); $("#analyze-button").disabled = false; }
+  } finally { clearInterval(timer); $("#elapsed").textContent = `Completed in ${((performance.now() - started) / 1000).toFixed(2)} seconds`; $("#progress-panel").classList.add("hidden"); $("#analyze-button").disabled = false; document.body.classList.remove("is-analyzing"); }
 });
 
 async function runAnalysis(sector) {
@@ -113,7 +207,7 @@ function renderDecision(p, alternatives, languageOnly = false) {
   $("#decision").classList.remove("hidden");
   $("#decision").innerHTML = `
     ${simpleSummary(p, summary, presentation, labels, language)}
-    <details class="technical-layer"><summary>${safe(labels.technical || "Detailed technical analysis")}</summary><div class="technical-layer-body">
+    <details class="technical-layer" open><summary>${safe(labels.technical || "Detailed technical analysis")}</summary><div class="technical-layer-body">
     <div class="result-head"><div><p class="eyebrow">Recommended planning case</p><h2 id="recommendation-title">${safe(labelSector(p.sector))}</h2><p>${safe(p.geography.locality)}, ${safe(displayDistrict(p.geography.district))} · ${friendlyConfidence(p.confidence)} confidence</p></div><div class="result-actions"><span class="confidence ${String(p.confidence).toLowerCase()}">${safe(p.confidence)}</span></div></div>
     <nav class="result-tabs" aria-label="Planning report sections">${tabButton("summary","Summary",true)}${tabButton("market","Local market")}${tabButton("opportunities","Opportunities")}${tabButton("risk","Risk & SWOT")}${tabButton("plan","Business plan")}${tabButton("finance","Finance")}${tabButton("action","Action plan")}</nav>
     <div class="tab-panel active" data-panel="summary"><div class="why"><strong>Why it fits here</strong><p>The flow model found a modelled service gap and the MVV oracle selected the lowest-investment tested configuration that repairs useful flow within your capital constraint.</p></div>
@@ -122,7 +216,7 @@ function renderDecision(p, alternatives, languageOnly = false) {
       <div class="advice-grid">${adviceCard("Why it is good", p.swot?.strengths?.[0] || (gap > 0 ? `Repairs a modelled monthly service gap of ${moneyOrUnit(gap,p.demand?.unit)} within the tested network.` : "Uses a minimum-capital configuration."))}${adviceCard("Main disadvantage", p.swot?.weaknesses?.[0] || (scenario && scenario.scenario_survival_rate < .8 ? "Cash resilience is weak in a material share of planning scenarios." : "The locality numbers remain benchmark-adjusted rather than observed sales."))}${adviceCard("Who it suits", primitive.staff <= 2 ? "An owner-operator able to supervise daily buying, selling and cash control." : `An entrepreneur able to coordinate approximately ${primitive.staff} people.`)}${adviceCard("Who should avoid it", (p.premortem?.[0]?.cause ? `Anyone unable to control this leading risk: ${p.premortem[0].cause}` : "Anyone unable to validate local prices and suppliers before committing capital."))}</div>
     </div>
     <div class="tab-panel" data-panel="market">${geographyPanel(p)}<div class="two-col"><article><h3>Demand and reachable supply</h3>${comparisonBars(p.demand,p.supply)}${rangeRow("Demand / opportunity",p.demand)}${rangeRow("Reachable incumbent supply",p.supply)}${rangeRow("Price / unit value",p.price)}<p class="caption">Gap: ${moneyOrUnit(gap,p.demand?.unit)}. Observation classes and years are preserved; this is not measured locality turnover.</p></article><article><h3>Competition and catchment</h3>${competitionDiscoveryNotice(p)}${plainRow("Direct OSM candidates inside radius",p.competition?.direct_count ?? "Not mapped")}${plainRow("Indirect OSM candidates inside radius",p.competition?.indirect_count ?? "Not mapped")}${plainRow("Mapped candidates without a public name",(p.competition?.direct_unnamed_count||0)+(p.competition?.indirect_unnamed_count||0))}${nearestCompetitorRow("Nearest named direct",p.competition?.likely_direct_competitors?.[0])}${nearestCompetitorRow("Nearest named indirect",p.competition?.likely_indirect_competitors?.[0])}${plainRow("Competition intensity",friendlyCompetitionIntensity(p.competition?.competition_intensity))}${plainRow("Planning radius",`${p.catchment?.radius_km || $("#radius").value} km`)}${p.competition?.competitor_discovery_radius_km>p.catchment?.radius_km?plainRow("Nearby-name discovery radius",`${p.competition.competitor_discovery_radius_km} km`):""}${plainRow("Nearest market",p.catchment?.nearest_market?.name || p.sector_intelligence?.nearest_markets?.[0]?.name || "Not linked")}${plainRow("Nearest institution",p.sector_intelligence?.institutional_buyer_candidates?.[0]?.name || "Not linked")}${plainRow("Incumbent capacity",p.competition?.capacity == null ? "Unknown — OSM proxy counts do not measure capacity, sales or market share" : number(p.competition.capacity))}<p class="caption">Unnamed mapped features remain included in density counts, but are not presented as identifiable businesses because OSM supplies no defensible public name.</p><p class="caption">${safe(p.competition?.caveat || "No coordinate-backed OSM competitor scan was possible for this locality.")}</p></article></div><div class="three-col"><article><h3>Customer segments</h3>${bulletList(p.sector_intelligence?.customer_segments,"No measured segment shares available.")}</article><article><h3>Supplier plan</h3>${bulletList(p.sector_intelligence?.supplier_types,"No supplier cluster linked.")}</article><article><h3>Channels</h3>${channelList(p.sector_intelligence?.distribution_channels)}</article></div><div class="two-col"><article><h3>All named direct alternatives</h3>${entityList(p.competition?.likely_direct_competitors)}</article><article><h3>All named indirect alternatives</h3>${entityList(p.competition?.likely_indirect_competitors)}</article></div><article class="network"><h3>Economic repair path</h3><div class="flow"><span>Suppliers</span><b>→</b><span class="bottleneck">Current service bottleneck</span><b>→</b><span class="repair">${safe(primitive.primitive_type)}</span><b>→</b><span>Customers</span></div><p class="caption">Newly served flow: ${number(p.counterfactual?.newly_served_demand)} ${safe(p.generated_graph?.unit || p.demand?.unit)}. Cannibalized existing flow: ${number(p.counterfactual?.cannibalized_existing_flow)}.</p></article></div>
-    <div class="tab-panel" data-panel="opportunities"><article><h3>Options tested</h3><div class="option-table"><div class="option-row head"><span>Option</span><span>Investment</span><span>Capacity</span><span>Role</span></div>${candidateRows(p)}</div></article>${alternatives.length ? `<article><h3>Other sectors compared</h3><div class="alternatives">${alternatives.map((x,i)=>`<span><b>${i+2}</b><strong>${safe(labelSector(x.sector))}</strong><small>${moneyRange(x.selected_venture.investment)} · ${percent(selectedScenario(x)?.scenario_survival_rate)}</small></span>`).join("")}</div></article>`:""}</div>
+    <div class="tab-panel" data-panel="opportunities"><article><h3>Options tested in the selected sector</h3><div class="option-table"><div class="option-row head"><span>Option</span><span>Investment</span><span>Capacity</span><span>Role</span></div>${candidateRows(p)}</div></article>${alternatives.length ? `<article><h3>Complete all-sector comparison</h3><p class="caption">All ${sectors.length} supported sectors were executed for this same locality, capital, profile, radius and analysis mode. The selected sector is ranked first; no tested sector is hidden.</p><div class="alternatives sector-comparison">${alternatives.map((x,i)=>sectorComparisonCard(x,i+2)).join("")}</div></article>`:""}</div>
     <div class="tab-panel" data-panel="risk"><div class="two-col"><article><h3>Computed SWOT</h3>${swot(p.swot)}</article><article><h3>Scenario resilience</h3>${plainRow("Scenarios",scenario?.scenario_count || "Quick plan")}${plainRow("Remain solvent",scenario?percent(scenario.scenario_survival_rate):"Not run")}${plainRow("Payback within 36 months",scenario?percent(scenario.payback_within_36_months_rate):"Not run")}${plainRow("10th percentile minimum cash",scenario?money(scenario.minimum_cash_p10):"Not run")}${plainRow("Worst 5% cumulative cash (CVaR)",scenario?money(-scenario.cvar95_loss):"Not run")}</article></div><div class="two-col"><article><h3>Sensitivity tornado</h3>${tornado(p.sensitivity_analysis)}</article><article><h3>Pre-mortem: why this could fail</h3>${premortemList(p.premortem)}</article></div><article><h3>Adaptive failure boundaries</h3><div class="boundary-grid">${(p.failure_boundaries||[]).map(boundaryCard).join("") || "Run Deep analysis to calculate boundaries."}</div><p class="caption">Scenario rates are modelled planning survival, not probability of success. The triangular factors are not empirically calibrated.</p></article></div>
     <div class="tab-panel" data-panel="plan"><div class="two-col"><article><h3>Minimum viable setup</h3><dl class="breakdown"><div><dt>Equipment and setup</dt><dd>${money(primitive.capex)}</dd></div><div><dt>Working capital</dt><dd>${money(primitive.working_capital)}</dd></div><div><dt>Monthly fixed OPEX</dt><dd>${money(primitive.monthly_opex)}</dd></div><div><dt>People</dt><dd>${primitive.staff}</dd></div><div><dt>Space</dt><dd>${number(primitive.space_sqft)} sq ft</dd></div><div><dt>Service radius</dt><dd>${number(primitive.service_radius_km)} km</dd></div></dl>${costBars(p.prudent_financing?.capex_breakdown,"CAPEX allocation")}</article><article><h3>Working-capital cycle</h3>${plainRow("Minimum modelled",money(p.prudent_financing?.working_capital?.minimum_modelled))}${plainRow("Recommended +15% buffer",money(p.prudent_financing?.working_capital?.recommended_with_15pct_buffer))}${plainRow("Inventory days",primitive.inventory_days)}${plainRow("Receivable days",primitive.receivable_days)}${plainRow("Payable days",primitive.payable_days)}${plainRow("Cash conversion cycle",`${primitive.inventory_days+primitive.receivable_days-primitive.payable_days} days`)}<h3 class="subhead">Licences to verify</h3>${bulletList(primitive.licence_assumptions)}</article></div><div class="three-col"><article><h3>Equipment</h3>${bulletList(primitive.equipment)}</article><article><h3>Quality controls</h3>${bulletList(primitive.quality_controls)}</article><article><h3>Operational factors</h3>${bulletList(primitive.operational_factors?.length ? primitive.operational_factors : p.sector_intelligence?.operational_factors)}</article></div><div class="two-col"><article><h3>Weather and seasonality</h3>${bulletList(primitive.weather_factors?.length ? primitive.weather_factors : p.sector_intelligence?.weather_factors,"No material weather-specific factor is registered for this sector.")}</article><article><h3>Insurance / protection</h3>${bulletList(p.sector_intelligence?.insurance_options)}</article></div><div class="two-col"><article><h3>Customer plan</h3>${bulletList(primitive.customer_types)}</article><article><h3>Supplier plan</h3>${bulletList(primitive.supplier_types)}</article></div></div>
     <div class="tab-panel" data-panel="finance"><div class="metric-grid">${metric("Total project cost",moneyRange(venture.investment),"CAPEX + working capital")}${metric("Your own capital",money(Number($("#capital").value)),"entered by you")}${metric("External financing",money(p.prudent_financing.illustrative_financing_requirement||0),"illustrative, not approved")}${metric("Operating break-even",twin?.operating_break_even_month?`Month ${twin.operating_break_even_month}`:"Not reached","cumulative operating cash")}${metric("Cash break-even",twin?.cash_break_even_month?`Month ${twin.cash_break_even_month}`:"Not reached","closing cash")}${metric("Payback",twin?.investment_payback_month?`Month ${twin.investment_payback_month}`:"Beyond model","owner capital recovered")}</div><article><h3>Unit economics and investment metrics</h3><div class="metric-grid">${metric("Gross margin",percent(p.prudent_financing?.financial_metrics?.gross_margin),"month 12")}${metric("Break-even volume",number(p.prudent_financing?.financial_metrics?.break_even_volume_month),"planning revenue units/month")}${metric("36-month NPV",money(p.prudent_financing?.financial_metrics?.npv_36_month_at_12pct),"12% annual discount rate")}${metric("Annualized IRR",percent(p.prudent_financing?.financial_metrics?.irr_annualized),"benchmark-adjusted assumptions")}</div><p class="caption">${safe(p.prudent_financing?.financial_metrics?.confidence_note||"")}</p></article><article><h3>36-month closing cash</h3><div class="cash-chart">${cashBars(twin)}</div></article><article><h3>Possible finance fit</h3><ul>${(p.official_finance||[]).map(x=>`<li><strong>${safe(x.scheme_name)}</strong> — ${safe(x.status_wording)}</li>`).join("")}</ul></article></div>
@@ -164,7 +258,7 @@ function simpleCompetitionPreview(p,language){
   const c=p.competition||{}; const center=p.catchment?.center||{};
   const direct=(c.likely_direct_competitors||[]).map(x=>({...x,kind:"direct"}));
   const indirect=(c.likely_indirect_competitors||[]).map(x=>({...x,kind:"indirect"}));
-  const items=[...direct,...indirect].sort((a,b)=>(a.straight_line_distance_km??Infinity)-(b.straight_line_distance_km??Infinity)).slice(0,6);
+  const items=[...direct,...indirect].sort((a,b)=>(a.straight_line_distance_km??Infinity)-(b.straight_line_distance_km??Infinity));
   const labels=({
     en:{title:"Nearby OSM competitors and alternatives",direct:"Direct",indirect:"Indirect",inside:"inside radius",outside:"outside radius",none:"No mapped candidate was found in the bounded scan. This is missing OSM evidence, not proof that no competitor exists.",center:"Scan center",vintage:"OSM index"},
     bn:{title:"নিকটবর্তী OSM প্রতিযোগী ও বিকল্প",direct:"সরাসরি",indirect:"পরোক্ষ",inside:"পরিকল্পনা ব্যাসার্ধের ভিতরে",outside:"পরিকল্পনা ব্যাসার্ধের বাইরে",none:"সীমিত অনুসন্ধানে কোনো মানচিত্রভুক্ত প্রার্থী মেলেনি। এটি OSM প্রমাণের ঘাটতি; কোনো প্রতিযোগী নেই—তার প্রমাণ নয়।",center:"স্ক্যান কেন্দ্র",vintage:"OSM সূচক"},
@@ -200,7 +294,22 @@ function localizeUnit(unit,language){const maps={bn:{"litres/month":"লিট�
 function localizedStatus(status,language){const maps={bn:{PLANNING_RANGE:"পরিকল্পনার সীমা",MODELLED:"মডেলভিত্তিক",MODELLED_BENCHMARK:"মডেলভিত্তিক বেঞ্চমার্ক",ILLUSTRATIVE:"উদাহরণমূলক",PROJECTED_MONTH_12:"১২তম মাসের প্রক্ষেপণ",PROJECTED:"প্রক্ষেপিত",RECENT_SURVEY_UNIT_VALUE:"সাম্প্রতিক সমীক্ষার একক মূল্য",UNAVAILABLE:"তথ্য নেই"},hi:{PLANNING_RANGE:"योजना सीमा",MODELLED:"मॉडल-आधारित",MODELLED_BENCHMARK:"मॉडल-आधारित बेंचमार्क",ILLUSTRATIVE:"उदाहरणात्मक",PROJECTED_MONTH_12:"माह 12 का अनुमान",PROJECTED:"अनुमानित",RECENT_SURVEY_UNIT_VALUE:"हालिया सर्वेक्षण इकाई मूल्य",UNAVAILABLE:"जानकारी उपलब्ध नहीं"}};return maps[language]?.[status]||status||"UNAVAILABLE";}
 function localizedIntensity(value,language){if(language==="bn")return value&&value!=="UNKNOWN"?"মানচিত্রভিত্তিক ঘনত্ব":"অজানা";if(language==="hi")return value&&value!=="UNKNOWN"?"मानचित्र-आधारित घनत्व":"अज्ञात";return friendlyCompetitionIntensity(value);}
 
-function bindTabs(){ document.querySelectorAll(".result-tabs button").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".result-tabs button").forEach(x=>x.classList.toggle("active",x===button));document.querySelectorAll(".tab-panel").forEach(panel=>panel.classList.toggle("active",panel.dataset.panel===button.dataset.tab));})); }
+function bindTabs(){ document.querySelectorAll(".result-tabs button").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".result-tabs button").forEach(x=>x.classList.toggle("active",x===button));document.querySelectorAll(".tab-panel").forEach(panel=>panel.classList.toggle("active",panel.dataset.panel===button.dataset.tab));setJourneyStep(({summary:2,market:2,opportunities:3,risk:4,plan:5,finance:6,action:7})[button.dataset.tab]||2);})); }
+
+function setAnalyzeButtonLabel(label){const button=$("#analyze-button");if(button)button.innerHTML=`<i class="ph ph-graph" aria-hidden="true"></i><span>${safe(label)}</span>`;}
+function setJourneyStep(step){document.querySelectorAll(".journey b").forEach((item,index)=>item.classList.toggle("active",index===Math.max(0,step-1)));}
+
+function initializeVisualExperience(){
+  if(reducedMotion())return;
+  let ticking=false;
+  const updateParallax=()=>{document.documentElement.style.setProperty("--parallax-y",`${Math.min(window.scrollY*.045,48)}px`);ticking=false;};
+  window.addEventListener("scroll",()=>{if(!ticking){requestAnimationFrame(updateParallax);ticking=true;}},{passive:true});
+  const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add("is-visible");observer.unobserve(entry.target);}}),{threshold:.08,rootMargin:"0px 0px -5%"});
+  const prepare=root=>root.querySelectorAll(".decision > *, .tab-panel > *, .audit, .progress-panel").forEach(item=>{if(!item.classList.contains("reveal-ready")){item.classList.add("reveal-ready");observer.observe(item);}});
+  prepare(document);
+  const mutation=new MutationObserver(()=>prepare(document));
+  mutation.observe($("#decision"),{childList:true,subtree:true});
+}
 function renderInputNeeded(p){const gates=(p.evidence_gates||[]).filter(g=>g.blocking);$("#decision").classList.remove("hidden");$("#decision").innerHTML=`<div class="notice"><p class="eyebrow">Evidence gate — no fabricated plan</p><h2>${safe(labelSector(p.sector))} cannot yet be estimated responsibly for this locality.</h2>${bulletList(gates.map(g=>g.message),"Linked evidence is insufficient.")}<p><strong>Useful next action:</strong> collect or link ${safe([...new Set(gates.flatMap(g=>g.required_variables||[]))].join(", ")||"the missing current evidence")}, or use “Find the best opportunity” to test sectors supported by the available evidence.</p></div>${geographyPanel(p)}${compactCompetitionPanel(p)}${factorPanel(p)}`;renderAudit(p);localizeRenderedDecision(p,$("#language").value);}
 function renderConstraintFailure(p){const c=p.constraint_analysis||{};const inv=c.inverse_analysis||{};const relax=c.minimum_relaxation||{};$("#decision").classList.remove("hidden");$("#decision").innerHTML=`<div class="notice constraint"><p class="eyebrow">No tested configuration meets all your limits</p><h2>No tested configuration is economically viable within your limits.</h2><p><strong>Binding constraints:</strong> ${(c.binding_constraints||[]).map(x=>friendlyConstraint(x,p.entrepreneur?.minimum_monthly_income)).join(", ")||"Physical or evidence feasibility"}.</p><div class="metric-grid">${metric("Maximum income with current funding",money(inv.maximum_owner_income_with_current_funding),"enumerated configurations")}${metric(p.entrepreneur?.minimum_monthly_income==null?"Minimum non-loss income":"Your requested income",money(relax.requested_income),"per month")}${metric("Smallest additional own capital",money(relax.additional_own_capital_needed),"alternative to extra debt")}${metric("Smallest additional debt ceiling",money(relax.additional_debt_ceiling_needed),"not a borrowing recommendation")}</div><p>Best currently achievable: ${money(relax.best_income_with_current_limits)} per month. These are exact only over the configurations GramArtha generated.</p></div>${geographyPanel(p)}${compactCompetitionPanel(p)}${factorPanel(p)}`;renderAudit(p);localizeRenderedDecision(p,$("#language").value);}
 function renderAudit(p){$("#audit-content").innerHTML=`<p><strong>Decision chain:</strong> evidence → ${safe(p.demand?.method_version)} → ${safe(p.economic_graph_summary?.builder)} → ${safe(p.baseline_flow?.solver)} → enumerated MVV → ${safe(p.digital_twin?.method_version)} → ${safe(p.robust_comparison?.method_version||"quick central estimate")}</p><p><strong>Estimate class:</strong> ${safe(p.demand?.status)}. ${safe((p.demand?.notes||[]).join(" "))}</p><p><strong>Scope:</strong> ${safe(p.robust_comparison?.scope||"No selected configuration")}. ${safe(p.robust_comparison?.calibration_status||"")}</p><p><strong>Evidence limitations:</strong> ${safe((p.evidence_gates||[]).map(g=>g.message).join(" ")||"None")}</p><details><summary>Source links</summary><ul>${p.sources.map(url=>`<li><a href="${safe(url)}" target="_blank" rel="noreferrer">${safe(url)}</a></li>`).join("")}</ul></details>`;}
@@ -244,6 +353,7 @@ function compactCompetitionPanel(p){const c=p.competition||{};return `<article><
 
 function selectedScenario(p){const id=p.selected_venture?.candidate_id;return (p.robust_comparison?.candidate_summaries||[]).find(x=>x.candidate_id===id);}
 function candidateRows(p){const roles={};roles[p.selected_venture.candidate_id]="Lowest viable";if(p.robust_comparison?.expected_value_winner)roles[p.robust_comparison.expected_value_winner]="Highest upside";if(p.robust_comparison?.survival_first_winner)roles[p.robust_comparison.survival_first_winner]="Survival-first";if(p.robust_comparison?.minimax_regret_winner)roles[p.robust_comparison.minimax_regret_winner]="Robust";return (p.candidate_ventures||[]).map(x=>`<div class="option-row"><span>${safe(x.candidate_id.split(":").at(-1).replace(/-v[0-9]+$/,""))}</span><span>${money(x.investment)}</span><span>${number(x.total_capacity)}</span><span>${safe(roles[x.candidate_id]||"Alternative")}</span></div>`).join("");}
+function sectorComparisonCard(result,rank){const venture=result.selected_venture;const scenario=selectedScenario(result);const status=venture?(scenario?`${percent(scenario.scenario_survival_rate)} scenario survival · ${moneyRange(venture.investment)}`:`Quick central estimate · ${moneyRange(venture.investment)}`):(result.status==="NOT_FEASIBLE"?"Not feasible under the entered constraints":"Blocked by an explicit evidence gate");return `<span><b>${rank}</b><strong>${safe(labelSector(result.sector))}</strong><small>${safe(status)}</small></span>`;}
 function swot(data){return ["strengths","weaknesses","opportunities","threats"].map(key=>`<div class="swot-block ${key}"><strong>${key}</strong><ul>${(data?.[key]||[]).map(x=>`<li>${safe(x)}</li>`).join("")||"<li>No computed item.</li>"}</ul></div>`).join("");}
 function boundaryCard(item){return `<div><strong>${safe(item.variable.replaceAll("_"," "))}</strong><span>${item.threshold==null?"No failure in tested range":`${number(item.threshold)} ${safe(item.unit)}`}</span><small>${safe(item.interpretation)}</small></div>`;}
 function tabButton(id,label,active=false){return `<button type="button" data-tab="${id}" class="${active?"active":""}">${label}</button>`;}

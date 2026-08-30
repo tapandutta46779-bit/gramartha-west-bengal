@@ -8,7 +8,8 @@ The full local West Bengal OSM database contained 381 administrative-area geomet
 
 - The deployment asset still removes the 633,601-row road network to remain hostable, but it now preserves administrative-area geometry and its spatial index.
 - A regression test decompresses the actual committed public OSM asset and verifies that every one of the 23 supported West Bengal districts resolves an explicitly labelled administrative representative-point proxy.
-- The ordinary visible summary now shows up to six nearest direct/indirect OSM candidates with name, category, straight-line distance, inside/outside-radius status, coordinate quality and OSM vintage.
+- The ordinary visible summary and detailed market section now retain every named direct/indirect OSM candidate returned by the bounded sector scan, with name, category, straight-line distance, inside/outside-radius status, coordinate quality and OSM vintage.
+- English, Bengali and Hindi PDFs paginate the complete named-candidate lists instead of truncating them to the first twelve.
 - The business-type explanation now distinguishes transparent scenario ranking from ML sector classification and confirms that a user-selected sector was not silently replaced.
 
 ## Honesty boundary

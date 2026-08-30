@@ -166,6 +166,26 @@ def test_multilingual_pdfs_preserve_page_count_and_analysis_id():
     assert len(set(results.values())) == 1
 
 
+def test_multilingual_pdfs_do_not_truncate_named_osm_candidates():
+    decision = decision_fixture()
+    decision.competition["likely_direct_competitors"] = [
+        {
+            "name": f"Complete Candidate {index:02d}",
+            "category": "FOOD_SHOP",
+            "straight_line_distance_km": index / 10,
+        }
+        for index in range(1, 26)
+    ]
+    decision.plain_language_summary = build_plain_language_summary(decision)
+    for language in ("en", "bn", "hi"):
+        reader = PdfReader(BytesIO(build_customer_pdf(decision, language)))
+        extracted = " ".join(
+            " ".join((page.extract_text() or "").split()) for page in reader.pages
+        )
+        assert "Complete Candidate 01" in extracted
+        assert "Complete Candidate 25" in extracted
+
+
 def test_pdf_download_headers_and_restart_safe_post_fallback():
     decision = decision_fixture()
     decision.plain_language_summary = build_plain_language_summary(decision)

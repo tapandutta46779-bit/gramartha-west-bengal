@@ -94,7 +94,7 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
     month_12 = twin.months[min(11, len(twin.months) - 1)] if twin and twin.months else None
     presentation = summary.presentations[language]
 
-    def add_page(title: str, page_number: int):
+    def add_page(title: str):
         pdf.add_page()
         pdf.set_fill_color(18, 59, 49)
         pdf.rect(0, 0, 210, 19, style="F")
@@ -113,7 +113,7 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
         pdf.set_text_color(102, 113, 104)
         pdf.set_font(family, size=5.8)
         pdf.cell(130, 4, f"GramArtha | {decision.analysis_id}")
-        pdf.cell(54, 4, f"{label('page')} {page_number}", align="R")
+        pdf.cell(54, 4, f"{label('page')} {pdf.page_no() + 1}", align="R")
         pdf.set_y(24)
         pdf.set_text_color(23, 35, 29)
 
@@ -156,7 +156,7 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
         pdf.ln(1)
 
     # Page 2: recommendation, geography and market evidence.
-    add_page(label("recommendation"), 2)
+    add_page(label("recommendation"))
     heading(presentation.recommended_venture_name)
     paragraph(presentation.why_recommended + " " + presentation.why_here)
     rows([
@@ -176,7 +176,7 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
     bullets(label("supplier_plan"), decision.sector_intelligence.get("supplier_types", []))
 
     # Page 3: competition, catchment and operating context.
-    add_page(label("competition"), 3)
+    add_page(label("competition"))
     rows([
         (label("direct_inside"), decision.competition.get("direct_count", tr("UNKNOWN"))),
         (label("indirect_inside"), decision.competition.get("indirect_count", tr("UNKNOWN"))),
@@ -186,14 +186,16 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
         (label("nearest_institution"), (decision.sector_intelligence.get("institutional_buyer_candidates") or [{}])[0].get("name", tr("UNKNOWN"))),
     ])
     paragraph(tr(decision.competition.get("caveat", "")), muted=True)
-    _localized_entity_list(pdf, family, label("all_direct"), decision.competition.get("likely_direct_competitors", []), label, tr, language)
-    _localized_entity_list(pdf, family, label("all_indirect"), decision.competition.get("likely_indirect_competitors", []), label, tr, language)
+    _localized_entity_list(pdf, family, label("all_direct"), decision.competition.get("likely_direct_competitors", []), label, tr, language, add_page)
+    _localized_entity_list(pdf, family, label("all_indirect"), decision.competition.get("likely_indirect_competitors", []), label, tr, language, add_page)
+    if pdf.get_y() > 225:
+        add_page(label("competition"))
     bullets(label("channels"), [f"{tr(item.get('role'))}: {tr(item.get('channel'))} ({tr(item.get('confidence'))})" for item in decision.sector_intelligence.get("distribution_channels", [])])
     bullets(label("operational_factors"), decision.sector_intelligence.get("operational_factors", []))
     bullets(label("weather"), decision.sector_intelligence.get("weather_factors", []))
 
     # Page 4: minimum viable setup and cost structure.
-    add_page(label("business_setup"), 4)
+    add_page(label("business_setup"))
     if primitive:
         rows([
             (label("equipment_setup"), _money(primitive.capex)),
@@ -214,7 +216,7 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
     bullets(label("insurance"), decision.sector_intelligence.get("insurance_options", []))
 
     # Page 5: finance, metrics, schemes and 36-month checkpoints.
-    add_page(label("finance_cash"), 5)
+    add_page(label("finance_cash"))
     metrics = decision.prudent_financing.get("financial_metrics", {})
     rows([
         (label("monthly_revenue"), _money(month_12.revenue if month_12 else None)),
@@ -232,7 +234,7 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
     bullets(label("finance_fit"), [f"{item.scheme_name}: {tr(item.status_wording)}" for item in decision.official_finance])
 
     # Page 6: scenarios, sensitivity, SWOT and failure boundaries.
-    add_page(label("risk_scenarios"), 6)
+    add_page(label("risk_scenarios"))
     scenario = next((item for item in decision.robust_comparison.get("candidate_summaries", []) if venture and item.get("candidate_id") == venture.candidate_id), {})
     rows([
         (label("scenarios"), scenario.get("scenario_count", label("quick_plan"))),
@@ -248,7 +250,7 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
     bullets(label("sensitivity"), [f"{tr(item.get('variable'))}: {tr('LOW')} {_money(item.get('profit_low'))}; {tr('MEDIUM')} {_money(item.get('profit_central'))}; {tr('HIGH')} {_money(item.get('profit_high'))}" for item in decision.sensitivity_analysis])
 
     # Page 7: pre-mortem and every staged action.
-    add_page(label("actions"), 7)
+    add_page(label("actions"))
     bullets(label("premortem"), [f"{tr(item.get('cause'))} {tr(item.get('prevention'))}" for item in decision.premortem])
     action_keys = {"before_starting":"before_starting","day_1_7":"week1","first_30_days":"month1","months_2_3":"months23","months_4_6":"months46","stop_or_reconsider":"stop_reconsider"}
     for key, values in decision.action_plan.items():
@@ -256,7 +258,7 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
     bullets(label("actions"), decision.staged_plan)
 
     # Page 8: evidence freshness, limitations and provenance.
-    add_page(label("evidence"), 8)
+    add_page(label("evidence"))
     rows([
         (label("confidence"), tr(decision.confidence.value)),
         (label("status"), tr(decision.status.value)),
@@ -285,15 +287,23 @@ def _localized_month(value, language):
     return {"bn": f"মাস {value}", "hi": f"माह {value}"}.get(language, f"Month {value}")
 
 
-def _localized_entity_list(pdf, family, title, entities, label, tr, language):
+def _localized_entity_list(pdf, family, title, entities, label, tr, language, add_page):
     if not entities:
         return
-    pdf.set_text_color(18, 59, 49)
-    pdf.set_font(family, size=7.2)
-    pdf.multi_cell(184, 4, title)
-    pdf.set_text_color(23, 35, 29)
-    pdf.set_font(family, size=6.1)
-    for item in entities[:12]:
+    def list_heading():
+        pdf.set_text_color(18, 59, 49)
+        pdf.set_font(family, size=7.2)
+        pdf.multi_cell(184, 4, title)
+        pdf.set_text_color(23, 35, 29)
+        pdf.set_font(family, size=6.1)
+
+    if pdf.get_y() > 268:
+        add_page(title)
+    list_heading()
+    for item in entities:
+        if pdf.get_y() > 272:
+            add_page(title)
+            list_heading()
         name = item.get("name") or label("unnamed")
         category = tr(item.get("category") or label("mapped_place"))
         distance = f"{_number(item.get('straight_line_distance_km'))} {_localized_unit('km', language)}"
@@ -1094,7 +1104,7 @@ def _entity_table(story, title, entities, styles):
                 _text(f"{_number(item.get('straight_line_distance_km'))} km"), styles["table"]
             ),
         ]
-        for item in entities[:12]
+        for item in entities
     )
     story.append(_table(rows, [80 * mm, 55 * mm, 41 * mm]))
 

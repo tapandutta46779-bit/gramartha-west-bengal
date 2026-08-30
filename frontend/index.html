@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="styles.css?v=0.7.1" />
     <link rel="stylesheet" href="version.css?v=0.7.1" />
     <link rel="stylesheet" href="fixes.css?v=0.7.1-osm1" />
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+    <link rel="stylesheet" href="design.css?v=0.7.1-design3" />
     <script>
       if (window.location.protocol === "file:") {
         window.addEventListener("DOMContentLoaded", () => {
@@ -27,27 +29,30 @@
     </script>
   </head>
   <body>
-    <nav><a class="brand" href="#">Gram<span>Artha</span> <em>v0.7.1</em></a><span>West Bengal business advisor</span></nav>
-    <header><p class="eyebrow">Hyper-local economic network repair</p><h1>What business can work where you live?</h1><p class="lede">Enter your locality and budget. GramArtha tests local service gaps, minimum viable ventures, 36-month cash flow and downside scenarios.</p></header>
+    <nav><a class="brand" href="#"><i class="ph ph-path" aria-hidden="true"></i> Gram<span>Artha</span> <em>v0.7.1</em></a><span>West Bengal business advisor</span></nav>
+    <div class="journey-shell" aria-label="Planning journey">
+      <div class="journey"><b class="active"><i class="ph ph-map-pin" aria-hidden="true"></i><span>1</span> Setup</b><b><i class="ph ph-storefront" aria-hidden="true"></i><span>2</span> Local market</b><b><i class="ph ph-lightbulb" aria-hidden="true"></i><span>3</span> Opportunities</b><b><i class="ph ph-shield-check" aria-hidden="true"></i><span>4</span> Risk</b><b><i class="ph ph-clipboard-text" aria-hidden="true"></i><span>5</span> Plan</b><b><i class="ph ph-currency-inr" aria-hidden="true"></i><span>6</span> Finance</b><b><i class="ph ph-flag-checkered" aria-hidden="true"></i><span>7</span> Action</b></div>
+    </div>
     <main>
+      <div class="experience-grid">
+      <header><p class="eyebrow">Hyper-local economic network repair</p><h1>What business can work where you live?</h1><p class="lede">Enter your locality and budget. GramArtha tests local service gaps, minimum viable ventures, 36-month cash flow and downside scenarios.</p><div class="hero-signal" aria-hidden="true"><i class="ph ph-map-pin"></i><span>Locality</span><i class="ph ph-storefront"></i><span>Market</span><i class="ph ph-chart-line-up"></i><span>Plan</span></div></header>
       <section class="planner">
-        <div class="journey"><b class="active">1 Setup</b><b>2 Local market</b><b>3 Opportunities</b><b>4 Risk</b><b>5 Plan</b><b>6 Finance</b><b>7 Action</b></div>
-        <div class="step"><span>1</span><div><strong>Your area</strong><small>West Bengal → district → canonical locality</small></div></div>
+        <div class="step"><span>1</span><i class="ph ph-map-trifold" aria-hidden="true"></i><div><strong>Your area</strong><small>West Bengal → district → canonical locality</small></div></div>
         <div class="area-grid">
-          <label>State<input value="West Bengal" disabled /></label>
-          <label>District<select id="district" required><option value="">Loading supported districts…</option></select></label>
+          <label><span class="field-label"><i class="ph ph-bank" aria-hidden="true"></i>State</span><input value="West Bengal" disabled /></label>
+          <div class="district-field"><span class="field-label" id="district-label"><i class="ph ph-map-pin" aria-hidden="true"></i>District</span><div class="district-picker" id="district-picker"><select id="district" required disabled aria-busy="true" aria-labelledby="district-label"><option value="">Loading supported districts…</option></select><button id="district-trigger" class="district-trigger hidden" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="district-label district-trigger"><span>Loading supported districts…</span><i class="ph ph-caret-down" aria-hidden="true"></i></button><div id="district-menu" class="district-menu hidden" role="listbox" aria-labelledby="district-label" tabindex="-1"></div></div><button id="district-retry" class="inline-retry hidden" type="button"><i class="ph ph-arrow-clockwise" aria-hidden="true"></i>Retry district list</button></div>
         </div>
-        <form id="search-form" class="search-row"><label class="sr-only" for="query">Locality, town, municipality, block, village or ward</label><input id="query" autocomplete="off" required minlength="2" placeholder="Select a district, then type your local area" /><button type="submit">Find area</button></form>
+        <form id="search-form" class="search-row"><label class="sr-only" for="query">Locality, town, municipality, block, village or ward</label><div class="input-with-icon"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><input id="query" autocomplete="off" required minlength="2" placeholder="Select a district, then type your local area" /></div><button type="submit"><i class="ph ph-crosshair" aria-hidden="true"></i>Find area</button></form>
         <p id="status" class="muted" role="status" aria-live="polite">Select a district before searching.</p><ul id="results" class="results"></ul><div id="identity" class="identity empty">No canonical locality selected yet.</div>
 
-        <div class="step plan-step"><span>2</span><div><strong>Your plan</strong><small>Budget, interest and analysis depth</small></div></div>
+        <div class="step plan-step"><span>2</span><i class="ph ph-briefcase" aria-hidden="true"></i><div><strong>Your plan</strong><small>Budget, interest and analysis depth</small></div></div>
         <form id="analysis-form" class="plan-grid"><input id="selected-geo-id" type="hidden" />
-          <label>Own capital (₹)<input id="capital" type="number" min="10000" value="100000" required /></label>
-          <label>Business interest<select id="sector"><option value="best">Find the best opportunity for me</option><optgroup label="Agriculture and food"><option value="dairy">Dairy / milk</option><option value="poultry">Poultry / egg aggregation</option><option value="fishery">Fish collection / distribution</option><option value="food processing">Small food processing</option><option value="flour mill">Flour mill</option><option value="spice processing">Spice processing</option><option value="mustard oil">Mustard oil extraction</option></optgroup><optgroup label="Retail and distribution"><option value="kirana">Kirana / grocery</option><option value="household goods">Household-goods distribution</option><option value="electronics">Electronics / mobile retail</option><option value="transport">Rural distribution / aggregation</option></optgroup></select></label>
-          <label>Planning radius<select id="radius"><option value="3">3 km</option><option value="5">5 km</option><option value="10" selected>10 km</option><option value="15">15 km</option><option value="20">20 km</option></select></label>
-          <label>Analysis<select id="analysis-mode"><option value="deep" selected>Deep — 512 scenarios</option><option value="quick">Quick — central estimate</option></select></label>
-          <label>Output language (input stays English)<select id="language"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option></select></label>
-          <details class="advanced"><summary>Optional entrepreneur profile</summary><div class="advanced-grid">
+          <label><span class="field-label"><i class="ph ph-wallet" aria-hidden="true"></i>Own capital (₹)</span><input id="capital" type="number" min="10000" value="100000" required /></label>
+          <label><span class="field-label"><i class="ph ph-storefront" aria-hidden="true"></i>Business interest</span><select id="sector"><option value="best">Find the best opportunity for me</option><optgroup label="Agriculture and food"><option value="dairy">Dairy / milk</option><option value="poultry">Poultry / egg aggregation</option><option value="fishery">Fish collection / distribution</option><option value="food processing">Small food processing</option><option value="flour mill">Flour mill</option><option value="spice processing">Spice processing</option><option value="mustard oil">Mustard oil extraction</option></optgroup><optgroup label="Retail and distribution"><option value="kirana">Kirana / grocery</option><option value="household goods">Household-goods distribution</option><option value="electronics">Electronics / mobile retail</option><option value="transport">Rural distribution / aggregation</option></optgroup></select></label>
+          <label><span class="field-label"><i class="ph ph-crosshair" aria-hidden="true"></i>Planning radius</span><select id="radius"><option value="3">3 km</option><option value="5">5 km</option><option value="10" selected>10 km</option><option value="15">15 km</option><option value="20">20 km</option></select></label>
+          <label><span class="field-label"><i class="ph ph-chart-bar" aria-hidden="true"></i>Analysis</span><select id="analysis-mode"><option value="deep" selected>Deep — 512 scenarios</option><option value="quick">Quick — central estimate</option></select></label>
+          <label><span class="field-label"><i class="ph ph-globe-hemisphere-east" aria-hidden="true"></i>Output language (input stays English)</span><select id="language"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option></select></label>
+          <details class="advanced"><summary><i class="ph ph-user-circle" aria-hidden="true"></i>Optional entrepreneur profile</summary><div class="advanced-grid">
             <label>Desired monthly income (₹)<input id="income-target" type="number" min="0" placeholder="Optional" /></label>
             <label>Maximum acceptable debt (₹)<input id="max-debt" type="number" min="0" /></label>
             <label>Experience (years)<input id="experience" type="number" min="0" value="0" /></label>
@@ -58,10 +63,11 @@
             <label>Time available (hours/week)<input id="time-available" type="number" min="0" placeholder="Optional" /></label>
             <label>Family labour available<input id="family-labour" type="number" min="0" value="0" /></label>
           </div></details>
-          <button class="primary" type="submit" disabled id="analyze-button">Select your area first</button>
+          <button class="primary" type="submit" disabled id="analyze-button"><i class="ph ph-graph" aria-hidden="true"></i><span>Select your area first</span></button>
         </form>
       </section>
-      <section id="progress-panel" class="progress-panel hidden" aria-live="polite"><div class="spinner"></div><div><strong id="analysis-status">Starting analysis…</strong><p id="elapsed">Elapsed: 0.0 seconds</p><small>Resolving evidence → graph and flow → MVV → 36-month cash flow → uncertainty and robust ranking</small></div></section>
+      </div>
+      <section id="progress-panel" class="progress-panel hidden" aria-live="polite"><div class="analysis-nodes" aria-hidden="true"><i class="ph ph-map-pin"></i><i class="ph ph-graph"></i><i class="ph ph-currency-inr"></i></div><div><strong id="analysis-status">Starting analysis…</strong><p id="elapsed">Elapsed: 0.0 seconds</p><small>Resolving evidence → graph and flow → MVV → 36-month cash flow → uncertainty and robust ranking</small></div></section>
       <section id="decision" class="decision hidden" aria-labelledby="recommendation-title"></section>
       <details class="audit"><summary>How did GramArtha decide? Evidence & methodology</summary><div id="audit-content"></div></details>
     </main>
@@ -69,7 +75,7 @@
     <script>
       if (window.location.protocol !== "file:") {
         const application = document.createElement("script");
-        application.src = "app.js?v=0.7.1-osm2";
+        application.src = "app.js?v=0.7.1-design3";
         document.body.appendChild(application);
       }
     </script>
