@@ -1,0 +1,214 @@
+{
+  "created_at": "2026-08-30T05:49:46.455938+00:00",
+  "scope": "EVERY_SUPPORTED_WEST_BENGAL_LOCALITY_X_EVERY_SUPPORTED_SECTOR",
+  "evidence_database": "data/sih26091_phase2.sqlite",
+  "osm_database": "data/west_bengal_osm.sqlite",
+  "osm_metadata": {
+    "source_path": "work/raw_stage/DS071_WEST_BENGAL/west_bengal.pbf",
+    "source_sha256": "b5b0c617e22d828954d8754c24aeb5b6440b483260bf040ef9cbbcdfd0e46cca",
+    "source_size_bytes": "113098966",
+    "extracted_at": "2026-08-30T05:44:57.855609+00:00",
+    "extractor_version": "WB_OSM_SQLITE_V3_EXPANDED_BUSINESS_TAGS",
+    "entity_count": "19245",
+    "road_way_count": "633601",
+    "admin_area_count": "381",
+    "category_counts": "{\"AGRI_INPUT_SHOP\": 20, \"ATM\": 476, \"BANK\": 549, \"CLINIC\": 521, \"COLLEGE\": 385, \"DAIRY\": 19, \"ELECTRONICS_SHOP\": 385, \"FOOD_SHOP\": 880, \"FUEL_STATION\": 465, \"GENERAL_SHOP\": 348, \"HOSPITAL\": 1226, \"HOUSEHOLD_SHOP\": 346, \"INDUSTRIAL\": 1574, \"MARKET\": 358, \"PHARMACY\": 492, \"PLACE\": 5343, \"RESTAURANT\": 1354, \"SCHOOL\": 1042, \"SUPERMARKET\": 154, \"TEA_OR_SWEET_SHOP\": 798, \"TRANSPORT_HUB\": 2396, \"WAREHOUSE\": 114}",
+    "osm_completeness_caveat": "OSM is volunteered proxy evidence and is not a complete business registry."
+  },
+  "districts_expected": 23,
+  "districts_tested": 23,
+  "localities_tested": 40474,
+  "sectors_tested": [
+    "dairy",
+    "kirana",
+    "poultry",
+    "fishery",
+    "food processing",
+    "flour mill",
+    "spice processing",
+    "mustard oil",
+    "household goods",
+    "electronics",
+    "transport"
+  ],
+  "matrix_rows": 445214,
+  "unique_scan_centers": 3192,
+  "coordinate_resolution_rate": 1.0,
+  "coordinate_quality_counts": {
+    "BLOCK_SIBLING_MEDIAN_PROXY": 11050,
+    "OFFICIAL_BSK_LOCALITY_SERVICE_CENTRE_PROXY": 1,
+    "OSM_DISTRICT_REPRESENTATIVE_POINT_PROXY": 26362,
+    "OSM_PLACE_PROXY": 3061
+  },
+  "scan_execution_rate": 1.0,
+  "candidate_return_rate": 0.9538154685162641,
+  "named_in_radius_total": 2165318,
+  "unnamed_mapped_in_radius_total": 710476,
+  "failures_count": 0,
+  "district_statistics": {
+    "Alipurduar": {
+      "matrix_rows": 4114,
+      "scan_executed": 4114,
+      "candidate_returned": 4110,
+      "named_in_radius": 11372,
+      "unnamed_in_radius": 4261
+    },
+    "Bankura": {
+      "matrix_rows": 38742,
+      "scan_executed": 38742,
+      "candidate_returned": 37829,
+      "named_in_radius": 36025,
+      "unnamed_in_radius": 22840
+    },
+    "Birbhum": {
+      "matrix_rows": 25850,
+      "scan_executed": 25850,
+      "candidate_returned": 24488,
+      "named_in_radius": 20180,
+      "unnamed_in_radius": 11703
+    },
+    "Cooch Behar": {
+      "matrix_rows": 13409,
+      "scan_executed": 13409,
+      "candidate_returned": 13405,
+      "named_in_radius": 48909,
+      "unnamed_in_radius": 21475
+    },
+    "Dakshin Dinajpur": {
+      "matrix_rows": 17589,
+      "scan_executed": 17589,
+      "candidate_returned": 17569,
+      "named_in_radius": 8803,
+      "unnamed_in_radius": 506
+    },
+    "Darjeeling": {
+      "matrix_rows": 7205,
+      "scan_executed": 7205,
+      "candidate_returned": 7205,
+      "named_in_radius": 87868,
+      "unnamed_in_radius": 30800
+    },
+    "Hooghly": {
+      "matrix_rows": 24277,
+      "scan_executed": 24277,
+      "candidate_returned": 24277,
+      "named_in_radius": 137231,
+      "unnamed_in_radius": 23848
+    },
+    "Howrah": {
+      "matrix_rows": 9647,
+      "scan_executed": 9647,
+      "candidate_returned": 9647,
+      "named_in_radius": 44587,
+      "unnamed_in_radius": 18378
+    },
+    "Jalpaiguri": {
+      "matrix_rows": 5115,
+      "scan_executed": 5115,
+      "candidate_returned": 5115,
+      "named_in_radius": 52749,
+      "unnamed_in_radius": 29733
+    },
+    "Jhargram": {
+      "matrix_rows": 26180,
+      "scan_executed": 26180,
+      "candidate_returned": 17608,
+      "named_in_radius": 2301,
+      "unnamed_in_radius": 538
+    },
+    "Kalimpong": {
+      "matrix_rows": 1375,
+      "scan_executed": 1375,
+      "candidate_returned": 1375,
+      "named_in_radius": 0,
+      "unnamed_in_radius": 0
+    },
+    "Kolkata": {
+      "matrix_rows": 1562,
+      "scan_executed": 1562,
+      "candidate_returned": 1562,
+      "named_in_radius": 596826,
+      "unnamed_in_radius": 116440
+    },
+    "Malda": {
+      "matrix_rows": 18436,
+      "scan_executed": 18436,
+      "candidate_returned": 15530,
+      "named_in_radius": 11853,
+      "unnamed_in_radius": 28910
+    },
+    "Murshidabad": {
+      "matrix_rows": 22847,
+      "scan_executed": 22847,
+      "candidate_returned": 22840,
+      "named_in_radius": 44552,
+      "unnamed_in_radius": 5068
+    },
+    "Nadia": {
+      "matrix_rows": 16181,
+      "scan_executed": 16181,
+      "candidate_returned": 16151,
+      "named_in_radius": 23352,
+      "unnamed_in_radius": 13523
+    },
+    "North 24 Parganas": {
+      "matrix_rows": 24596,
+      "scan_executed": 24596,
+      "candidate_returned": 24596,
+      "named_in_radius": 130910,
+      "unnamed_in_radius": 193034
+    },
+    "Paschim Bardhaman": {
+      "matrix_rows": 5236,
+      "scan_executed": 5236,
+      "candidate_returned": 5236,
+      "named_in_radius": 26873,
+      "unnamed_in_radius": 25170
+    },
+    "Paschim Medinipur": {
+      "matrix_rows": 55297,
+      "scan_executed": 55297,
+      "candidate_returned": 55297,
+      "named_in_radius": 428566,
+      "unnamed_in_radius": 38893
+    },
+    "Purba Bardhaman": {
+      "matrix_rows": 25597,
+      "scan_executed": 25597,
+      "candidate_returned": 25597,
+      "named_in_radius": 119594,
+      "unnamed_in_radius": 30123
+    },
+    "Purba Medinipur": {
+      "matrix_rows": 33066,
+      "scan_executed": 33066,
+      "candidate_returned": 33066,
+      "named_in_radius": 49986,
+      "unnamed_in_radius": 29337
+    },
+    "Purulia": {
+      "matrix_rows": 27291,
+      "scan_executed": 27291,
+      "candidate_returned": 25085,
+      "named_in_radius": 22959,
+      "unnamed_in_radius": 9766
+    },
+    "South 24 Parganas": {
+      "matrix_rows": 24530,
+      "scan_executed": 24530,
+      "candidate_returned": 24410,
+      "named_in_radius": 168823,
+      "unnamed_in_radius": 33435
+    },
+    "Uttar Dinajpur": {
+      "matrix_rows": 17072,
+      "scan_executed": 17072,
+      "candidate_returned": 12654,
+      "named_in_radius": 90999,
+      "unnamed_in_radius": 22695
+    }
+  },
+  "matrix_csv_gzip": "output/validation/osm_all_localities_all_sectors_v3/all_localities_all_sectors_osm_matrix.csv.gz",
+  "exact_failures_json": "output/validation/osm_all_localities_all_sectors_v3/exact_failures.json",
+  "interpretation_caveat": "A named-candidate zero is retained when the expanded statewide index genuinely contains no sector-mapped named OSM feature in the bounded scan. OSM is volunteered proxy evidence, not a complete business registry; counts do not measure capacity, sales or market share. Parent and district proxies are explicitly labelled and are not exact locality centroids."
+}

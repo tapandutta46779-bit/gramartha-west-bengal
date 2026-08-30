@@ -16,7 +16,7 @@ from backend.models.decision import VentureDecision
 from backend.reporting.customer_pdf import build_customer_pdf
 from backend.service import analyze
 
-app = FastAPI(title="GramArtha West Bengal Business Advisor", version="0.7.1")
+app = FastAPI(title="GramArtha West Bengal Business Advisor", version="0.7.2")
 store = EvidenceStore(os.environ.get("SIH26091_SQLITE_PATH", ":memory:"))
 frontend_path = Path(__file__).resolve().parents[2] / "frontend"
 if frontend_path.exists():

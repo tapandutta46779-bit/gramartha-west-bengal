@@ -577,10 +577,13 @@ def _spatial_context(
     discovery_radius_km = radius_km
     displayed_direct = direct_competitors
     displayed_indirect = indirect_competitors
-    if not direct_competitors and not indirect_competitors and radius_km < 30:
-        # A zero in-radius result should not become the misleading "Not mapped".
-        # Search a bounded wider ring for named context, while preserving the
-        # planning-catchment counts at zero and labelling every outside entity.
+    has_named_in_radius = any(
+        _entity_display_name(item)[0] for item in [*direct_competitors, *indirect_competitors]
+    )
+    if not has_named_in_radius and radius_km < 30:
+        # An unnamed-only or zero in-radius result should not become the misleading
+        # "Not mapped". Search a bounded wider ring for named context, while
+        # preserving the planning-catchment counts and labelling outside entities.
         discovery_radius_km = 30.0
         discovery = store.radial_catchment(
             latitude,
@@ -592,10 +595,12 @@ def _spatial_context(
         displayed_direct = _deduplicate_entities(displayed_direct, latitude, longitude)
         displayed_indirect = _deduplicate_entities(displayed_indirect, latitude, longitude)
     context_entities = radial.entities
-    if radius_km < 30 and not any(
-        item.category in {"MARKET", "SCHOOL", "COLLEGE", "HOSPITAL", "CLINIC"}
+    has_market = any(item.category == "MARKET" for item in context_entities)
+    has_institution = any(
+        item.category in {"SCHOOL", "COLLEGE", "HOSPITAL", "CLINIC"}
         for item in context_entities
-    ):
+    )
+    if radius_km < 30 and (not has_market or not has_institution):
         context_entities = store.radial_catchment(
             latitude,
             longitude,
@@ -618,9 +623,7 @@ def _spatial_context(
     markets = [item for item in context_entities if item.category == "MARKET"]
     named_markets = [item for item in markets if _entity_display_name(item)[0]]
     nearest_market = _nearest_entity(latitude, longitude, named_markets)
-    named_institutions = [
-        item for item in institutions if _entity_display_name(item)[0]
-    ]
+    named_institutions = [item for item in institutions if _entity_display_name(item)[0]]
     nearest_institutions = sorted(
         named_institutions,
         key=lambda item: haversine_km(latitude, longitude, item.latitude, item.longitude),
@@ -674,11 +677,7 @@ def _spatial_context(
                 for item in _nearest_entities(
                     latitude,
                     longitude,
-                    [
-                        entity
-                        for entity in displayed_direct
-                        if _entity_display_name(entity)[0]
-                    ],
+                    [entity for entity in displayed_direct if _entity_display_name(entity)[0]],
                     len(displayed_direct),
                 )
             ],
@@ -687,11 +686,7 @@ def _spatial_context(
                 for item in _nearest_entities(
                     latitude,
                     longitude,
-                    [
-                        entity
-                        for entity in displayed_indirect
-                        if _entity_display_name(entity)[0]
-                    ],
+                    [entity for entity in displayed_indirect if _entity_display_name(entity)[0]],
                     len(displayed_indirect),
                 )
             ],
@@ -707,8 +702,7 @@ def _spatial_context(
             "caveat": (
                 "The scan center is a district representative-point proxy, not this locality's "
                 "coordinate; treat nearby results as district context only. "
-                if coordinate.get("coordinate_quality")
-                == "OSM_DISTRICT_REPRESENTATIVE_POINT_PROXY"
+                if coordinate.get("coordinate_quality") == "OSM_DISTRICT_REPRESENTATIVE_POINT_PROXY"
                 else ""
             )
             + (

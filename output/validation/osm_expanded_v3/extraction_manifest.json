@@ -1,0 +1,32 @@
+{
+  "admin_areas": 381,
+  "categories": {
+    "AGRI_INPUT_SHOP": 20,
+    "ATM": 476,
+    "BANK": 549,
+    "CLINIC": 521,
+    "COLLEGE": 385,
+    "DAIRY": 19,
+    "ELECTRONICS_SHOP": 385,
+    "FOOD_SHOP": 880,
+    "FUEL_STATION": 465,
+    "GENERAL_SHOP": 348,
+    "HOSPITAL": 1226,
+    "HOUSEHOLD_SHOP": 346,
+    "INDUSTRIAL": 1574,
+    "MARKET": 358,
+    "PHARMACY": 492,
+    "PLACE": 5343,
+    "RESTAURANT": 1354,
+    "SCHOOL": 1042,
+    "SUPERMARKET": 154,
+    "TEA_OR_SWEET_SHOP": 798,
+    "TRANSPORT_HUB": 2396,
+    "WAREHOUSE": 114
+  },
+  "destination_sha256": "8987671785c9512991c958d16a4294f1ee4c6acdbb326c0a462fa358445bce2b",
+  "destination_size_bytes": 532766720,
+  "entities": 19245,
+  "roads": 633601,
+  "source_sha256": "b5b0c617e22d828954d8754c24aeb5b6440b483260bf040ef9cbbcdfd0e46cca"
+}
