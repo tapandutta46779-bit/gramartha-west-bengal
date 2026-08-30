@@ -54,17 +54,18 @@ def build_customer_pdf(decision: VentureDecision, language: str = "en") -> bytes
 
 
 def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> bytes:
-    """Build the complete seven-page technical layer in the selected language.
+    """Build the complete technical layer in the selected language.
 
     The canonical VentureDecision is never mutated.  Locality names, official
     dataset names, URLs, analysis identifiers and numerical values are preserved.
+    Page one is generated separately and is deliberately unaffected by this layout.
     """
     summary = decision.plain_language_summary or build_plain_language_summary(decision)
     detail = summary.detailed_presentations[language]
     labels = detail.labels
     translations = detail.translations
     pdf = FPDF(format="A4", unit="mm")
-    pdf.set_margins(13, 11, 13)
+    pdf.set_margins(14, 12, 14)
     pdf.set_auto_page_break(False)
     if language == "bn":
         pdf.add_font("GramArthaUnicode", fname=str(FONT_DIR / "NotoSansBengali.ttf"))
@@ -94,181 +95,456 @@ def _build_localized_technical_pdf(decision: VentureDecision, language: str) -> 
     month_12 = twin.months[min(11, len(twin.months) - 1)] if twin and twin.months else None
     presentation = summary.presentations[language]
 
-    def add_page(title: str):
+    pdf_copy = {
+        "en": {
+            "appendix": "OSM competitor evidence appendix",
+            "appendix_note": "Complete named OSM candidates from the bounded sector scan. Distances are straight-line planning distances; these records do not measure sales, capacity or market share.",
+            "continued": "continued",
+            "direct": "DIRECT",
+            "indirect": "INDIRECT",
+            "technical": "DETAILED BUSINESS PLANNING REPORT",
+            "workflow": "How the local opportunity becomes an operating business",
+            "evidence_register": "Evidence freshness register",
+        },
+        "bn": {
+            "appendix": "OSM প্রতিযোগী প্রমাণের পরিশিষ্ট",
+            "appendix_note": "সীমিত খাতভিত্তিক অনুসন্ধানে পাওয়া সব নামযুক্ত OSM প্রার্থী। দূরত্ব সরলরেখায় পরিকল্পনামূলক দূরত্ব; এগুলি বিক্রয়, সক্ষমতা বা বাজারের অংশ পরিমাপ করে না।",
+            "continued": "চলমান",
+            "direct": "সরাসরি",
+            "indirect": "পরোক্ষ",
+            "technical": "বিস্তারিত ব্যবসায়িক পরিকল্পনা প্রতিবেদন",
+            "workflow": "স্থানীয় সুযোগ কীভাবে পরিচালনযোগ্য ব্যবসায় রূপ নেয়",
+            "evidence_register": "প্রমাণের সময়োপযোগিতা নিবন্ধন",
+        },
+        "hi": {
+            "appendix": "OSM प्रतिस्पर्धी प्रमाण परिशिष्ट",
+            "appendix_note": "सीमित क्षेत्र-आधारित खोज से प्राप्त सभी नामयुक्त OSM उम्मीदवार। दूरियां सीधी रेखा की नियोजन दूरियां हैं; ये अभिलेख बिक्री, क्षमता या बाजार हिस्सेदारी नहीं मापते।",
+            "continued": "जारी",
+            "direct": "प्रत्यक्ष",
+            "indirect": "अप्रत्यक्ष",
+            "technical": "विस्तृत व्यवसाय नियोजन रिपोर्ट",
+            "workflow": "स्थानीय अवसर एक संचालित व्यवसाय में कैसे बदलता है",
+            "evidence_register": "प्रमाण की नवीनता का अभिलेख",
+        },
+    }[language]
+
+    def unit(value: str) -> str:
+        return _localized_technical_unit(value, language)
+
+    def add_page(title: str, *, continuation: bool = False):
         pdf.add_page()
+        pdf.set_fill_color(251, 249, 243)
+        pdf.rect(0, 0, 210, 297, style="F")
+        pdf.set_fill_color(236, 243, 238)
+        pdf.ellipse(164, -26, 76, 76, style="F")
+        pdf.set_fill_color(247, 226, 207)
+        pdf.ellipse(-24, 242, 62, 62, style="F")
+        pdf.set_fill_color(217, 111, 43)
+        pdf.rect(0, 0, 5, 297, style="F")
         pdf.set_fill_color(18, 59, 49)
-        pdf.rect(0, 0, 210, 19, style="F")
+        pdf.rect(5, 0, 205, 28, style="F")
         pdf.set_text_color(255, 255, 255)
-        pdf.set_font(family, size=7)
-        pdf.set_xy(13, 5)
-        pdf.cell(60, 4, "GRAMARTHA")
-        pdf.set_xy(63, 5)
-        pdf.set_font(family, size=11)
-        pdf.cell(134, 5, title, align="R")
-        pdf.set_y(24)
+        pdf.set_font(family, size=7.5)
+        pdf.set_xy(14, 5)
+        pdf.cell(75, 4, "GRAMARTHA")
+        pdf.set_text_color(207, 228, 218)
+        pdf.set_font(family, size=6.5)
+        pdf.set_xy(14, 11)
+        pdf.cell(75, 4, pdf_copy["technical"])
+        rendered_title = f"{title} - {pdf_copy['continued']}" if continuation else title
+        pdf.set_text_color(255, 255, 255)
+        pdf.set_font(family, size=14)
+        pdf.set_xy(80, 7)
+        pdf.multi_cell(116, 6, rendered_title, align="R")
+        pdf.set_y(35)
         pdf.set_text_color(23, 35, 29)
-        pdf.set_draw_color(220, 229, 223)
-        pdf.line(13, 282, 197, 282)
-        pdf.set_xy(13, 284)
+        pdf.set_draw_color(204, 215, 207)
+        pdf.line(14, 282, 196, 282)
+        pdf.set_xy(14, 284)
         pdf.set_text_color(102, 113, 104)
-        pdf.set_font(family, size=5.8)
-        pdf.cell(130, 4, f"GramArtha | {decision.analysis_id}")
-        pdf.cell(54, 4, f"{label('page')} {pdf.page_no() + 1}", align="R")
-        pdf.set_y(24)
+        pdf.set_font(family, size=6.8)
+        pdf.cell(136, 4, f"GramArtha | {decision.analysis_id}")
+        pdf.cell(46, 4, f"{label('page')} {pdf.page_no() + 1}", align="R")
+        pdf.set_y(35)
         pdf.set_text_color(23, 35, 29)
 
     def heading(title: str):
+        pdf.set_fill_color(235, 242, 237)
+        pdf.rect(14, pdf.get_y(), 182, 11, style="F")
+        pdf.set_xy(18, pdf.get_y() + 2)
         pdf.set_text_color(18, 59, 49)
-        pdf.set_font(family, size=10)
-        pdf.multi_cell(184, 5.2, title)
+        pdf.set_font(family, size=12.5)
+        pdf.multi_cell(174, 6, title)
+        pdf.ln(2)
         pdf.set_text_color(23, 35, 29)
 
     def paragraph(text: str, *, muted: bool = False):
         pdf.set_text_color(*(102, 113, 104) if muted else (23, 35, 29))
-        pdf.set_font(family, size=6.5)
-        pdf.multi_cell(184, 3.4, text)
-        pdf.ln(1)
+        pdf.set_font(family, size=9)
+        pdf.set_x(16)
+        pdf.multi_cell(178, 5.1, text)
+        pdf.ln(1.5)
 
     def rows(values):
-        for key, value in values:
-            pdf.set_fill_color(247, 249, 247)
+        for index, (key, value) in enumerate(values):
+            pdf.set_fill_color(*(245, 248, 245) if index % 2 == 0 else (239, 244, 240))
             pdf.set_text_color(18, 59, 49)
-            pdf.set_font(family, size=6.1)
-            pdf.set_x(13)
-            pdf.cell(62, 5.2, str(key), fill=True)
+            pdf.set_font(family, size=8.3)
+            pdf.set_x(14)
+            pdf.cell(67, 8.1, str(key), fill=True)
             pdf.set_text_color(23, 35, 29)
-            pdf.cell(122, 5.2, str(value), fill=True)
-            pdf.ln(5.6)
-        pdf.ln(1)
+            pdf.set_font(family, size=8.6)
+            pdf.cell(115, 8.1, str(value), fill=True)
+            pdf.ln(8.5)
+        pdf.ln(2)
 
     def bullets(title: str, values, limit: int | None = None):
         if not values:
             return
+        if pdf.get_y() > 251:
+            add_page(title, continuation=True)
         pdf.set_text_color(18, 59, 49)
-        pdf.set_font(family, size=7.2)
-        pdf.multi_cell(184, 4, title)
+        pdf.set_font(family, size=10)
+        pdf.set_x(14)
+        pdf.multi_cell(182, 5.2, title)
         pdf.set_text_color(23, 35, 29)
-        pdf.set_font(family, size=6.1)
+        pdf.set_font(family, size=8.8)
         selected = list(values) if limit is None else list(values)[:limit]
         for item in selected:
-            pdf.set_x(16)
-            pdf.multi_cell(181, 3.2, f"- {tr(item)}")
-        pdf.ln(1)
+            if pdf.get_y() > 274:
+                add_page(title, continuation=True)
+                pdf.set_font(family, size=8.8)
+            pdf.set_x(18)
+            pdf.multi_cell(176, 4.9, f"•  {tr(item)}")
+        pdf.ln(2)
+
+    def guidance_panels():
+        heading(label("business_guidance"))
+        cards = [
+            (label("why_good"), " ".join(presentation.top_advantages)),
+            (label("main_disadvantage"), " ".join(presentation.top_disadvantages)),
+            (label("who_suits"), presentation.who_suits),
+            (label("who_avoid"), presentation.who_should_avoid),
+        ]
+        x, y, gap, width, height = 14, pdf.get_y() + 1, 4, 89, 34
+        for index, (title, body) in enumerate(cards):
+            row, column = divmod(index, 2)
+            cell_x, cell_y = x + column * (width + gap), y + row * (height + 4)
+            pdf.set_fill_color(*(240, 246, 242) if index % 2 == 0 else (255, 245, 233))
+            pdf.set_draw_color(*(190, 211, 200) if index % 2 == 0 else (230, 173, 126))
+            pdf.rect(cell_x, cell_y, width, height, style="DF")
+            pdf.set_xy(cell_x + 4, cell_y + 3)
+            pdf.set_text_color(18, 59, 49)
+            pdf.set_font(family, size=8.7)
+            pdf.cell(width - 8, 4.5, title)
+            pdf.set_xy(cell_x + 4, cell_y + 9)
+            pdf.set_text_color(23, 35, 29)
+            pdf.set_font(family, size=7.5)
+            pdf.multi_cell(width - 8, 4.2, body)
+        pdf.set_y(y + 2 * (height + 4) + 1)
+
+    def workflow():
+        heading(pdf_copy["workflow"])
+        stages = [
+            label("suppliers"),
+            label("bottleneck"),
+            tr(primitive.primitive_type.value if primitive else decision.sector or "-"),
+            label("customers"),
+        ]
+        x, y, width, gap = 14, pdf.get_y() + 2, 39.5, 8
+        for index, stage in enumerate(stages):
+            cell_x = x + index * (width + gap)
+            selected = index == 2
+            pdf.set_fill_color(*(18, 59, 49) if selected else (236, 243, 238))
+            pdf.set_text_color(*(255, 255, 255) if selected else (23, 35, 29))
+            pdf.rect(cell_x, y, width, 18, style="F")
+            pdf.set_xy(cell_x + 2, y + 4)
+            pdf.set_font(family, size=7.2)
+            pdf.multi_cell(width - 4, 4.2, stage, align="C")
+            if index < 3:
+                pdf.set_draw_color(217, 111, 43)
+                pdf.set_line_width(0.7)
+                arrow_x = cell_x + width + 1.5
+                pdf.line(arrow_x, y + 9, arrow_x + 4.5, y + 9)
+                pdf.line(arrow_x + 4.5, y + 9, arrow_x + 2.7, y + 7.2)
+                pdf.line(arrow_x + 4.5, y + 9, arrow_x + 2.7, y + 10.8)
+        pdf.set_y(y + 23)
+        pdf.set_text_color(23, 35, 29)
 
     # Page 2: recommendation, geography and market evidence.
     add_page(label("recommendation"))
     heading(presentation.recommended_venture_name)
     paragraph(presentation.why_recommended + " " + presentation.why_here)
-    rows([
-        (label("canonical_locality"), f"{geography.locality}, {geography.district}" if geography else "-"),
-        (label("locality_type"), tr(geography.locality_type if geography else None)),
-        (label("project_cost"), _money(venture.investment if venture else None)),
-        (label("own_capital"), _money(decision.prudent_financing.get("own_capital_deployed"))),
-        (label("finance_required"), _money(decision.prudent_financing.get("illustrative_financing_requirement"))),
-        (label("confidence"), tr(decision.confidence.value)),
-        (label("demand_opportunity"), _localized_interval(decision.demand, language, tr)),
-        (label("reachable_supply"), _localized_interval(decision.supply, language, tr)),
-        (label("price"), _localized_interval(decision.price, language, tr)),
-        (label("planning_radius"), f"{_number(decision.catchment.get('radius_km'))} {_localized_unit('km', language)}"),
-    ])
+    rows(
+        [
+            (
+                label("canonical_locality"),
+                f"{geography.locality}, {geography.district}" if geography else "-",
+            ),
+            (label("locality_type"), tr(geography.locality_type if geography else None)),
+            (label("project_cost"), _money(venture.investment if venture else None)),
+            (label("own_capital"), _money(decision.prudent_financing.get("own_capital_deployed"))),
+            (
+                label("finance_required"),
+                _money(decision.prudent_financing.get("illustrative_financing_requirement")),
+            ),
+            (label("confidence"), tr(decision.confidence.value)),
+            (label("demand_opportunity"), _localized_technical_interval(decision.demand, tr, unit)),
+            (label("reachable_supply"), _localized_technical_interval(decision.supply, tr, unit)),
+            (label("price"), _localized_technical_interval(decision.price, tr, unit)),
+            (
+                label("planning_radius"),
+                f"{_number(decision.catchment.get('radius_km'))} {unit('km')}",
+            ),
+        ]
+    )
     paragraph(presentation.data_confidence, muted=True)
     bullets(label("customer_segments"), decision.sector_intelligence.get("customer_segments", []))
     bullets(label("supplier_plan"), decision.sector_intelligence.get("supplier_types", []))
+    guidance_panels()
 
     # Page 3: competition, catchment and operating context.
     add_page(label("competition"))
-    rows([
-        (label("direct_inside"), decision.competition.get("direct_count", tr("UNKNOWN"))),
-        (label("indirect_inside"), decision.competition.get("indirect_count", tr("UNKNOWN"))),
-        (label("competition_intensity"), tr(decision.competition.get("competition_intensity", "UNKNOWN"))),
-        (label("coordinates_quality"), tr(decision.competition.get("coordinate_quality", "UNKNOWN"))),
-        (label("nearest_market"), (decision.catchment.get("nearest_market") or {}).get("name", tr("UNKNOWN"))),
-        (label("nearest_institution"), (decision.sector_intelligence.get("institutional_buyer_candidates") or [{}])[0].get("name", tr("UNKNOWN"))),
-    ])
+    rows(
+        [
+            (label("direct_inside"), decision.competition.get("direct_count", tr("UNKNOWN"))),
+            (label("indirect_inside"), decision.competition.get("indirect_count", tr("UNKNOWN"))),
+            (
+                label("competition_intensity"),
+                tr(decision.competition.get("competition_intensity", "UNKNOWN")),
+            ),
+            (
+                label("coordinates_quality"),
+                tr(decision.competition.get("coordinate_quality", "UNKNOWN")),
+            ),
+            (
+                label("nearest_market"),
+                (decision.catchment.get("nearest_market") or {}).get("name", tr("UNKNOWN")),
+            ),
+            (
+                label("nearest_institution"),
+                (decision.sector_intelligence.get("institutional_buyer_candidates") or [{}])[0].get(
+                    "name", tr("UNKNOWN")
+                ),
+            ),
+        ]
+    )
     paragraph(tr(decision.competition.get("caveat", "")), muted=True)
-    _localized_entity_list(pdf, family, label("all_direct"), decision.competition.get("likely_direct_competitors", []), label, tr, language, add_page)
-    _localized_entity_list(pdf, family, label("all_indirect"), decision.competition.get("likely_indirect_competitors", []), label, tr, language, add_page)
-    if pdf.get_y() > 225:
-        add_page(label("competition"))
-    bullets(label("channels"), [f"{tr(item.get('role'))}: {tr(item.get('channel'))} ({tr(item.get('confidence'))})" for item in decision.sector_intelligence.get("distribution_channels", [])])
-    bullets(label("operational_factors"), decision.sector_intelligence.get("operational_factors", []))
+    nearest_direct = (decision.competition.get("likely_direct_competitors") or [{}])[0]
+    nearest_indirect = (decision.competition.get("likely_indirect_competitors") or [{}])[0]
+    rows(
+        [
+            (label("nearest_direct"), nearest_direct.get("name", label("no_named"))),
+            (label("nearest_indirect"), nearest_indirect.get("name", label("no_named"))),
+            (
+                label("discovery_radius"),
+                f"{_number(decision.competition.get('competitor_discovery_radius_km'))} {unit('km')}",
+            ),
+        ]
+    )
+    workflow()
+    bullets(
+        label("channels"),
+        [
+            f"{tr(item.get('role'))}: {tr(item.get('channel'))} ({tr(item.get('confidence'))})"
+            for item in decision.sector_intelligence.get("distribution_channels", [])
+        ],
+    )
+    bullets(
+        label("operational_factors"), decision.sector_intelligence.get("operational_factors", [])
+    )
     bullets(label("weather"), decision.sector_intelligence.get("weather_factors", []))
 
     # Page 4: minimum viable setup and cost structure.
     add_page(label("business_setup"))
     if primitive:
-        rows([
-            (label("equipment_setup"), _money(primitive.capex)),
-            (label("working_capital"), _money(primitive.working_capital)),
-            (label("monthly_opex"), _money(primitive.monthly_opex)),
-            (label("people"), primitive.staff),
-            (label("space"), f"{_number(primitive.space_sqft)} {_localized_unit('sq ft', language)}"),
-            (label("service_radius"), f"{_number(primitive.service_radius_km)} {_localized_unit('km', language)}"),
-            (label("inventory_days"), primitive.inventory_days),
-            (label("receivable_days"), primitive.receivable_days),
-            (label("payable_days"), primitive.payable_days),
-        ])
+        rows(
+            [
+                (label("equipment_setup"), _money(primitive.capex)),
+                (label("working_capital"), _money(primitive.working_capital)),
+                (label("monthly_opex"), _money(primitive.monthly_opex)),
+                (label("people"), primitive.staff),
+                (
+                    label("space"),
+                    f"{_number(primitive.space_sqft)} {_localized_unit('sq ft', language)}",
+                ),
+                (label("service_radius"), f"{_number(primitive.service_radius_km)} {unit('km')}"),
+                (label("inventory_days"), primitive.inventory_days),
+                (label("receivable_days"), primitive.receivable_days),
+                (label("payable_days"), primitive.payable_days),
+            ]
+        )
         bullets(label("equipment"), primitive.equipment)
         bullets(label("quality_controls"), primitive.quality_controls)
         bullets(label("licences"), primitive.licence_assumptions)
     heading(label("costs"))
-    rows([(tr(key.replace("_", " ").title()), _money(value)) for key, value in decision.prudent_financing.get("capex_breakdown", {}).items()])
+    rows(
+        [
+            (tr(key.replace("_", " ").title()), _money(value))
+            for key, value in decision.prudent_financing.get("capex_breakdown", {}).items()
+        ]
+    )
     bullets(label("insurance"), decision.sector_intelligence.get("insurance_options", []))
 
     # Page 5: finance, metrics, schemes and 36-month checkpoints.
     add_page(label("finance_cash"))
     metrics = decision.prudent_financing.get("financial_metrics", {})
-    rows([
-        (label("monthly_revenue"), _money(month_12.revenue if month_12 else None)),
-        (label("operating_cash"), _money(month_12.operating_cash_flow if month_12 else None)),
-        (label("operating_be"), _localized_month(twin.operating_break_even_month if twin else None, language)),
-        (label("cash_be"), _localized_month(twin.cash_break_even_month if twin else None, language)),
-        (label("payback"), _localized_month(twin.investment_payback_month if twin else None, language)),
-        (label("npv"), _money(metrics.get("npv_36_month_at_12pct"))),
-        (label("irr"), _percent(metrics.get("irr_annualized"))),
-        (label("break_even_volume"), _number(metrics.get("break_even_volume_month"))),
-    ])
+    rows(
+        [
+            (label("monthly_revenue"), _money(month_12.revenue if month_12 else None)),
+            (label("operating_cash"), _money(month_12.operating_cash_flow if month_12 else None)),
+            (
+                label("operating_be"),
+                _localized_month(twin.operating_break_even_month if twin else None, language),
+            ),
+            (
+                label("cash_be"),
+                _localized_month(twin.cash_break_even_month if twin else None, language),
+            ),
+            (
+                label("payback"),
+                _localized_month(twin.investment_payback_month if twin else None, language),
+            ),
+            (label("npv"), _money(metrics.get("npv_36_month_at_12pct"))),
+            (label("irr"), _percent(metrics.get("irr_annualized"))),
+            (label("break_even_volume"), _number(metrics.get("break_even_volume_month"))),
+            (label("gross_margin"), _percent(metrics.get("gross_margin"))),
+            (tr("Operating margin"), _percent(metrics.get("operating_margin"))),
+            (
+                tr("Contribution margin per unit"),
+                _money(metrics.get("contribution_margin_per_unit")),
+            ),
+        ]
+    )
     if twin:
         checkpoints = [m for m in twin.months if m.month % 3 == 0]
-        bullets(label("cash36"), [f"{label('month')} {m.month}: {label('revenue')} {_money(m.revenue)}; {label('operating_cash')} {_money(m.operating_cash_flow)}; {label('closing_cash')} {_money(m.closing_cash)}" for m in checkpoints])
-    bullets(label("finance_fit"), [f"{item.scheme_name}: {tr(item.status_wording)}" for item in decision.official_finance])
+        bullets(
+            label("cash36"),
+            [
+                f"{label('month')} {m.month}: {label('revenue')} {_money(m.revenue)}; {label('operating_cash')} {_money(m.operating_cash_flow)}; {label('closing_cash')} {_money(m.closing_cash)}"
+                for m in checkpoints
+            ],
+        )
+    bullets(
+        label("finance_fit"),
+        [f"{item.scheme_name}: {tr(item.status_wording)}" for item in decision.official_finance],
+    )
 
     # Page 6: scenarios, sensitivity, SWOT and failure boundaries.
     add_page(label("risk_scenarios"))
-    scenario = next((item for item in decision.robust_comparison.get("candidate_summaries", []) if venture and item.get("candidate_id") == venture.candidate_id), {})
-    rows([
-        (label("scenarios"), scenario.get("scenario_count", label("quick_plan"))),
-        (label("remain_solvent"), _percent(scenario.get("scenario_survival_rate"))),
-        (label("payback36"), _percent(scenario.get("payback_within_36_months_rate"))),
-        (label("p10_cash"), _money(scenario.get("minimum_cash_p10"))),
-        (label("cvar"), _money(scenario.get("cvar95_loss"))),
-    ])
+    scenario = next(
+        (
+            item
+            for item in decision.robust_comparison.get("candidate_summaries", [])
+            if venture and item.get("candidate_id") == venture.candidate_id
+        ),
+        {},
+    )
+    rows(
+        [
+            (label("scenarios"), scenario.get("scenario_count", label("quick_plan"))),
+            (label("remain_solvent"), _percent(scenario.get("scenario_survival_rate"))),
+            (label("payback36"), _percent(scenario.get("payback_within_36_months_rate"))),
+            (label("p10_cash"), _money(scenario.get("minimum_cash_p10"))),
+            (label("cvar"), _money(scenario.get("cvar95_loss"))),
+        ]
+    )
     paragraph(label("scenario_caveat"), muted=True)
     for key in ("strengths", "weaknesses", "opportunities", "threats"):
         bullets(tr(key.upper()), decision.swot.get(key, []), 4)
-    bullets(label("failure_boundaries"), [f"{tr(item.get('variable'))}: {_number(item.get('threshold'))} {_localized_unit(item.get('unit', ''), language)} - {tr(item.get('interpretation'))}" for item in decision.failure_boundaries])
-    bullets(label("sensitivity"), [f"{tr(item.get('variable'))}: {tr('LOW')} {_money(item.get('profit_low'))}; {tr('MEDIUM')} {_money(item.get('profit_central'))}; {tr('HIGH')} {_money(item.get('profit_high'))}" for item in decision.sensitivity_analysis])
+    bullets(
+        label("failure_boundaries"),
+        [
+            f"{tr(item.get('variable'))}: {_number(item.get('threshold'))} {unit(item.get('unit', ''))} - {tr(item.get('interpretation'))}"
+            for item in decision.failure_boundaries
+        ],
+    )
+    bullets(
+        label("sensitivity"),
+        [
+            f"{tr(item.get('variable'))}: {tr('LOW')} {_money(item.get('profit_low'))}; {tr('MEDIUM')} {_money(item.get('profit_central'))}; {tr('HIGH')} {_money(item.get('profit_high'))}"
+            for item in decision.sensitivity_analysis
+        ],
+    )
 
     # Page 7: pre-mortem and every staged action.
     add_page(label("actions"))
-    bullets(label("premortem"), [f"{tr(item.get('cause'))} {tr(item.get('prevention'))}" for item in decision.premortem])
-    action_keys = {"before_starting":"before_starting","day_1_7":"week1","first_30_days":"month1","months_2_3":"months23","months_4_6":"months46","stop_or_reconsider":"stop_reconsider"}
+    bullets(
+        label("premortem"),
+        [f"{tr(item.get('cause'))} {tr(item.get('prevention'))}" for item in decision.premortem],
+    )
+    action_keys = {
+        "before_starting": "before_starting",
+        "day_1_7": "week1",
+        "first_30_days": "month1",
+        "months_2_3": "months23",
+        "months_4_6": "months46",
+        "stop_or_reconsider": "stop_reconsider",
+    }
     for key, values in decision.action_plan.items():
         bullets(label(action_keys.get(key, key)), values)
     bullets(label("actions"), decision.staged_plan)
 
     # Page 8: evidence freshness, limitations and provenance.
     add_page(label("evidence"))
-    rows([
-        (label("confidence"), tr(decision.confidence.value)),
-        (label("status"), tr(decision.status.value)),
-        (label("decision_chain"), decision.methodology_version),
-        ("Analysis ID", decision.analysis_id),
-    ])
+    rows(
+        [
+            (label("confidence"), tr(decision.confidence.value)),
+            (label("status"), tr(decision.status.value)),
+            (label("decision_chain"), decision.methodology_version),
+            ("Analysis ID", decision.analysis_id),
+        ]
+    )
+    heading(pdf_copy["evidence_register"])
+    grouped_evidence = {}
     for item in decision.evidence:
-        paragraph(f"{tr(item.variable)} | {item.source_dataset} | {item.observation_date or tr('UNKNOWN')} | {tr(item.freshness_status.value)} | {tr(item.confidence.value)}", muted=False)
+        key = (
+            item.source_dataset,
+            str(item.observation_date or tr("UNKNOWN")),
+            tr(item.freshness_status.value),
+            tr(item.confidence.value),
+        )
+        grouped_evidence.setdefault(key, []).append(tr(item.variable))
+    for (dataset, observation, freshness, confidence), variables in grouped_evidence.items():
+        if pdf.get_y() > 260:
+            add_page(label("evidence"), continuation=True)
+        bullets(
+            f"{dataset} | {observation} | {freshness} | {confidence}",
+            [", ".join(sorted(set(variables)))],
+        )
     bullets(label("limitations"), decision.limitations)
-    bullets(label("sources"), decision.sources)
+    if decision.sources:
+        add_page(label("sources"))
+        heading(label("source_links"))
+        for index, source in enumerate(decision.sources, start=1):
+            y = pdf.get_y()
+            pdf.set_fill_color(*(245, 248, 245) if index % 2 else (238, 243, 239))
+            pdf.rect(14, y, 182, 19, style="F")
+            pdf.set_fill_color(217, 111, 43)
+            pdf.ellipse(18, y + 4, 10, 10, style="F")
+            pdf.set_xy(18, y + 6)
+            pdf.set_text_color(255, 255, 255)
+            pdf.set_font(family, size=7.2)
+            pdf.cell(10, 5, str(index), align="C")
+            pdf.set_xy(33, y + 4)
+            pdf.set_text_color(23, 35, 29)
+            pdf.set_font(family, size=8.2)
+            pdf.multi_cell(158, 5, source)
+            pdf.set_y(y + 20.5)
+
+    # The complete OSM names are intentionally the final PDF pages.  Main report
+    # pages retain only counts and nearest examples, so long lists cannot compress
+    # the technical narrative or make its type unreadably small.
+    _localized_competitor_appendix(
+        pdf,
+        family,
+        decision,
+        label,
+        tr,
+        unit,
+        add_page,
+        pdf_copy,
+    )
     return bytes(pdf.output())
 
 
@@ -281,35 +557,115 @@ def _localized_interval(value, language, tr):
     return f"{_number(value.lower)} - {_number(value.upper)} {_localized_unit(value.unit, language)} ({tr(value.status)})"
 
 
+def _localized_technical_interval(value, tr, unit):
+    if value is None or value.central is None:
+        return "-"
+    return (
+        f"{_number(value.lower)} - {_number(value.upper)} {unit(value.unit)} ({tr(value.status)})"
+    )
+
+
+def _localized_technical_unit(value: str, language: str) -> str:
+    """Use readable, fully spelled technical units without changing page-one copy."""
+    if value == "km":
+        return {"bn": "কিলোমিটার", "hi": "किलोमीटर"}.get(language, "km")
+    return _localized_unit(value, language)
+
+
 def _localized_month(value, language):
     if value is None:
-        return {"bn": "৩৬ মাসের পরে / অর্জিত নয়", "hi": "36 माह के बाद / प्राप्त नहीं"}.get(language, "Beyond 36 months / not reached")
+        return {"bn": "৩৬ মাসের পরে / অর্জিত নয়", "hi": "36 माह के बाद / प्राप्त नहीं"}.get(
+            language, "Beyond 36 months / not reached"
+        )
     return {"bn": f"মাস {value}", "hi": f"माह {value}"}.get(language, f"Month {value}")
 
 
-def _localized_entity_list(pdf, family, title, entities, label, tr, language, add_page):
-    if not entities:
+def _localized_competitor_appendix(
+    pdf,
+    family,
+    decision,
+    label,
+    tr,
+    unit,
+    add_page,
+    copy,
+):
+    entries = [
+        (copy["direct"], item) for item in decision.competition.get("likely_direct_competitors", [])
+    ] + [
+        (copy["indirect"], item)
+        for item in decision.competition.get("likely_indirect_competitors", [])
+    ]
+    if not entries:
         return
-    def list_heading():
-        pdf.set_text_color(18, 59, 49)
-        pdf.set_font(family, size=7.2)
-        pdf.multi_cell(184, 4, title)
-        pdf.set_text_color(23, 35, 29)
-        pdf.set_font(family, size=6.1)
 
-    if pdf.get_y() > 268:
-        add_page(title)
-    list_heading()
-    for item in entities:
-        if pdf.get_y() > 272:
-            add_page(title)
-            list_heading()
-        name = item.get("name") or label("unnamed")
-        category = tr(item.get("category") or label("mapped_place"))
-        distance = f"{_number(item.get('straight_line_distance_km'))} {_localized_unit('km', language)}"
-        pdf.set_x(16)
-        pdf.multi_cell(181, 3.2, f"- {name} | {category} | {distance}")
-    pdf.ln(1)
+    def group_heading(title):
+        pdf.set_fill_color(18, 59, 49)
+        pdf.rect(14, pdf.get_y(), 182, 10, style="F")
+        pdf.set_xy(18, pdf.get_y() + 2)
+        pdf.set_text_color(255, 255, 255)
+        pdf.set_font(family, size=9.5)
+        pdf.cell(174, 5, title)
+        pdf.ln(12)
+
+    page_count = max(1, (len(entries) + 16) // 15)
+    base_size, remainder = divmod(len(entries), page_count)
+    chunks = []
+    offset = 0
+    for page_index in range(page_count):
+        size = base_size + (1 if page_index < remainder else 0)
+        chunks.append(entries[offset : offset + size])
+        offset += size
+
+    for page_index, chunk in enumerate(chunks):
+        add_page(copy["appendix"], continuation=page_index > 0)
+        if page_index == 0:
+            pdf.set_fill_color(255, 245, 233)
+            pdf.set_draw_color(231, 167, 113)
+            pdf.rect(14, 35, 182, 23, style="DF")
+            pdf.set_xy(19, 40)
+            pdf.set_text_color(79, 53, 31)
+            pdf.set_font(family, size=8.4)
+            pdf.multi_cell(172, 4.6, copy["appendix_note"])
+            pdf.set_y(64)
+        group_count = sum(
+            1
+            for entry_index, (group_title, _) in enumerate(chunk)
+            if entry_index == 0 or group_title != chunk[entry_index - 1][0]
+        )
+        available_height = 267 - pdf.get_y() - (group_count * 12)
+        row_step = min(17.5, max(13, available_height / max(len(chunk), 1)))
+        previous_group = None
+        for index, (group_title, item) in enumerate(chunk, start=1):
+            if group_title != previous_group:
+                group_heading(group_title)
+                previous_group = group_title
+            y = pdf.get_y()
+            pdf.set_fill_color(*(245, 248, 245) if index % 2 else (238, 243, 239))
+            pdf.rect(14, y, 182, row_step - 1.5, style="F")
+            pdf.set_fill_color(217, 111, 43)
+            badge_y = y + (row_step - 7.2) / 2 - 0.75
+            pdf.rect(17, badge_y, 25, 7.2, style="F")
+            pdf.set_xy(18, badge_y + 1)
+            pdf.set_text_color(255, 255, 255)
+            pdf.set_font(family, size=6.6)
+            pdf.cell(23, 4.8, group_title, align="C")
+            pdf.set_xy(46, y + (row_step - 9) / 2)
+            pdf.set_text_color(23, 35, 29)
+            pdf.set_font(family, size=8.8)
+            pdf.cell(146, 4.5, item.get("name") or label("unnamed"))
+            category = tr(item.get("category") or label("mapped_place"))
+            distance = f"{_number(item.get('straight_line_distance_km'))} {unit('km')}"
+            radius_status = (
+                label("outside_radius")
+                if item.get("outside_planning_catchment")
+                else label("inside_radius")
+            )
+            pdf.set_xy(46, y + (row_step - 9) / 2 + 4.6)
+            pdf.set_text_color(102, 113, 104)
+            pdf.set_font(family, size=7.1)
+            pdf.cell(146, 4, f"{category}  |  {distance}  |  {radius_status}")
+            pdf.set_y(y + row_step)
 
 
 def _build_technical_pdf(decision: VentureDecision) -> bytes:

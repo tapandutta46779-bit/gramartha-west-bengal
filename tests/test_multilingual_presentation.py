@@ -11,7 +11,7 @@ from backend.models.finance import DigitalTwinResult, MonthProjection
 from backend.models.geography import GeographicIdentity
 from backend.models.venture import PrimitiveType, VentureCandidate, VenturePrimitive
 from backend.presentation import build_plain_language_summary
-from backend.reporting.customer_pdf import build_customer_pdf
+from backend.reporting.customer_pdf import _localized_technical_unit, build_customer_pdf
 
 
 def decision_fixture() -> VentureDecision:
@@ -179,11 +179,30 @@ def test_multilingual_pdfs_do_not_truncate_named_osm_candidates():
     decision.plain_language_summary = build_plain_language_summary(decision)
     for language in ("en", "bn", "hi"):
         reader = PdfReader(BytesIO(build_customer_pdf(decision, language)))
-        extracted = " ".join(
-            " ".join((page.extract_text() or "").split()) for page in reader.pages
-        )
+        page_text = [" ".join((page.extract_text() or "").split()) for page in reader.pages]
+        extracted = " ".join(page_text)
         assert "Complete Candidate 01" in extracted
         assert "Complete Candidate 25" in extracted
+        candidate_pages = [
+            index for index, text in enumerate(page_text) if "Complete Candidate" in text
+        ]
+        assert candidate_pages
+        # The nearest example may be summarized on the competition page; every
+        # other name belongs exclusively to the complete final appendix.
+        for index in range(2, 26):
+            pages_with_name = [
+                page_index
+                for page_index, text in enumerate(page_text)
+                if f"Complete Candidate {index:02d}" in text
+            ]
+            assert pages_with_name
+            assert min(pages_with_name) >= len(reader.pages) - 2
+
+
+def test_technical_pdf_uses_fully_spelled_localized_distance_units():
+    assert _localized_technical_unit("km", "en") == "km"
+    assert _localized_technical_unit("km", "bn") == "কিলোমিটার"
+    assert _localized_technical_unit("km", "hi") == "किलोमीटर"
 
 
 def test_pdf_download_headers_and_restart_safe_post_fallback():
