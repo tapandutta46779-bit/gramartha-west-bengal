@@ -24,6 +24,7 @@ The final implementation preserves the selected 70/30 composition: editorial lef
 - Result state: the simple summary, complete OSM competitor section and seven detailed result tabs render after the same analysis request. No named-candidate slice remains in the website or PDFs.
 - Mobile: no horizontal document overflow (`scrollWidth == clientWidth == 375`); brand, hero, planning controls and primary action remain readable.
 - Loading/motion: connected analysis icons, locality confirmation pulse, reveal transitions and background parallax are implemented, with a complete `prefers-reduced-motion` fallback.
+- Dynamic result safety: reveal classes are fully opaque by default; IntersectionObserver only adds a short decorative motion and can never leave the result card blank.
 
 ## Comparison history
 
