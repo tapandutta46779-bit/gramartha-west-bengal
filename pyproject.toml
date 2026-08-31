@@ -35,6 +35,17 @@ dev = [
 [tool.hatch.build.targets.wheel]
 packages = ["backend"]
 
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/data",
+  "/database",
+  "/deliverables",
+  "/output",
+  "/outputs",
+  "/sources",
+  "/work",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
