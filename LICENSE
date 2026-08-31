@@ -19,11 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-THIRD-PARTY DATA AND ASSETS
-
-This license covers original GramArtha source code only. It does not relicense
-third-party datasets, official-source documents, OpenStreetMap-derived data,
-fonts, or other third-party assets. See DATA_LICENSES.md and NOTICE.md.

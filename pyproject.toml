@@ -28,6 +28,7 @@ sih26091-ingest-livestock = "backend.evidence.livestock_adapter:main"
 dev = [
   "httpx>=0.28,<1",
   "pytest>=9.0.3,<10",
+  "pytest-cov>=6,<8",
   "ruff>=0.12,<1",
 ]
 
@@ -37,6 +38,16 @@ packages = ["backend"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+
+[tool.coverage.run]
+branch = true
+source = ["backend"]
+omit = ["backend/reporting/fonts/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+precision = 1
 
 [tool.ruff]
 line-length = 100

@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   quality-and-tests:
-    name: Python quality & tests
+    name: Python quality, tests & coverage
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
@@ -48,8 +48,52 @@ jobs:
       - name: Python compilation
         run: python -m compileall -q backend scripts deploy
 
-      - name: Pytest
-        run: pytest
+      - name: Pytest with branch coverage
+        run: |
+          pytest \
+            --cov=backend \
+            --cov-branch \
+            --cov-report=term-missing:skip-covered \
+            --cov-report=xml:coverage.xml \
+            --cov-report=html:htmlcov
+
+      - name: Coverage summary
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          path = Path("coverage.xml")
+          if not path.exists():
+              print("coverage.xml not produced")
+              raise SystemExit(0)
+          root = ET.parse(path).getroot()
+          line = float(root.attrib.get("line-rate", 0)) * 100
+          branch = float(root.attrib.get("branch-rate", 0)) * 100
+          print(f"Backend line coverage: {line:.1f}%")
+          print(f"Backend branch coverage: {branch:.1f}%")
+          summary = Path("coverage-summary.md")
+          summary.write_text(
+              "## GramArtha test coverage\n\n"
+              f"- Backend line coverage: **{line:.1f}%**\n"
+              f"- Backend branch coverage: **{branch:.1f}%**\n",
+              encoding="utf-8",
+          )
+          PY
+          cat coverage-summary.md >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: |
+            coverage.xml
+            coverage-summary.md
+            htmlcov/
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Version consistency
         run: |
@@ -91,6 +135,50 @@ jobs:
 
       - name: JavaScript syntax
         run: node --check frontend/app.js
+
+  docs-integrity:
+    name: Docs & repository integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify repository hygiene and local Markdown links
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          forbidden = [
+              Path("FILES_TO_DELETE.md"),
+              Path("design-qa.md"),
+              Path("docs/ARCHITECTURE.md"),
+          ]
+          present = [str(path) for path in forbidden if path.exists()]
+          if present:
+              raise SystemExit("Repository hygiene regression: " + ", ".join(present))
+
+          docs = [Path("README.md"), Path("ARCHITECTURE.md"), Path("docs/README.md")]
+          pattern = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
+          missing = []
+          for doc in docs:
+              text = doc.read_text(encoding="utf-8")
+              for raw in pattern.findall(text):
+                  target = raw.strip().split()[0].strip("<>\"")
+                  if not target or target.startswith(("http://", "https://", "mailto:", "#")):
+                      continue
+                  target = target.split("#", 1)[0].split("?", 1)[0]
+                  if not target:
+                      continue
+                  resolved = (doc.parent / target).resolve()
+                  if not resolved.exists():
+                      missing.append(f"{doc}: {raw}")
+          if missing:
+              raise SystemExit("Broken local Markdown links:\n" + "\n".join(missing))
+          print("Repository hygiene and local Markdown links: OK")
+          PY
 
   runtime-smoke:
     name: Public runtime smoke
