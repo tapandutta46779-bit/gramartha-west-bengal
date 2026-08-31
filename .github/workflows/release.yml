@@ -11,9 +11,9 @@ permissions:
 
 jobs:
   build-release:
-    name: Build verified release
+    name: Build verified software release
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
 
     steps:
       - name: Checkout
@@ -25,17 +25,35 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - name: Install build tooling and project
+      - name: Install build, audit and project tooling
         run: |
           python -m pip install --upgrade pip
-          python -m pip install build
+          python -m pip install build pip-audit
           python -m pip install -e '.[dev]'
 
-      - name: Verify
+      - name: Verify source and coverage gate
         run: |
           ruff check backend scripts tests deploy
-          pytest
           python -m compileall -q backend scripts deploy
+          python deploy/prepare_runtime.py
+          mkdir -p data
+          ln -sf /tmp/gramartha-runtime/gramartha.sqlite data/sih26091_phase2.sqlite
+          ln -sf /tmp/gramartha-runtime/west_bengal_osm_poi.sqlite data/west_bengal_osm.sqlite
+          pytest --cov=backend --cov-branch --cov-fail-under=75 --cov-report=term
+
+      - name: Verify public runtime SQLite integrity
+        run: |
+          python - <<'PY'
+          import sqlite3
+          from pathlib import Path
+
+          for path in Path("/tmp/gramartha-runtime").glob("*.sqlite"):
+              with sqlite3.connect(path) as conn:
+                  result = conn.execute("PRAGMA integrity_check").fetchone()[0]
+              if result != "ok":
+                  raise SystemExit(f"SQLite integrity failed for {path.name}: {result}")
+              print(f"{path.name}: integrity ok")
+          PY
 
       - name: Verify tag matches package version
         if: startsWith(github.ref, 'refs/tags/')
@@ -52,10 +70,25 @@ jobs:
             exit 1
           }
 
-      - name: Build Python package
+      - name: Audit release dependencies
+        run: pip-audit --local --skip-editable
+
+      - name: Build wheel and source distribution
         run: python -m build
 
-      - name: Build public runtime bundle
+      - name: Smoke-install built wheel
+        run: |
+          python -m venv /tmp/gramartha-release-smoke
+          /tmp/gramartha-release-smoke/bin/python -m pip install --upgrade pip
+          /tmp/gramartha-release-smoke/bin/python -m pip install dist/*.whl
+          /tmp/gramartha-release-smoke/bin/python - <<'PY'
+          import backend
+          from backend.api.main import app
+          assert app.version == "0.7.2"
+          print("Built wheel import smoke: OK")
+          PY
+
+      - name: Build public-safe runtime bundle
         run: |
           VERSION="$(python - <<'PY'
           import tomllib
@@ -64,22 +97,61 @@ jobs:
           PY
           )"
           tar -czf "dist/gramartha-${VERSION}-public-runtime.tar.gz" \
-            backend frontend deploy render.yaml pyproject.toml README.md \
-            LICENSE DATA_LICENSES.md NOTICE.md SECURITY.md
+            backend frontend deploy \
+            render.yaml pyproject.toml README.md ARCHITECTURE.md \
+            LICENSE DATA_LICENSES.md NOTICE.md SECURITY.md \
+            docs/README.md docs/IMPLEMENTATION_STATUS.md docs/VALIDATION.md docs/LIMITATIONS.md
+
+      - name: Verify runtime bundle boundary
+        run: |
+          ARCHIVE="$(ls dist/gramartha-*-public-runtime.tar.gz)"
+          tar -tzf "$ARCHIVE" > /tmp/runtime-files.txt
+          if grep -E '(^|/)(sources|work|outputs?)/|(^|/)\.env($|/)|respondent|microdata' /tmp/runtime-files.txt; then
+            echo "Forbidden raw/restricted surface found in runtime bundle"
+            exit 1
+          fi
+          echo "Public runtime bundle boundary: OK"
+
+      - name: Generate CycloneDX dependency SBOM
+        run: |
+          VERSION="$(python - <<'PY'
+          import tomllib
+          with open("pyproject.toml", "rb") as fh:
+              print(tomllib.load(fh)["project"]["version"])
+          PY
+          )"
+          pip-audit --local --skip-editable \
+            --format cyclonedx-json \
+            --output "dist/gramartha-${VERSION}-sbom.cdx.json"
+
+      - name: Create release manifest and checksums
+        run: |
+          VERSION="$(python - <<'PY'
+          import tomllib
+          with open("pyproject.toml", "rb") as fh:
+              print(tomllib.load(fh)["project"]["version"])
+          PY
+          )"
+          cat > dist/RELEASE-MANIFEST.txt <<EOF
+          GramArtha ${VERSION}
+          Commit: ${GITHUB_SHA}
+          Python: 3.12
+          Verification: Ruff + compileall + pytest coverage gate >=75% + dependency audit + SQLite integrity + wheel smoke install
+          Public runtime boundary: restricted/raw data excluded by archive-content check
+          EOF
           (
             cd dist
             sha256sum * > SHA256SUMS.txt
           )
 
-      - name: Upload build artifact
+      - name: Upload verified build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: gramartha-release
-          path: |
-            dist/*
+          name: gramartha-verified-release
+          path: dist/*
           if-no-files-found: error
 
-      - name: Publish GitHub release
+      - name: Publish tagged GitHub release
         if: startsWith(github.ref, 'refs/tags/')
         env:
           GH_TOKEN: ${{ github.token }}

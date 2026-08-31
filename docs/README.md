@@ -12,6 +12,7 @@ This index separates the **current judge/reviewer path** from implementation ref
 | [`IMPLEMENTATION_STATUS.md`](IMPLEMENTATION_STATUS.md) | Implemented, partial and intentionally bounded surfaces |
 | [`VALIDATION.md`](VALIDATION.md) | Automated, E2E and geographic validation evidence |
 | [`LIMITATIONS.md`](LIMITATIONS.md) | Evidence, calibration and product limitations |
+| [`RELEASING.md`](RELEASING.md) | Verified software release policy, SBOM/checksum/runtime-boundary process |
 
 ## Evidence, geography and data
 
@@ -29,7 +30,7 @@ This index separates the **current judge/reviewer path** from implementation ref
 - [`BOTTLENECK_MODEL.md`](BOTTLENECK_MODEL.md) — structural bottleneck definition.
 - [`MVV_ALGORITHM.md`](MVV_ALGORITHM.md) — Minimum Viable Venture search boundary.
 - [`VENTURE_GENERATION.md`](VENTURE_GENERATION.md) — venture primitive generation.
-- [`DEMAND_MODEL.md`](DEMAND_MODEL.md), [`SUPPLY_MODEL.md`](SUPPLY_MODEL.md), [`PRICE_MODEL.md`](PRICE_MODEL.md) — core modeled quantities.
+- [`DEMAND_MODEL.md`](DEMAND_MODEL.md), [`SUPPLY_MODEL.md`](SUPPLY_MODEL.md), [`PRICE_MODEL.md`](PRICE_MODEL.md) — core modelled quantities.
 - [`DIGITAL_TWIN.md`](DIGITAL_TWIN.md) — 36-month monthly financial simulation.
 - [`STRESS_ENGINE.md`](STRESS_ENGINE.md) — downside/stress mechanics.
 - [`ROBUST_SELECTION.md`](ROBUST_SELECTION.md) — robust/minimum-regret selection.
@@ -43,7 +44,7 @@ This index separates the **current judge/reviewer path** from implementation ref
 
 ## Versioned and historical audits
 
-The following files are retained for traceability. Their version numbers are historical and **must not be read as the current v0.7.2 implementation status**:
+These files are retained for traceability. Their version numbers are historical and **must not be read as the current v0.7.2 implementation status**:
 
 - `FINAL_COMPLETION_REPORT_V0.3.0.md`
 - `PRODUCTIZATION_V0.4.0.md`
@@ -55,7 +56,6 @@ The following files are retained for traceability. Their version numbers are his
 - `FULL_DETAIL_LOCALIZATION_AUDIT_V0.7.1.md`
 - `OSM_RUNTIME_REGRESSION_FIX_V0.7.1.md`
 - `EXISTING_REPOSITORY_AUDIT.md`
-- `PRODUCTIZATION_V0.4.0.md`
 - `WEST_BENGAL_DATA_IMPLEMENTATION_PLAN.md`
 
 Historical public-share package manifests remain under `deliverables/` for auditability; the live repository and tagged release workflow are the authoritative current software surfaces.

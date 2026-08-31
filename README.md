@@ -11,23 +11,24 @@
 <br>
 
 ![Version](https://img.shields.io/badge/version-0.7.2-123f32?style=for-the-badge)
-![Tests](https://img.shields.io/badge/tests-68%20passing-16a34a?style=for-the-badge)
+![Tests](https://img.shields.io/badge/tests-68%2F68%20passing-16a34a?style=for-the-badge)
+![Coverage](https://img.shields.io/badge/backend%20line%20coverage-81.6%25-16a34a?style=for-the-badge)
 ![Geographies](https://img.shields.io/badge/geographies-53%2C537-0f766e?style=for-the-badge)
 ![Evidence](https://img.shields.io/badge/evidence%20records-381%2C523-2563eb?style=for-the-badge)
 ![Scenarios](https://img.shields.io/badge/stress%20scenarios-512-d97706?style=for-the-badge)
 
 [![CI](https://github.com/tapandutta46779-bit/gramartha-west-bengal/actions/workflows/ci.yml/badge.svg)](https://github.com/tapandutta46779-bit/gramartha-west-bengal/actions/workflows/ci.yml)
 [![Security](https://github.com/tapandutta46779-bit/gramartha-west-bengal/actions/workflows/security.yml/badge.svg)](https://github.com/tapandutta46779-bit/gramartha-west-bengal/actions/workflows/security.yml)
-[![Dependency Review](https://github.com/tapandutta46779-bit/gramartha-west-bengal/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/tapandutta46779-bit/gramartha-west-bengal/actions/workflows/dependency-review.yml)
+[![Dependency Audit](https://github.com/tapandutta46779-bit/gramartha-west-bengal/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/tapandutta46779-bit/gramartha-west-bengal/actions/workflows/dependency-review.yml)
 
 <br>
 
 [![Live App](https://img.shields.io/badge/🚀%20OPEN%20LIVE%20APP-0f766e?style=for-the-badge)](https://gramartha-west-bengal.onrender.com/ui/)
-[![Latest Release](https://img.shields.io/badge/📦%20LATEST%20RELEASE-176348?style=for-the-badge)](../../releases/latest)
 [![Judge Walkthrough](https://img.shields.io/badge/🎯%20JUDGES%20START%20HERE-df6d20?style=for-the-badge)](docs/SIH_JUDGE_WALKTHROUGH.md)
-[![Architecture Maps](https://img.shields.io/badge/🗺️%20SYSTEM%20MAPS-7c3aed?style=for-the-badge)](ARCHITECTURE.md)
-[![Validation](https://img.shields.io/badge/✅%20VALIDATION-2563eb?style=for-the-badge)](docs/VALIDATION.md)
-[![Limitations](https://img.shields.io/badge/🔎%20LIMITATIONS-6b7280?style=for-the-badge)](docs/LIMITATIONS.md)
+[![Architecture](https://img.shields.io/badge/🗺️%20SYSTEM%20MAPS-7c3aed?style=for-the-badge)](ARCHITECTURE.md)
+[![Docs](https://img.shields.io/badge/📚%20DOCS%20INDEX-2563eb?style=for-the-badge)](docs/README.md)
+[![Demo Videos](https://img.shields.io/badge/🎬%20DEMO%20VIDEOS-b45309?style=for-the-badge)](../../releases/tag/sih2026-demo-videos-v1)
+[![Validation](https://img.shields.io/badge/✅%20VALIDATION-15803d?style=for-the-badge)](docs/VALIDATION.md)
 
 <br>
 
@@ -35,7 +36,7 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.116%2B-009688?style=flat-square&logo=fastapi&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-evidence%20runtime-003B57?style=flat-square&logo=sqlite&logoColor=white)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-validation-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
-![License](https://img.shields.io/badge/code%20license-MIT-7c3aed?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-7c3aed?style=flat-square)
 
 **Contributor: [Mohit Dutta](https://github.com/tapandutta46779) · [@tapandutta46779](https://github.com/tapandutta46779)**
 
@@ -47,42 +48,44 @@
   <img src="docs/assets/gramartha-engine-overview.svg" alt="GramArtha four-layer deterministic economic network repair engine" width="100%">
 </p>
 
-> **GramArtha is not a chatbot that guesses a business name.** It is an evidence-backed decision engine that asks a harder question: *what structural gap exists in this local economy, what is the smallest venture that can repair it, and does that venture survive financial stress for this entrepreneur?*
+> **GramArtha is not a chatbot that guesses a business name.** It asks a harder question: *what structural gap exists in this local economy, what is the smallest venture that can repair it, and does that venture survive financial stress for this entrepreneur?*
 
-The system keeps language AI at the edge. Geography, evidence status, market structure, economic flow, venture selection, finance, uncertainty and robust ranking are deterministic or explicitly modelled. If evidence is stale, sampled, missing or modelled, GramArtha preserves that state instead of silently presenting it as a current local fact.
+Language AI stays at the edge. Geography, evidence status, economic flow, venture selection, finance, uncertainty and robust ranking are deterministic or explicitly modelled. Weak, stale or missing evidence is preserved as such instead of being silently converted into a precise present-day fact.
 
-### 🗺️ Full business & economic system maps
-
-The detailed **Business & Decision Architecture** and **Economic Network & Implementation System Map** are kept on a dedicated page so the landing README stays product-first and readable.
-
-**[Open the complete GramArtha architecture maps →](ARCHITECTURE.md)**
-
----
-
-## ⚡ 60-second judge view
+## ⚡ Choose the fastest path
 
 <table>
 <tr>
-<td width="25%" valign="top"><b>📍 Start with reality</b><br><br>Resolve the entrepreneur to a canonical West Bengal geography, preserve provenance and confidence, and qualify stale or incomplete evidence.</td>
-<td width="25%" valign="top"><b>🕸️ Model the local economy</b><br><br>Build economic relationships, reachable supply and demand, exact flow, residual unserved demand and structural bottlenecks.</td>
-<td width="25%" valign="top"><b>🧩 Repair, do not list</b><br><br>Insert venture primitives, recompute the graph and search for the Minimum Viable Venture rather than returning a generic business list.</td>
-<td width="25%" valign="top"><b>₹ Test financial reality</b><br><br>Screen schemes, simulate 36 months, stress adverse conditions, compare regret and stage expansion behind measurable triggers.</td>
+<td width="33%" valign="top"><b>🚀 Try the product</b><br><br>Open the public application, choose a West Bengal locality and run a real analysis.<br><br><a href="https://gramartha-west-bengal.onrender.com/ui/"><b>Open live GramArtha →</b></a></td>
+<td width="33%" valign="top"><b>🎯 Judge it in 5 minutes</b><br><br>Follow the evidence-first SIH walkthrough from locality resolution to finance and audit trail.<br><br><a href="docs/SIH_JUDGE_WALKTHROUGH.md"><b>Open judge walkthrough →</b></a></td>
+<td width="33%" valign="top"><b>🔬 Audit the engineering</b><br><br>Inspect architecture, implementation status, validation, limitations, data provenance and CI quality gates.<br><br><a href="docs/README.md"><b>Open documentation index →</b></a></td>
 </tr>
 </table>
 
-### What is already repository-verifiable
+---
+
+## 🧭 What happens to one request
+
+<table>
+<tr>
+<td width="25%" valign="top"><b>01 · Verified reality</b><br><br>Canonical geography, source provenance, freshness and confidence.</td>
+<td width="25%" valign="top"><b>02 · Local economy</b><br><br>Reachable supply/demand, exact flow, residual demand and structural bottlenecks.</td>
+<td width="25%" valign="top"><b>03 · Safe venture</b><br><br>Counterfactual graph repairs and Minimum Viable Venture search.</td>
+<td width="25%" valign="top"><b>04 · Financial reality</b><br><br>Scheme rules, 36-month digital twin, stress, failure boundaries and staged action.</td>
+</tr>
+</table>
+
+### Repository-verifiable scale
 
 | Proof surface | Current implementation |
 |---|---|
 | **Geographic/evidence layer** | **53,537** geographic identities and **381,523** locality evidence records in the audited implementation snapshot |
 | **Survey priors** | **976** regional priors; restricted HCES/ASUSE respondent microdata are not redistributed in the public runtime |
-| **Spatial context** | West Bengal OSM-derived roads/POIs with explicit volunteered-data completeness caveats |
-| **Decision core** | Exact flow, bottleneck ranking, counterfactual recomputation, venture primitives and Minimum Viable Venture search |
-| **Finance** | Scheme screening, loan calculations, **36-month** cash-flow digital twin, break-even/payback and working-capital analysis |
+| **Decision core** | Exact flow, bottleneck ranking, counterfactual recomputation, venture primitives and enumerated Minimum Viable Venture search |
+| **Finance** | Scheme screening, loan calculations, **36-month** monthly cash-flow digital twin, break-even/payback and working-capital analysis |
 | **Uncertainty** | **512** deterministic seeded triangular joint scenarios, survival/payback summaries, VaR/CVaR and regret-based robustness |
-| **Validation** | **68 automated tests passing** on current CI, plus real West Bengal E2E cases and a 23-district smoke run |
-| **Product** | Seven-stage web workflow, FastAPI contract, English/Bengali/Hindi output, PDF export and a public web deployment |
-| **Deployment** | Render configuration plus reproducible public-safe compressed runtime databases |
+| **Validation** | **68/68 tests passing**, **81.6% backend line coverage**, **61.4% branch coverage**, real West Bengal E2E cases and district smoke validation |
+| **Product** | Seven-stage web workflow, FastAPI contract, English/Bengali/Hindi output, PDF export and public deployment |
 
 ---
 
@@ -98,108 +101,76 @@ The detailed **Business & Decision Architecture** and **Economic Network & Imple
 <td><img src="output/validation/v0.7.0/dairy-desktop-simple-summary.png" alt="GramArtha evidence-backed dairy venture summary" width="100%"></td>
 </tr>
 <tr>
-<td><b>Evidence before recommendation.</b><br>Canonical geography, OSM context and local evidence remain visible instead of disappearing behind a score.</td>
+<td><b>Evidence before recommendation.</b><br>Canonical geography, spatial context and local evidence remain visible instead of disappearing behind a score.</td>
 <td><b>A decision, not a paragraph.</b><br>The output exposes venture structure, finance, risk and action rather than only natural-language advice.</td>
 </tr>
 </table>
 
 <p align="center">
-  <img src="output/validation/v0.7.0/dairy-bengali-mobile-summary.png" alt="GramArtha Bengali mobile summary" width="360">
+  <img src="output/validation/v0.7.0/dairy-bengali-mobile-summary.png" alt="GramArtha Bengali mobile summary" width="340">
+  <br><b>Responsive multilingual output — English · বাংলা · हिन्दी</b>
 </p>
 
-<p align="center"><b>Responsive multilingual output — English · বাংলা · हिन्दी</b></p>
-
 ---
 
-## 🧭 The 7-stage user journey
-
-| Stage | What the entrepreneur sees | What the engine is doing underneath |
-|---|---|---|
-| **1 · Setup** | Locality, capital and optional entrepreneur profile | Canonical geography + constraints |
-| **2 · Local Market** | Evidence, catchment and local context | Provenance, confidence, OSM and survey priors |
-| **3 · Opportunities** | Structural gaps worth testing | Graph construction, flow and bottleneck detection |
-| **4 · Risk** | What can break the venture | Scenario stress, uncertainty and failure boundaries |
-| **5 · Plan** | Smallest viable operating configuration | Counterfactual repair + MVV search |
-| **6 · Finance** | Loan/scheme fit and monthly cash reality | Rules, EMI, 36-month digital twin, working capital |
-| **7 · Action** | Staged launch and expansion triggers | Robust selection + measurable trigger conditions |
-
----
-
-## 🧠 Why this is structurally different from a standard AI business advisor
-
-| Question | Typical text-first assistant | GramArtha |
-|---|---|---|
-| **Market reach** | Radius/population overlap | Reachable economic context using spatial and network evidence |
-| **Competition** | “Few nearby competitors = opportunity” | Supply/demand overlap, capacity, residual demand and cannibalization logic |
-| **Opportunity** | Generic generated list | Structural bottleneck → candidate repair → counterfactual recomputation |
-| **Venture size** | Start a category/business | Search the **Minimum Viable Venture** that satisfies constraints |
-| **Finance** | Static EMI / optimistic projection | Scheme rules + 36-month monthly digital twin + working-capital gaps |
-| **Risk** | SWOT / vague labels | Stress scenarios, failure boundaries, VaR/CVaR and minimum-regret comparison |
-| **Evidence** | Often flattened into prose | Observed / estimated / stale / conflicting states with provenance |
-| **AI role** | May generate the decision | May structure intake/explain output; cannot silently alter the frozen decision |
-
----
-
-## 🔄 How a decision is produced
+## 🔄 Decision architecture
 
 ```mermaid
 flowchart LR
-    U["Entrepreneur\nlocation · capital · profile"] --> UI["7-stage web product"]
-    UI --> GEO["Canonical geography"]
-    GEO --> EVID["Evidence + freshness + confidence"]
-    EVID --> SPATIAL["OSM / catchment context"]
-    EVID --> PRIORS["Official / survey priors"]
-    SPATIAL --> GRAPH["Economic graph"]
-    PRIORS --> EST["Transparent estimation + uncertainty"]
-    EST --> GRAPH
-    GRAPH --> FLOW["Exact flow + bottlenecks"]
+    U["Entrepreneur\nlocation · capital · profile"] --> GEO["Canonical geography"]
+    GEO --> EVID["Evidence\nprovenance · freshness · confidence"]
+    EVID --> GRAPH["Economic graph"]
+    GRAPH --> FLOW["Exact flow\n+ bottlenecks"]
     FLOW --> CF["Counterfactual repair"]
     CF --> MVV["Minimum Viable Venture"]
-    MVV --> FIN["Schemes + 36-month digital twin"]
-    FIN --> STRESS["512 scenarios + failure boundaries"]
-    STRESS --> ROBUST["Minimum-regret / robust selection"]
+    MVV --> FIN["Schemes + 36-month twin"]
+    FIN --> STRESS["512 scenarios\n+ failure boundaries"]
+    STRESS --> ROBUST["Robust / minimum-regret choice"]
     ROBUST --> D["Frozen VentureDecision"]
-    D --> OUT["English · Bengali · Hindi\nweb + PDF + staged action"]
-    LLM["Optional language AI"] -. "structure / explain only" .-> UI
-    LLM -. "explain frozen decision" .-> OUT
+    D --> OUT["Web · PDF · staged action"]
+    LLM["Optional language AI"] -. "structure input / explain frozen output" .-> OUT
 ```
+
+The complete **Business & Decision Architecture** and **Economic Network & Implementation System Map** are in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ### Strict AI containment boundary
 
 ```text
-Natural language input
-        │
-        ▼
- optional AI / NLP structuring
-        │
-        ▼
-┌───────────────────────────────────────────┐
-│       DETERMINISTIC DECISION CORE         │
-│ evidence → graph → flow → MVV → finance   │
-│ uncertainty → robust selection            │
-└───────────────────────────────────────────┘
-        │
-        ▼
-      VentureDecision  ← frozen
-        │
-        ▼
- optional multilingual explanation
+language input
+    │
+    ▼
+optional structuring
+    │
+    ▼
+┌─────────────────────────────────────────┐
+│        DETERMINISTIC DECISION CORE      │
+│ evidence → graph → flow → MVV → finance │
+│ uncertainty → robust selection          │
+└─────────────────────────────────────────┘
+    │
+    ▼
+frozen VentureDecision
+    │
+    ▼
+optional multilingual explanation
 ```
 
-The LLM boundary is deliberate: it must not invent market evidence, perform hidden loan arithmetic, change venture assumptions, replace the selected venture or convert weak evidence into certainty.
+The LLM must not invent market evidence, perform hidden loan arithmetic, replace the selected venture or turn weak evidence into certainty.
 
 ---
 
-## 🧱 Four technical layers
+## 🧠 Why this is not a standard text-first business advisor
 
-<table>
-<tr>
-<td width="25%" valign="top"><b>1 · Evidence & geographic identity</b><br><br><code>backend/evidence/</code><br><code>backend/spatial/</code><br><br>Canonical location, source provenance, freshness, evidence gates, OSM context.</td>
-<td width="25%" valign="top"><b>2 · Economic graph & exact flow</b><br><br><code>backend/engine/</code><br><br>Flow, bottlenecks, counterfactuals, reachable supply and structural gaps.</td>
-<td width="25%" valign="top"><b>3 · Venture repair & MVV</b><br><br><code>backend/engine/</code><br><code>backend/pipeline/</code><br><br>Venture primitives, graph repairs, enumerated candidate search and robust ranking.</td>
-<td width="25%" valign="top"><b>4 · Finance & digital twin</b><br><br><code>backend/finance/</code><br><br>Scheme rules, EMI, monthly cash flow, stress, working capital and staged expansion.</td>
-</tr>
-</table>
+| Question | Text-first assistant | GramArtha |
+|---|---|---|
+| **Market reach** | Radius/population overlap | Reachable economic context using spatial and network evidence |
+| **Competition** | “Few nearby competitors = opportunity” | Supply/demand overlap, capacity, residual demand and cannibalization logic |
+| **Opportunity** | Generated list | Structural bottleneck → candidate repair → counterfactual recomputation |
+| **Venture size** | Start a category | Search the **Minimum Viable Venture** satisfying constraints |
+| **Finance** | Static EMI / projection | Scheme rules + monthly digital twin + working-capital gaps |
+| **Risk** | SWOT / labels | Stress scenarios, failure boundaries, VaR/CVaR and minimum-regret comparison |
+| **Evidence** | Flattened into prose | Observed / estimated / stale / conflicting states with provenance |
+| **AI role** | May generate the decision | May structure/explain; cannot silently alter the frozen decision |
 
 ---
 
@@ -207,45 +178,51 @@ The LLM boundary is deliberate: it must not invent market evidence, perform hidd
 
 | Problem-statement need | GramArtha implementation | Judge-visible proof |
 |---|---|---|
-| **Multilingual advisory** | English/Bengali/Hindi presentation and PDF reporting | Product UI + multilingual screenshots |
-| **Hyper-local feasibility** | Canonical geography, evidence store, spatial context and explicit confidence/freshness | Local Market stage + audit trail |
-| **Financial structuring** | Scheme screening, loan arithmetic, monthly digital twin, break-even/payback | Finance stage + decision output |
-| **Government scheme routing** | Explicit eligibility/rule layer rather than free-form LLM advice | Finance rules + generated plan |
-| **Catchment / competitor context** | OSM-derived spatial context with completeness caveats | Transport/OSM validation screenshot |
-| **Decision support under uncertainty** | 512 deterministic scenarios, failure boundaries and robust/minimum-regret selection | Risk stage + validation docs |
-| **Actionable business recommendation** | Minimum Viable Venture + staged expansion triggers | Plan and Action stages |
+| Multilingual advisory | English/Bengali/Hindi presentation + PDF | UI and multilingual output |
+| Hyper-local feasibility | Canonical geography, evidence store, OSM context, confidence/freshness | Local Market + audit trail |
+| Financial structuring | Scheme screening, loan arithmetic, monthly twin, break-even/payback | Finance stage |
+| Government scheme routing | Explicit eligibility/rule layer | Finance rules + generated plan |
+| Catchment / competitor context | OSM-derived spatial context with completeness caveats | Market evidence |
+| Decision support under uncertainty | 512 scenarios, failure boundaries, robust/minimum-regret selection | Risk + validation |
+| Actionable recommendation | MVV + staged expansion triggers | Plan + Action |
 
 ---
 
-## 🔬 Evidence model: confidence is part of the data
+## ✅ Engineering quality is measured, not implied
 
-GramArtha does not treat every number as equally real. Evidence carries its source and status, including distinctions such as **observed**, **estimated**, **stale** or **conflicting**. Lower-confidence inputs widen stress ranges or qualify the decision rather than masquerading as precise present-day knowledge.
+Current `main` quality gate:
 
-The public runtime intentionally does **not** redistribute restricted respondent microdata or private fitted model artifacts. Rebuild paths, licenses and caveats are documented instead.
+- **68/68 automated tests pass**.
+- **81.6% backend line coverage** and **61.4% branch coverage** on the current measured baseline.
+- CI enforces a **minimum 75% combined coverage gate** so coverage cannot silently collapse below the accepted baseline.
+- Ruff, Python compilation and frontend JavaScript syntax checks run on every push/PR.
+- Public runtime databases are reconstructed and checked with SQLite `PRAGMA integrity_check`.
+- FastAPI is smoke-tested through `/health` against the reconstructed public runtime.
+- Repository hygiene and local Markdown links are validated automatically.
+- Every CI run publishes XML + HTML coverage as a downloadable `backend-coverage` artifact.
 
-Key references:
+Security automation runs **CodeQL (Python + JavaScript), pip-audit, Bandit and Gitleaks**. Dependency auditing is separate and blocking for known third-party vulnerabilities.
 
-- [`docs/IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md) — what is implemented and what is not
-- [`docs/VALIDATION.md`](docs/VALIDATION.md) — automated and end-to-end validation
-- [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) — evidence, calibration and product limitations
-- [`docs/DATA_ARCHITECTURE.md`](docs/DATA_ARCHITECTURE.md) — provenance and rebuild design
-- [`docs/DATA_SOURCES_ACQUIRED.md`](docs/DATA_SOURCES_ACQUIRED.md) — acquired-source inventory
-- [`DATA_LICENSES.md`](DATA_LICENSES.md) — dataset/asset licensing boundaries
+[Inspect the CI workflow →](.github/workflows/ci.yml) · [Security policy →](SECURITY.md) · [Validation evidence →](docs/VALIDATION.md)
 
 ---
 
-## 🏁 Five-minute judge demo
+## 📦 Release integrity
 
-For the shortest useful evaluation path, open **[`docs/SIH_JUDGE_WALKTHROUGH.md`](docs/SIH_JUDGE_WALKTHROUGH.md)**.
+GramArtha keeps demo media and software releases conceptually separate. The current `sih2026-demo-videos-v1` release is **presentation media**, not a software-version claim.
 
-The sequence is intentionally evidence-first:
+For every semantic version tag (`v*.*.*`), the release workflow is designed to:
 
-1. Select a West Bengal district and canonical locality.
-2. Show the Local Market evidence/context before any recommendation.
-3. Run **Deep — 512 scenarios**.
-4. Open the recommendation and explain the structural gap / MVV logic.
-5. Show monthly finance, downside/failure information and staged action.
-6. Expand **“How did GramArtha decide?”** to inspect evidence and methodology.
+1. rerun lint, compilation, tests and the coverage gate;
+2. rebuild and integrity-check the public runtime databases;
+3. build Python wheel + source distribution;
+4. smoke-install the built wheel in a fresh environment;
+5. build a public-safe runtime archive that excludes restricted/raw evidence surfaces;
+6. generate a CycloneDX dependency SBOM;
+7. generate SHA-256 checksums for every release artifact;
+8. publish the verified artifacts to the tagged GitHub Release.
+
+See [`docs/RELEASING.md`](docs/RELEASING.md) and [`.github/workflows/release.yml`](.github/workflows/release.yml).
 
 ---
 
@@ -255,7 +232,9 @@ The sequence is intentionally evidence-first:
 
 **[Open GramArtha live →](https://gramartha-west-bengal.onrender.com/ui/)**
 
-For local development, requires **Python 3.12+**.
+### Local development
+
+Requires Python 3.12+.
 
 ```bash
 python3 -m venv .venv
@@ -267,82 +246,53 @@ bash deploy/start.sh
 
 Then open:
 
-- `http://127.0.0.1:10000/ui/` — GramArtha product
-- `http://127.0.0.1:10000/docs` — FastAPI / OpenAPI contract
+- `http://127.0.0.1:10000/ui/` — product UI
+- `http://127.0.0.1:10000/docs` — FastAPI/OpenAPI contract
 - `http://127.0.0.1:10000/health` — service health
-
-On macOS, `Open GramArtha.command` is also provided for the local full-data workflow.
-
----
-
-## ✅ Verification and engineering quality
-
-The current CI runs the same baseline checks a reviewer can run locally:
-
-```bash
-ruff check backend scripts tests deploy
-pytest
-python -m compileall -q backend scripts deploy
-node --check frontend/app.js
-```
-
-Current CI result: **68 passed**. The workflow also prepares the public runtime data, checks SQLite integrity, smoke-tests `/health`, and verifies version consistency.
-
-Security automation includes CodeQL for Python/JavaScript, `pip-audit`, high-severity Bandit checks, advisory Gitleaks scanning and a portable third-party dependency audit. A dependency scan during repository hardening identified a vulnerable pytest release; the project was upgraded to the patched pytest 9 line and the complete suite passed afterwards.
 
 ---
 
 ## 📂 Repository map
 
 ```text
-backend/
-  api/             FastAPI contract and endpoints
-  engine/          flow, bottleneck, counterfactual, MVV, robustness, uncertainty
-  evidence/        geography, freshness, evidence store and adapters
-  finance/         calculations, finance rules, digital twin and stress
-  pipeline/        automatic decision pipeline and sector adapters
-  presentation/    multilingual plain-language rendering
-  reporting/       PDF generation and licensed fonts
-  spatial/         OSM spatial runtime
-
-frontend/          seven-stage browser product
-scripts/           acquisition, ingestion, audits, validation and packaging
-tests/             automated correctness tests
-docs/              methodology, judge guide, limitations, audits, data architecture
-deploy/            public-safe production runtime
-deliverables/      public-share packages and implementation report
+backend/       API · evidence · graph/flow/MVV · finance · reporting
+frontend/      seven-stage browser product
+tests/         automated correctness and integration tests
+scripts/       acquisition · ingestion · audits · validation · packaging
+deploy/        reproducible public-safe runtime assets
+docs/          indexed methodology · validation · limitations · judge guide
+output/        committed visual/PDF validation evidence
+outputs/       committed E2E validation reports
+deliverables/  historical public-share manifests / implementation report
 ```
+
+Use [`docs/README.md`](docs/README.md) instead of browsing historical audits alphabetically; it clearly separates current reviewer docs from versioned historical records.
 
 ---
 
-## ⚠️ What GramArtha does **not** claim
+## ⚠️ Evidence and product limits
 
-GramArtha is a planning and decision-support system, not a lender, official statistics publisher or guarantee of business viability. Historical observations remain historical. OSM completeness varies. Generic outputs can contain modelled planning benchmarks. Scenario probabilities are not claimed to be empirically calibrated unless explicitly documented.
+GramArtha is planning/decision support, not a lender, official statistics publisher or guarantee of business viability. Historical observations remain historical. OSM completeness varies. Generic outputs can contain modelled planning benchmarks. Scenario probabilities are not claimed to be empirically calibrated unless explicitly documented.
 
-That restraint is part of the architecture: **the system must not turn stale, sampled, missing or modelled evidence into fabricated present-day facts.**
+That restraint is architectural: **stale, sampled, missing or modelled evidence must not become fabricated present-day fact.**
 
 Read [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) before treating any output as decision-ready.
 
 ---
 
-## 🔐 Data, security and licensing
+## 🔐 Data, security, licensing and attribution
 
-Original GramArtha source code is released under the [MIT License](LICENSE). Third-party datasets, derived OSM material, official-source documents and bundled fonts remain subject to their own terms. The MIT license does not relicense those assets.
+Original GramArtha source code is [MIT licensed](LICENSE). Third-party datasets, OSM-derived material, official-source documents and bundled fonts retain their own terms; see [`DATA_LICENSES.md`](DATA_LICENSES.md) and [`NOTICE.md`](NOTICE.md).
 
-See [`DATA_LICENSES.md`](DATA_LICENSES.md), [`NOTICE.md`](NOTICE.md) and [`SECURITY.md`](SECURITY.md).
+Security reports follow [`SECURITY.md`](SECURITY.md). Do not publish secrets, restricted respondent microdata or private model artifacts in public issues.
 
----
-
-## 👤 Contributor
-
-**Mohit Dutta — [@tapandutta46779](https://github.com/tapandutta46779)**
-
-See [`CONTRIBUTORS.md`](CONTRIBUTORS.md) and [`CITATION.cff`](CITATION.cff) for attribution/citation metadata.
+**Contributor: Mohit Dutta — [@tapandutta46779](https://github.com/tapandutta46779)**  
+See [`CONTRIBUTORS.md`](CONTRIBUTORS.md) and [`CITATION.cff`](CITATION.cff).
 
 ---
 
 <div align="center">
 
-### **Explored by AI at the language boundary. Decided by evidence, graphs and mathematics.**
+### **Language AI can explain. Evidence, graphs and mathematics decide.**
 
 </div>

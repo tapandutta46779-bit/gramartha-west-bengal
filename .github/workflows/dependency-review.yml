@@ -1,4 +1,4 @@
-name: Dependency Review
+name: Dependency Audit
 
 on:
   push:
@@ -11,12 +11,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: dependency-review-${{ github.workflow }}-${{ github.ref }}
+  group: dependency-audit-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  dependency-review:
-    name: Python dependency audit
+  dependency-audit:
+    name: Installed Python dependency audit
     runs-on: ubuntu-latest
     timeout-minutes: 20
 

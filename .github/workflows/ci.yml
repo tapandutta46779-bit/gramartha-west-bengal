@@ -48,11 +48,12 @@ jobs:
       - name: Python compilation
         run: python -m compileall -q backend scripts deploy
 
-      - name: Pytest with branch coverage
+      - name: Pytest with branch coverage gate
         run: |
           pytest \
             --cov=backend \
             --cov-branch \
+            --cov-fail-under=75 \
             --cov-report=term-missing:skip-covered \
             --cov-report=xml:coverage.xml \
             --cov-report=html:htmlcov
@@ -77,7 +78,8 @@ jobs:
           summary.write_text(
               "## GramArtha test coverage\n\n"
               f"- Backend line coverage: **{line:.1f}%**\n"
-              f"- Backend branch coverage: **{branch:.1f}%**\n",
+              f"- Backend branch coverage: **{branch:.1f}%**\n"
+              "- Combined coverage gate: **>= 75%**\n",
               encoding="utf-8",
           )
           PY
