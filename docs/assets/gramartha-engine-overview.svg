@@ -1,60 +1,70 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
-  <title id="title">GramArtha deterministic economic network repair engine</title>
-  <desc id="desc">A four-layer flow from verified evidence through economic network analysis and minimum viable venture search to finance and robust action.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 430" role="img" aria-labelledby="title desc">
+  <title id="title">GramArtha decision engine overview</title>
+  <desc id="desc">A clean four-stage flow from verified local evidence to economic network analysis, minimum viable venture search and stress-tested financial action.</desc>
   <defs>
-    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#081c18"/><stop offset="1" stop-color="#123f32"/></linearGradient>
-    <linearGradient id="accent" x1="0" x2="1"><stop stop-color="#66e0bd"/><stop offset="1" stop-color="#f0a14a"/></linearGradient>
-    <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071c18"/>
+      <stop offset="1" stop-color="#123f32"/>
+    </linearGradient>
+    <linearGradient id="track" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#66e0bd"/>
+      <stop offset="0.72" stop-color="#66e0bd"/>
+      <stop offset="1" stop-color="#f0a14a"/>
+    </linearGradient>
+    <filter id="softGlow" x="-20%" y="-50%" width="140%" height="200%">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>
-  <rect width="1200" height="520" rx="28" fill="url(#bg)"/>
-  <g opacity=".12" stroke="#8debd1"><path d="M0 80H1200M0 160H1200M0 240H1200M0 320H1200M0 400H1200M120 0V520M240 0V520M360 0V520M480 0V520M600 0V520M720 0V520M840 0V520M960 0V520M1080 0V520"/></g>
-  <text x="64" y="72" fill="#f7fbf8" font-family="system-ui,sans-serif" font-size="40" font-weight="800">GramArtha</text>
-  <text x="64" y="108" fill="#9adcc9" font-family="system-ui,sans-serif" font-size="20">Hyper-local economic network repair · SIH26091</text>
-  <text x="1136" y="73" text-anchor="end" fill="#f0a14a" font-family="system-ui,sans-serif" font-size="18" font-weight="700">AI structures language · mathematics decides reality</text>
 
-  <g font-family="system-ui,sans-serif">
-    <rect x="64" y="154" width="250" height="172" rx="18" fill="#0e2a23" stroke="#55c9a8" stroke-width="2"/>
-    <text x="88" y="190" fill="#73e4c4" font-size="15" font-weight="800">01 · VERIFIED REALITY</text>
-    <text x="88" y="225" fill="#fff" font-size="24" font-weight="750">Evidence + identity</text>
-    <text x="88" y="256" fill="#c3d8d1" font-size="16">Provenance · freshness</text>
-    <text x="88" y="282" fill="#c3d8d1" font-size="16">confidence · geography</text>
-    <text x="88" y="308" fill="#f0a14a" font-size="14" font-weight="700">No missing fact becomes a present fact.</text>
-
-    <rect x="342" y="154" width="250" height="172" rx="18" fill="#0e2a23" stroke="#55c9a8" stroke-width="2"/>
-    <text x="366" y="190" fill="#73e4c4" font-size="15" font-weight="800">02 · LOCAL ECONOMY</text>
-    <text x="366" y="225" fill="#fff" font-size="24" font-weight="750">Graph + exact flow</text>
-    <text x="366" y="256" fill="#c3d8d1" font-size="16">Reachable supply · demand</text>
-    <text x="366" y="282" fill="#c3d8d1" font-size="16">bottlenecks · counterfactuals</text>
-    <text x="366" y="308" fill="#f0a14a" font-size="14" font-weight="700">Opportunity = structural gap, not a list.</text>
-
-    <rect x="620" y="154" width="250" height="172" rx="18" fill="#0e2a23" stroke="#55c9a8" stroke-width="2"/>
-    <text x="644" y="190" fill="#73e4c4" font-size="15" font-weight="800">03 · SAFE VENTURE</text>
-    <text x="644" y="225" fill="#fff" font-size="24" font-weight="750">MVV search</text>
-    <text x="644" y="256" fill="#c3d8d1" font-size="16">Smallest viable configuration</text>
-    <text x="644" y="282" fill="#c3d8d1" font-size="16">robust minimum-regret choice</text>
-    <text x="644" y="308" fill="#f0a14a" font-size="14" font-weight="700">Start smaller; expand only on triggers.</text>
-
-    <rect x="898" y="154" width="238" height="172" rx="18" fill="#0e2a23" stroke="#f0a14a" stroke-width="2"/>
-    <text x="922" y="190" fill="#f0b66f" font-size="15" font-weight="800">04 · FINANCIAL REALITY</text>
-    <text x="922" y="225" fill="#fff" font-size="24" font-weight="750">36-month twin</text>
-    <text x="922" y="256" fill="#c3d8d1" font-size="16">Cash flow · schemes · stress</text>
-    <text x="922" y="282" fill="#c3d8d1" font-size="16">failure boundaries · staging</text>
-    <text x="922" y="308" fill="#73e4c4" font-size="14" font-weight="700">Decision remains auditable end to end.</text>
+  <rect width="1200" height="430" rx="30" fill="url(#bg)"/>
+  <g opacity="0.10" stroke="#8debd1" stroke-width="1">
+    <path d="M0 86H1200M0 172H1200M0 258H1200M0 344H1200"/>
+    <path d="M120 0V430M240 0V430M360 0V430M480 0V430M600 0V430M720 0V430M840 0V430M960 0V430M1080 0V430"/>
   </g>
 
-  <g fill="none" stroke="url(#accent)" stroke-width="4" filter="url(#glow)">
-    <path d="M314 240H342"/><path d="M592 240H620"/><path d="M870 240H898"/>
-  </g>
-  <g fill="#f0a14a"><path d="M336 233l10 7-10 7z"/><path d="M614 233l10 7-10 7z"/><path d="M892 233l10 7-10 7z"/></g>
+  <g font-family="system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+    <text x="62" y="61" fill="#f7fbf8" font-size="37" font-weight="820">GramArtha</text>
+    <text x="62" y="94" fill="#9adcc9" font-size="18">Evidence-backed hyper-local economic network repair</text>
+    <rect x="1010" y="42" width="128" height="40" rx="20" fill="#173f35" stroke="#4fc6a5"/>
+    <text x="1074" y="68" text-anchor="middle" fill="#b8f1df" font-size="15" font-weight="760">SIH26091</text>
 
-  <g font-family="system-ui,sans-serif">
-    <rect x="64" y="366" width="250" height="92" rx="16" fill="#f8fbf9" opacity=".97"/>
-    <text x="88" y="402" fill="#123f32" font-size="28" font-weight="850">53,537</text><text x="88" y="432" fill="#49645a" font-size="15">geographic identities</text>
-    <rect x="342" y="366" width="250" height="92" rx="16" fill="#f8fbf9" opacity=".97"/>
-    <text x="366" y="402" fill="#123f32" font-size="28" font-weight="850">381,523</text><text x="366" y="432" fill="#49645a" font-size="15">locality evidence records</text>
-    <rect x="620" y="366" width="250" height="92" rx="16" fill="#f8fbf9" opacity=".97"/>
-    <text x="644" y="402" fill="#123f32" font-size="28" font-weight="850">512</text><text x="644" y="432" fill="#49645a" font-size="15">deterministic stress scenarios</text>
-    <rect x="898" y="366" width="238" height="92" rx="16" fill="#f8fbf9" opacity=".97"/>
-    <text x="922" y="402" fill="#123f32" font-size="28" font-weight="850">68 / 68</text><text x="922" y="432" fill="#49645a" font-size="15">current automated tests passing</text>
+    <path d="M154 206H1043" fill="none" stroke="url(#track)" stroke-width="5" stroke-linecap="round" filter="url(#softGlow)"/>
+
+    <g>
+      <circle cx="160" cy="206" r="48" fill="#0b2b23" stroke="#66e0bd" stroke-width="3"/>
+      <text x="160" y="216" text-anchor="middle" fill="#c8f7e9" font-size="25" font-weight="850">01</text>
+      <text x="160" y="287" text-anchor="middle" fill="#78e6c7" font-size="14" font-weight="800">VERIFIED EVIDENCE</text>
+      <text x="160" y="316" text-anchor="middle" fill="#ffffff" font-size="21" font-weight="760">Local reality</text>
+      <text x="160" y="343" text-anchor="middle" fill="#bdd4cc" font-size="14">identity · provenance · confidence</text>
+    </g>
+
+    <g>
+      <circle cx="453" cy="206" r="48" fill="#0b2b23" stroke="#66e0bd" stroke-width="3"/>
+      <text x="453" y="216" text-anchor="middle" fill="#c8f7e9" font-size="25" font-weight="850">02</text>
+      <text x="453" y="287" text-anchor="middle" fill="#78e6c7" font-size="14" font-weight="800">ECONOMIC NETWORK</text>
+      <text x="453" y="316" text-anchor="middle" fill="#ffffff" font-size="21" font-weight="760">Flow + bottlenecks</text>
+      <text x="453" y="343" text-anchor="middle" fill="#bdd4cc" font-size="14">supply · demand · residual gaps</text>
+    </g>
+
+    <g>
+      <circle cx="746" cy="206" r="48" fill="#0b2b23" stroke="#66e0bd" stroke-width="3"/>
+      <text x="746" y="216" text-anchor="middle" fill="#c8f7e9" font-size="25" font-weight="850">03</text>
+      <text x="746" y="287" text-anchor="middle" fill="#78e6c7" font-size="14" font-weight="800">MINIMUM VIABLE VENTURE</text>
+      <text x="746" y="316" text-anchor="middle" fill="#ffffff" font-size="21" font-weight="760">Smallest safe repair</text>
+      <text x="746" y="343" text-anchor="middle" fill="#bdd4cc" font-size="14">counterfactuals · robust choice</text>
+    </g>
+
+    <g>
+      <circle cx="1040" cy="206" r="48" fill="#2d2519" stroke="#f0a14a" stroke-width="3"/>
+      <text x="1040" y="216" text-anchor="middle" fill="#ffd5a0" font-size="25" font-weight="850">04</text>
+      <text x="1040" y="287" text-anchor="middle" fill="#f2b66e" font-size="14" font-weight="800">FINANCIAL REALITY</text>
+      <text x="1040" y="316" text-anchor="middle" fill="#ffffff" font-size="21" font-weight="760">36-month stress test</text>
+      <text x="1040" y="343" text-anchor="middle" fill="#d9c8b6" font-size="14">cash flow · failure · staging</text>
+    </g>
+
+    <rect x="62" y="376" width="1076" height="34" rx="17" fill="#0b2922" stroke="#315e50"/>
+    <text x="82" y="399" fill="#9adcc9" font-size="14" font-weight="720">LANGUAGE AI: intake + explanation only</text>
+    <text x="1118" y="399" text-anchor="end" fill="#f0b66f" font-size="14" font-weight="760">CORE DECISION: evidence + mathematics + auditable rules</text>
   </g>
 </svg>
