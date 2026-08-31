@@ -5,139 +5,28 @@
   --ga-panel: rgba(9, 35, 29, 0.94);
 }
 
-/* Presentation layer: make the implemented engine visible before the user runs it. */
+/*
+ * Presentation layer for the operational UI.
+ * The detailed engine story now lives in GitHub/ARCHITECTURE.md; the public
+ * product stays task-first and gives the planner the full working width.
+ */
+.experience-grid {
+  display: block !important;
+}
+
 .product-hero {
-  position: relative;
-  overflow: hidden;
-  padding: 30px 28px 28px !important;
-  border: 1px solid rgba(114, 230, 197, 0.25);
-  border-radius: 24px;
-  background:
-    radial-gradient(circle at 92% 8%, rgba(240, 161, 74, 0.17), transparent 34%),
-    radial-gradient(circle at 0% 100%, rgba(114, 230, 197, 0.14), transparent 40%),
-    linear-gradient(145deg, rgba(7, 29, 24, 0.98), rgba(18, 63, 50, 0.95));
-  box-shadow: 0 28px 70px rgba(7, 29, 24, 0.26);
-  color: #f7fbf8;
+  display: none !important;
 }
 
-.product-hero::after {
-  position: absolute;
-  inset: 0;
-  content: "";
-  opacity: 0.16;
-  background-image:
-    linear-gradient(rgba(114,230,197,.18) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(114,230,197,.18) 1px, transparent 1px);
-  background-size: 34px 34px;
-  mask-image: linear-gradient(to bottom right, #000, transparent 72%);
-  pointer-events: none;
-}
-
-.product-hero > * { position: relative; z-index: 1; }
-.product-hero .eyebrow { color: var(--ga-cyan); }
-.product-hero h1 {
-  max-width: 520px !important;
-  margin-top: 8px;
-  color: #fff;
-  letter-spacing: -0.045em;
-}
-.product-hero .lede {
-  max-width: 510px !important;
-  color: #c7ddd5 !important;
-}
-
-.hero-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin: 18px 0 0;
-  padding: 8px 11px;
-  border: 1px solid rgba(240, 161, 74, 0.35);
-  border-radius: 999px;
-  background: rgba(240, 161, 74, 0.09);
-  color: #ffd3a2;
-  font-size: 0.73rem;
-  font-weight: 820;
-  letter-spacing: 0.04em;
-}
-.hero-kicker i { color: var(--ga-gold); font-size: 1rem; }
-
-.hero-proof-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 24px;
-}
-.hero-proof {
-  min-width: 0;
-  padding: 13px 14px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.055);
-  backdrop-filter: blur(8px);
-}
-.hero-proof strong {
-  display: block;
-  color: #fff;
-  font-size: 1.16rem;
-  line-height: 1.15;
-}
-.hero-proof span {
-  display: block;
-  margin-top: 4px;
-  color: #a8c8bd;
-  font-size: 0.69rem;
-  line-height: 1.35;
-}
-
-.engine-path {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 6px;
-  margin-top: 15px;
-}
-.engine-path span {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 42px;
-  padding: 8px 5px;
-  border: 1px solid rgba(114, 230, 197, 0.2);
-  border-radius: 10px;
-  background: rgba(114, 230, 197, 0.065);
-  color: #d9eee7;
-  text-align: center;
-  font-size: 0.64rem;
-  font-weight: 800;
-  line-height: 1.15;
-}
-.engine-path span:last-child {
-  border-color: rgba(240, 161, 74, 0.36);
-  background: rgba(240, 161, 74, 0.085);
-  color: #ffd5a8;
-}
-
-.hero-principle {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(255,255,255,.1);
-  color: #b9d3ca;
-  font-size: 0.72rem;
-  line-height: 1.5;
-}
-.hero-principle i { flex: 0 0 auto; margin-top: 1px; color: var(--ga-cyan); font-size: 1.1rem; }
-.hero-principle b { color: #fff; }
-
-/* Make the interaction surface feel like the operational console beside the engine story. */
 .planner {
   position: relative;
+  width: 100%;
+  max-width: none;
   overflow: visible;
   animation: none !important;
   box-shadow: 0 30px 80px rgba(25, 58, 44, 0.13) !important;
 }
+
 .planner::before {
   position: absolute;
   top: -1px;
@@ -177,20 +66,4 @@
 
 .audit {
   border-left: 3px solid rgba(223, 109, 32, .65);
-}
-
-@media (max-width: 1080px) {
-  .product-hero { position: relative !important; top: auto !important; }
-  .hero-proof-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
-
-@media (max-width: 720px) {
-  .product-hero { padding: 24px 20px 22px !important; border-radius: 20px; }
-  .hero-proof-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .engine-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
-@media (max-width: 420px) {
-  .hero-proof-grid { grid-template-columns: 1fr 1fr; }
-  .hero-proof strong { font-size: 1rem; }
 }
