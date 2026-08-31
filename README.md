@@ -187,7 +187,7 @@ Read [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) before treating an output as d
 
 Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request. Data changes require source, license/terms, observation date, freshness classification and reproducibility information.
 
-See [`CONTRIBUTORS.md`](CONTRIBUTORS.md) for project contributors, including **[@tapandutta46779](https://github.com/tapandutta46779)**.
+See [`CONTRIBUTORS.md`](CONTRIBUTORS.md) for project contributors, including **Mohit Dutta ([@tapandutta46779](https://github.com/tapandutta46779))**.
 
 ## License
 
