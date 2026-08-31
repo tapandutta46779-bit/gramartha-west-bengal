@@ -25,6 +25,7 @@
 [![Live App](https://img.shields.io/badge/🚀%20OPEN%20LIVE%20APP-0f766e?style=for-the-badge)](https://gramartha-west-bengal.onrender.com/ui/)
 [![Latest Release](https://img.shields.io/badge/📦%20LATEST%20RELEASE-176348?style=for-the-badge)](../../releases/latest)
 [![Judge Walkthrough](https://img.shields.io/badge/🎯%20JUDGES%20START%20HERE-df6d20?style=for-the-badge)](docs/SIH_JUDGE_WALKTHROUGH.md)
+[![Architecture Maps](https://img.shields.io/badge/🗺️%20SYSTEM%20MAPS-7c3aed?style=for-the-badge)](ARCHITECTURE.md)
 [![Validation](https://img.shields.io/badge/✅%20VALIDATION-2563eb?style=for-the-badge)](docs/VALIDATION.md)
 [![Limitations](https://img.shields.io/badge/🔎%20LIMITATIONS-6b7280?style=for-the-badge)](docs/LIMITATIONS.md)
 
@@ -49,6 +50,12 @@
 > **GramArtha is not a chatbot that guesses a business name.** It is an evidence-backed decision engine that asks a harder question: *what structural gap exists in this local economy, what is the smallest venture that can repair it, and does that venture survive financial stress for this entrepreneur?*
 
 The system keeps language AI at the edge. Geography, evidence status, market structure, economic flow, venture selection, finance, uncertainty and robust ranking are deterministic or explicitly modelled. If evidence is stale, sampled, missing or modelled, GramArtha preserves that state instead of silently presenting it as a current local fact.
+
+### 🗺️ Full business & economic system maps
+
+The detailed **Business & Decision Architecture** and **Economic Network & Implementation System Map** are kept on a dedicated page so the landing README stays product-first and readable.
+
+**[Open the complete GramArtha architecture maps →](ARCHITECTURE.md)**
 
 ---
 
