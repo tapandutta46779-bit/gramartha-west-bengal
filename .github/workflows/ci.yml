@@ -169,7 +169,7 @@ jobs:
               text = doc.read_text(encoding="utf-8")
               for raw in pattern.findall(text):
                   target = raw.strip().split()[0].strip("<>\"")
-                  if not target or target.startswith(("http://", "https://", "mailto:", "#")):
+                  if not target or target.startswith(("http://", "https://", "mailto:", "#", "../../releases/")):
                       continue
                   target = target.split("#", 1)[0].split("?", 1)[0]
                   if not target:
