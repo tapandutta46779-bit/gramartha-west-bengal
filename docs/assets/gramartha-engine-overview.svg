@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+  <title id="title">GramArtha deterministic economic network repair engine</title>
+  <desc id="desc">A four-layer flow from verified evidence through economic network analysis and minimum viable venture search to finance and robust action.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#081c18"/><stop offset="1" stop-color="#123f32"/></linearGradient>
+    <linearGradient id="accent" x1="0" x2="1"><stop stop-color="#66e0bd"/><stop offset="1" stop-color="#f0a14a"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect width="1200" height="520" rx="28" fill="url(#bg)"/>
+  <g opacity=".12" stroke="#8debd1"><path d="M0 80H1200M0 160H1200M0 240H1200M0 320H1200M0 400H1200M120 0V520M240 0V520M360 0V520M480 0V520M600 0V520M720 0V520M840 0V520M960 0V520M1080 0V520"/></g>
+  <text x="64" y="72" fill="#f7fbf8" font-family="system-ui,sans-serif" font-size="40" font-weight="800">GramArtha</text>
+  <text x="64" y="108" fill="#9adcc9" font-family="system-ui,sans-serif" font-size="20">Hyper-local economic network repair · SIH26091</text>
+  <text x="1136" y="73" text-anchor="end" fill="#f0a14a" font-family="system-ui,sans-serif" font-size="18" font-weight="700">AI structures language · mathematics decides reality</text>
+
+  <g font-family="system-ui,sans-serif">
+    <rect x="64" y="154" width="250" height="172" rx="18" fill="#0e2a23" stroke="#55c9a8" stroke-width="2"/>
+    <text x="88" y="190" fill="#73e4c4" font-size="15" font-weight="800">01 · VERIFIED REALITY</text>
+    <text x="88" y="225" fill="#fff" font-size="24" font-weight="750">Evidence + identity</text>
+    <text x="88" y="256" fill="#c3d8d1" font-size="16">Provenance · freshness</text>
+    <text x="88" y="282" fill="#c3d8d1" font-size="16">confidence · geography</text>
+    <text x="88" y="308" fill="#f0a14a" font-size="14" font-weight="700">No missing fact becomes a present fact.</text>
+
+    <rect x="342" y="154" width="250" height="172" rx="18" fill="#0e2a23" stroke="#55c9a8" stroke-width="2"/>
+    <text x="366" y="190" fill="#73e4c4" font-size="15" font-weight="800">02 · LOCAL ECONOMY</text>
+    <text x="366" y="225" fill="#fff" font-size="24" font-weight="750">Graph + exact flow</text>
+    <text x="366" y="256" fill="#c3d8d1" font-size="16">Reachable supply · demand</text>
+    <text x="366" y="282" fill="#c3d8d1" font-size="16">bottlenecks · counterfactuals</text>
+    <text x="366" y="308" fill="#f0a14a" font-size="14" font-weight="700">Opportunity = structural gap, not a list.</text>
+
+    <rect x="620" y="154" width="250" height="172" rx="18" fill="#0e2a23" stroke="#55c9a8" stroke-width="2"/>
+    <text x="644" y="190" fill="#73e4c4" font-size="15" font-weight="800">03 · SAFE VENTURE</text>
+    <text x="644" y="225" fill="#fff" font-size="24" font-weight="750">MVV search</text>
+    <text x="644" y="256" fill="#c3d8d1" font-size="16">Smallest viable configuration</text>
+    <text x="644" y="282" fill="#c3d8d1" font-size="16">robust minimum-regret choice</text>
+    <text x="644" y="308" fill="#f0a14a" font-size="14" font-weight="700">Start smaller; expand only on triggers.</text>
+
+    <rect x="898" y="154" width="238" height="172" rx="18" fill="#0e2a23" stroke="#f0a14a" stroke-width="2"/>
+    <text x="922" y="190" fill="#f0b66f" font-size="15" font-weight="800">04 · FINANCIAL REALITY</text>
+    <text x="922" y="225" fill="#fff" font-size="24" font-weight="750">36-month twin</text>
+    <text x="922" y="256" fill="#c3d8d1" font-size="16">Cash flow · schemes · stress</text>
+    <text x="922" y="282" fill="#c3d8d1" font-size="16">failure boundaries · staging</text>
+    <text x="922" y="308" fill="#73e4c4" font-size="14" font-weight="700">Decision remains auditable end to end.</text>
+  </g>
+
+  <g fill="none" stroke="url(#accent)" stroke-width="4" filter="url(#glow)">
+    <path d="M314 240H342"/><path d="M592 240H620"/><path d="M870 240H898"/>
+  </g>
+  <g fill="#f0a14a"><path d="M336 233l10 7-10 7z"/><path d="M614 233l10 7-10 7z"/><path d="M892 233l10 7-10 7z"/></g>
+
+  <g font-family="system-ui,sans-serif">
+    <rect x="64" y="366" width="250" height="92" rx="16" fill="#f8fbf9" opacity=".97"/>
+    <text x="88" y="402" fill="#123f32" font-size="28" font-weight="850">53,537</text><text x="88" y="432" fill="#49645a" font-size="15">geographic identities</text>
+    <rect x="342" y="366" width="250" height="92" rx="16" fill="#f8fbf9" opacity=".97"/>
+    <text x="366" y="402" fill="#123f32" font-size="28" font-weight="850">381,523</text><text x="366" y="432" fill="#49645a" font-size="15">locality evidence records</text>
+    <rect x="620" y="366" width="250" height="92" rx="16" fill="#f8fbf9" opacity=".97"/>
+    <text x="644" y="402" fill="#123f32" font-size="28" font-weight="850">512</text><text x="644" y="432" fill="#49645a" font-size="15">deterministic stress scenarios</text>
+    <rect x="898" y="366" width="238" height="92" rx="16" fill="#f8fbf9" opacity=".97"/>
+    <text x="922" y="402" fill="#123f32" font-size="28" font-weight="850">68 / 68</text><text x="922" y="432" fill="#49645a" font-size="15">current automated tests passing</text>
+  </g>
+</svg>
