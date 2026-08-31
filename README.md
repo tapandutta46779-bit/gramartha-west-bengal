@@ -13,6 +13,8 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.116%2B-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+**Contributor: [Mohit Dutta](https://github.com/tapandutta46779) · [@tapandutta46779](https://github.com/tapandutta46779)**
+
 </div>
 
 GramArtha is a deterministic decision engine for rural and hyper-local micro-enterprise planning. It combines evidence provenance, geographic resolution, uncertainty-aware estimation, economic-network optimization, finance screening, a 36-month digital twin, stress testing, robust alternative selection, and multilingual reporting.
@@ -164,7 +166,7 @@ The repository includes:
 - `pip-audit` dependency vulnerability checks
 - high-severity Bandit checks
 - Gitleaks advisory secret scanning
-- pull-request dependency review
+- portable third-party dependency audit on pushes and pull requests
 - Dependabot updates for Python and GitHub Actions
 - CODEOWNERS, issue templates and a PR integrity checklist
 - tagged release automation with SHA-256 checksums
