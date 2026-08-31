@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use GramArtha in research, evaluation, or a technical report, please cite the software repository."
+title: "GramArtha: Evidence-backed West Bengal hyper-local business advisory and financial structuring engine"
+type: software
+authors:
+  - given-names: Mohit
+    family-names: Dutta
+    alias: tapandutta46779
+version: 0.7.2
+repository-code: "https://github.com/tapandutta46779-bit/gramartha-west-bengal"
+license: MIT
+keywords:
+  - rural entrepreneurship
+  - decision support
+  - economic networks
+  - uncertainty
+  - finance
+  - West Bengal

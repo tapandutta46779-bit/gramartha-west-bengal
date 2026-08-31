@@ -1,0 +1,50 @@
+name: Data quality / provenance issue
+description: Report a source, freshness, geography or evidence-integrity problem
+title: "[Data]: "
+labels: ["data-quality"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Data-quality reports are especially valuable. Please separate observed source facts from estimates or assumptions.
+  - type: input
+    id: geography
+    attributes:
+      label: Geography / geo_id
+      placeholder: "Locality, district or GramArtha geo_id"
+  - type: input
+    id: dataset
+    attributes:
+      label: Dataset / evidence source
+      placeholder: "OSM, Census, HCES, ASUSE, livestock, official source, etc."
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: Problem
+      description: Explain the suspected error, stale value, mismatch, missing provenance or incorrect classification.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Supporting source
+      description: Public source URL or stable identifier when available. Do not upload restricted microdata.
+  - type: input
+    id: date
+    attributes:
+      label: Observation / effective date
+      placeholder: "YYYY-MM-DD or source period"
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected correction
+      description: State the proposed evidence value/classification and why.
+  - type: checkboxes
+    id: rights
+    attributes:
+      label: Redistribution check
+      options:
+        - label: I have not attached restricted or non-redistributable raw data.
+          required: true

@@ -1,0 +1,143 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-and-tests:
+    name: Python quality & tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+
+      - name: Ruff
+        run: ruff check backend scripts tests deploy
+
+      - name: Python compilation
+        run: python -m compileall -q backend scripts deploy
+
+      - name: Pytest
+        run: pytest
+
+      - name: Version consistency
+        run: |
+          python - <<'PY'
+          import re
+          import tomllib
+          from pathlib import Path
+
+          with Path("pyproject.toml").open("rb") as fh:
+              version = tomllib.load(fh)["project"]["version"]
+
+          api = Path("backend/api/main.py").read_text(encoding="utf-8")
+          readme = Path("README.md").read_text(encoding="utf-8")
+
+          api_match = re.search(r'FastAPI\(.*?version="([^"]+)"', api, re.S)
+          if not api_match:
+              raise SystemExit("Could not find FastAPI version in backend/api/main.py")
+          if api_match.group(1) != version:
+              raise SystemExit(f"API version {api_match.group(1)} != package version {version}")
+          if f"v{version}" not in readme:
+              raise SystemExit(f"README does not advertise v{version}")
+
+          print(f"Version consistency OK: {version}")
+          PY
+
+  frontend:
+    name: Frontend syntax
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: JavaScript syntax
+        run: node --check frontend/app.js
+
+  runtime-smoke:
+    name: Public runtime smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install project
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+
+      - name: Prepare public runtime
+        run: python deploy/prepare_runtime.py
+
+      - name: SQLite integrity
+        run: |
+          python - <<'PY'
+          import sqlite3
+          from pathlib import Path
+
+          base = Path("/tmp/gramartha-runtime")
+          for name in ("gramartha.sqlite", "west_bengal_osm_poi.sqlite"):
+              path = base / name
+              if not path.exists() or path.stat().st_size == 0:
+                  raise SystemExit(f"Missing runtime DB: {path}")
+              with sqlite3.connect(path) as conn:
+                  result = conn.execute("PRAGMA integrity_check").fetchone()[0]
+              if result != "ok":
+                  raise SystemExit(f"SQLite integrity failed for {name}: {result}")
+              print(f"{name}: integrity ok")
+          PY
+
+      - name: API health smoke
+        env:
+          SIH26091_SQLITE_PATH: /tmp/gramartha-runtime/gramartha.sqlite
+          SIH26091_OSM_SQLITE_PATH: /tmp/gramartha-runtime/west_bengal_osm_poi.sqlite
+        run: |
+          python - <<'PY'
+          from fastapi.testclient import TestClient
+          from backend.api.main import app
+
+          response = TestClient(app).get("/health")
+          response.raise_for_status()
+          payload = response.json()
+          assert payload["status"] == "ok", payload
+          print(payload)
+          PY

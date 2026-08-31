@@ -1,0 +1,29 @@
+name: Feature request
+description: Propose a product, engine, validation or developer-experience improvement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or user need
+      description: What concrete problem should GramArtha solve better?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe the smallest useful implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: integrity
+    attributes:
+      label: Evidence / decision-integrity implications
+      description: Could this change affect provenance, freshness gates, finance, uncertainty or venture selection?
+  - type: textarea
+    id: validation
+    attributes:
+      label: How should it be validated?
+      description: Tests, metrics, E2E cases or source evidence that would demonstrate success.

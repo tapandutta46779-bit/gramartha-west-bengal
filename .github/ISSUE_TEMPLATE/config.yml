@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security policy
+    url: https://github.com/tapandutta46779-bit/gramartha-west-bengal/blob/main/SECURITY.md
+    about: Report vulnerabilities privately when possible; do not post exploit details in public issues.
+  - name: Data licensing
+    url: https://github.com/tapandutta46779-bit/gramartha-west-bengal/blob/main/DATA_LICENSES.md
+    about: Check redistribution and attribution boundaries before submitting data.
