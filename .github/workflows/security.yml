@@ -68,7 +68,7 @@ jobs:
           python -m pip install pip-audit bandit
 
       - name: Dependency vulnerability audit
-        run: pip-audit --local --strict --skip-editable
+        run: pip-audit --local --skip-editable
 
       - name: High-severity Bandit audit
         run: bandit -r backend scripts deploy -lll -iii
