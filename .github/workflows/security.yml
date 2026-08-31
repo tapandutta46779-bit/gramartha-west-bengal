@@ -36,13 +36,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: none
 
       - name: Analyze
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:${{ matrix.language }}"
 
@@ -68,7 +68,7 @@ jobs:
           python -m pip install pip-audit bandit
 
       - name: Dependency vulnerability audit
-        run: pip-audit --local --strict
+        run: pip-audit --local --strict --skip-editable
 
       - name: High-severity Bandit audit
         run: bandit -r backend scripts deploy -lll -iii

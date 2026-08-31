@@ -35,6 +35,13 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e '.[dev]'
 
+      - name: Prepare test runtime data
+        run: |
+          python deploy/prepare_runtime.py
+          mkdir -p data
+          ln -sf /tmp/gramartha-runtime/gramartha.sqlite data/sih26091_phase2.sqlite
+          ln -sf /tmp/gramartha-runtime/west_bengal_osm_poi.sqlite data/west_bengal_osm.sqlite
+
       - name: Ruff
         run: ruff check backend scripts tests deploy
 
