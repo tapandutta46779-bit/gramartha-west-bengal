@@ -20,13 +20,16 @@
 [![CI](https://github.com/tapandutta46779-bit/gramartha-west-bengal/actions/workflows/ci.yml/badge.svg)](https://github.com/tapandutta46779-bit/gramartha-west-bengal/actions/workflows/ci.yml)
 [![Security](https://github.com/tapandutta46779-bit/gramartha-west-bengal/actions/workflows/security.yml/badge.svg)](https://github.com/tapandutta46779-bit/gramartha-west-bengal/actions/workflows/security.yml)
 [![Dependency Audit](https://github.com/tapandutta46779-bit/gramartha-west-bengal/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/tapandutta46779-bit/gramartha-west-bengal/actions/workflows/dependency-review.yml)
+[![Release](https://img.shields.io/badge/release-v0.7.2%20verified-2563eb?style=flat-square)](https://github.com/tapandutta46779-bit/gramartha-west-bengal/releases/tag/v0.7.2)
 
 <br>
 
 [![Live App](https://img.shields.io/badge/🚀%20OPEN%20LIVE%20APP-0f766e?style=for-the-badge)](https://gramartha-west-bengal.onrender.com/ui/)
+[![Download Judge Package](https://img.shields.io/badge/⬇️%20DOWNLOAD%20JUDGE%20PACKAGE-2563eb?style=for-the-badge)](https://github.com/tapandutta46779-bit/gramartha-west-bengal/releases/download/v0.7.2/GramArtha-v0.7.2-Judge-Package.zip)
 [![Judge Walkthrough](https://img.shields.io/badge/🎯%20JUDGES%20START%20HERE-df6d20?style=for-the-badge)](docs/SIH_JUDGE_WALKTHROUGH.md)
+
+[![Verified Release](https://img.shields.io/badge/📦%20VERIFIED%20v0.7.2%20RELEASE-4338ca?style=for-the-badge)](https://github.com/tapandutta46779-bit/gramartha-west-bengal/releases/tag/v0.7.2)
 [![Architecture](https://img.shields.io/badge/🗺️%20SYSTEM%20MAPS-7c3aed?style=for-the-badge)](ARCHITECTURE.md)
-[![Docs](https://img.shields.io/badge/📚%20DOCS%20INDEX-2563eb?style=for-the-badge)](docs/README.md)
 [![Demo Videos](https://img.shields.io/badge/🎬%20DEMO%20VIDEOS-b45309?style=for-the-badge)](../../releases/tag/sih2026-demo-videos-v1)
 [![Validation](https://img.shields.io/badge/✅%20VALIDATION-15803d?style=for-the-badge)](docs/VALIDATION.md)
 
@@ -52,15 +55,38 @@
 
 Language AI stays at the edge. Geography, evidence status, economic flow, venture selection, finance, uncertainty and robust ranking are deterministic or explicitly modelled. Weak, stale or missing evidence is preserved as such instead of being silently converted into a precise present-day fact.
 
-## ⚡ Choose the fastest path
+## ⚡ Four ways to evaluate GramArtha
 
 <table>
 <tr>
-<td width="33%" valign="top"><b>🚀 Try the product</b><br><br>Open the public application, choose a West Bengal locality and run a real analysis.<br><br><a href="https://gramartha-west-bengal.onrender.com/ui/"><b>Open live GramArtha →</b></a></td>
-<td width="33%" valign="top"><b>🎯 Judge it in 5 minutes</b><br><br>Follow the evidence-first SIH walkthrough from locality resolution to finance and audit trail.<br><br><a href="docs/SIH_JUDGE_WALKTHROUGH.md"><b>Open judge walkthrough →</b></a></td>
-<td width="33%" valign="top"><b>🔬 Audit the engineering</b><br><br>Inspect architecture, implementation status, validation, limitations, data provenance and CI quality gates.<br><br><a href="docs/README.md"><b>Open documentation index →</b></a></td>
+<td width="25%" valign="top"><b>🚀 Open it now</b><br><br>Run a real analysis in the hosted product. No installation required.<br><br><a href="https://gramartha-west-bengal.onrender.com/ui/"><b>Open live GramArtha →</b></a></td>
+<td width="25%" valign="top"><b>⬇️ Download the product</b><br><br>Get the 38 MB judge-ready ZIP with prepared public runtime databases and macOS/Linux/Windows launchers.<br><br><a href="https://github.com/tapandutta46779-bit/gramartha-west-bengal/releases/download/v0.7.2/GramArtha-v0.7.2-Judge-Package.zip"><b>Download v0.7.2 →</b></a></td>
+<td width="25%" valign="top"><b>🎯 Judge it in 5 minutes</b><br><br>Follow the evidence-first SIH walkthrough from locality resolution to finance and audit trail.<br><br><a href="docs/SIH_JUDGE_WALKTHROUGH.md"><b>Open judge walkthrough →</b></a></td>
+<td width="25%" valign="top"><b>🔬 Audit the engineering</b><br><br>Inspect architecture, validation, limitations, provenance and quality gates.<br><br><a href="docs/README.md"><b>Open documentation index →</b></a></td>
 </tr>
 </table>
+
+---
+
+## 📦 v0.7.2 is a real downloadable software release
+
+The latest stable release is **GramArtha v0.7.2 — Verified Software Release**. The recommended evaluator asset is:
+
+### **[`GramArtha-v0.7.2-Judge-Package.zip` →](https://github.com/tapandutta46779-bit/gramartha-west-bengal/releases/download/v0.7.2/GramArtha-v0.7.2-Judge-Package.zip)**
+
+It contains the released backend and frontend, **prepared public-safe economic + OSM SQLite runtime databases**, platform launchers, architecture/validation/limitations documentation, and licensing notices in one package.
+
+| Platform | Start the downloaded package |
+|---|---|
+| **macOS** | double-click `START_GRAMARTHA.command` |
+| **Linux** | run `./start_gramartha.sh` |
+| **Windows** | double-click `START_GRAMARTHA.bat` |
+
+Python 3.12+ is required. On first launch, the package creates its own private `.gramartha-venv`, installs the released dependencies, starts the local service at `127.0.0.1:8765`, waits for `/health`, and opens the product UI. See [`release/README.md`](release/README.md).
+
+The same release also exposes the **public-runtime archive, Python wheel, source distribution, CycloneDX SBOM, release manifest, release notes and SHA-256 checksums**. Restricted HCES/ASUSE respondent microdata are not redistributed.
+
+**[Inspect every v0.7.2 release asset →](https://github.com/tapandutta46779-bit/gramartha-west-bengal/releases/tag/v0.7.2)**
 
 ---
 
@@ -85,7 +111,7 @@ Language AI stays at the edge. Geography, evidence status, economic flow, ventur
 | **Finance** | Scheme screening, loan calculations, **36-month** monthly cash-flow digital twin, break-even/payback and working-capital analysis |
 | **Uncertainty** | **512** deterministic seeded triangular joint scenarios, survival/payback summaries, VaR/CVaR and regret-based robustness |
 | **Validation** | **68/68 tests passing**, **81.6% backend line coverage**, **61.4% branch coverage**, real West Bengal E2E cases and district smoke validation |
-| **Product** | Seven-stage web workflow, FastAPI contract, English/Bengali/Hindi output, PDF export and public deployment |
+| **Product** | Hosted web product + downloadable Judge Package + FastAPI contract + English/Bengali/Hindi output + PDF export |
 
 ---
 
@@ -190,37 +216,39 @@ The LLM must not invent market evidence, perform hidden loan arithmetic, replace
 
 ## ✅ Engineering quality is measured, not implied
 
-Current `main` quality gate:
+Current quality evidence:
 
 - **68/68 automated tests pass**.
-- **81.6% backend line coverage** and **61.4% branch coverage** on the current measured baseline.
-- CI enforces a **minimum 75% combined coverage gate** so coverage cannot silently collapse below the accepted baseline.
-- Ruff, Python compilation and frontend JavaScript syntax checks run on every push/PR.
+- **81.6% backend line coverage** and **61.4% branch coverage** on the measured baseline.
+- CI enforces a **minimum 75% combined coverage gate**.
+- Ruff, Python compilation and frontend JavaScript syntax checks run on push/PR.
 - Public runtime databases are reconstructed and checked with SQLite `PRAGMA integrity_check`.
 - FastAPI is smoke-tested through `/health` against the reconstructed public runtime.
 - Repository hygiene and local Markdown links are validated automatically.
-- Every CI run publishes XML + HTML coverage as a downloadable `backend-coverage` artifact.
+- CI publishes XML + HTML coverage as a `backend-coverage` artifact.
 
 Security automation runs **CodeQL (Python + JavaScript), pip-audit, Bandit and Gitleaks**. Dependency auditing is separate and blocking for known third-party vulnerabilities.
 
-[Inspect the CI workflow →](.github/workflows/ci.yml) · [Security policy →](SECURITY.md) · [Validation evidence →](docs/VALIDATION.md)
+[Inspect CI →](.github/workflows/ci.yml) · [Security policy →](SECURITY.md) · [Validation evidence →](docs/VALIDATION.md)
 
 ---
 
-## 📦 Release integrity
+## 🔏 Release integrity
 
-GramArtha keeps demo media and software releases conceptually separate. The current `sih2026-demo-videos-v1` release is **presentation media**, not a software-version claim.
+The `v0.7.2` software release was created by the verified release pipeline after successfully completing:
 
-For every semantic version tag (`v*.*.*`), the release workflow is designed to:
+1. linting and Python compilation;
+2. all automated tests and the coverage gate;
+3. reconstruction + SQLite integrity checks of the public runtime databases;
+4. third-party dependency vulnerability auditing;
+5. Python wheel + source-distribution builds;
+6. a clean-environment installation test of the built wheel;
+7. construction of the judge-ready ZIP and reproducible public-runtime archive;
+8. archive-boundary scans excluding raw/restricted evidence surfaces;
+9. CycloneDX SBOM generation;
+10. SHA-256 checksum and release-manifest generation.
 
-1. rerun lint, compilation, tests and the coverage gate;
-2. rebuild and integrity-check the public runtime databases;
-3. build Python wheel + source distribution;
-4. smoke-install the built wheel in a fresh environment;
-5. build a public-safe runtime archive that excludes restricted/raw evidence surfaces;
-6. generate a CycloneDX dependency SBOM;
-7. generate SHA-256 checksums for every release artifact;
-8. publish the verified artifacts to the tagged GitHub Release.
+Demo media remains a separate presentation release, so downloading `v0.7.2` means downloading the **software product**, not a video package.
 
 See [`docs/RELEASING.md`](docs/RELEASING.md) and [`.github/workflows/release.yml`](.github/workflows/release.yml).
 
@@ -228,11 +256,17 @@ See [`docs/RELEASING.md`](docs/RELEASING.md) and [`.github/workflows/release.yml
 
 ## 🚀 Run it
 
-### Public app
+### Option A — hosted product
 
 **[Open GramArtha live →](https://gramartha-west-bengal.onrender.com/ui/)**
 
-### Local development
+### Option B — evaluator download
+
+**[Download `GramArtha-v0.7.2-Judge-Package.zip` →](https://github.com/tapandutta46779-bit/gramartha-west-bengal/releases/download/v0.7.2/GramArtha-v0.7.2-Judge-Package.zip)**
+
+Extract the ZIP and use the launcher for your platform. Full instructions are in `START_HERE.md` inside the package and [`release/README.md`](release/README.md) in the repository.
+
+### Option C — local development
 
 Requires Python 3.12+.
 
@@ -257,6 +291,7 @@ Then open:
 ```text
 backend/       API · evidence · graph/flow/MVV · finance · reporting
 frontend/      seven-stage browser product
+release/       evaluator launchers + downloaded-product quick start
 tests/         automated correctness and integration tests
 scripts/       acquisition · ingestion · audits · validation · packaging
 deploy/        reproducible public-safe runtime assets
@@ -266,7 +301,7 @@ outputs/       committed E2E validation reports
 deliverables/  historical public-share manifests / implementation report
 ```
 
-Use [`docs/README.md`](docs/README.md) instead of browsing historical audits alphabetically; it clearly separates current reviewer docs from versioned historical records.
+Use [`docs/README.md`](docs/README.md) instead of browsing historical audits alphabetically; it separates current reviewer docs from versioned historical records.
 
 ---
 
