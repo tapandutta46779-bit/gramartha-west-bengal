@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "v*.*.*"
+    branches:
+      - main
+    paths:
+      - ".github/workflows/release.yml"
+      - "pyproject.toml"
+      - "deploy/**"
   workflow_dispatch:
 
 permissions:
@@ -82,10 +88,12 @@ jobs:
           /tmp/gramartha-release-smoke/bin/python -m pip install --upgrade pip
           /tmp/gramartha-release-smoke/bin/python -m pip install dist/*.whl
           /tmp/gramartha-release-smoke/bin/python - <<'PY'
-          import backend
+          from importlib.metadata import version
           from backend.api.main import app
-          assert app.version == "0.7.2"
-          print("Built wheel import smoke: OK")
+
+          package_version = version("sih26091-network-repair")
+          assert app.version == package_version, (app.version, package_version)
+          print(f"Built wheel import smoke: OK ({package_version})")
           PY
 
       - name: Build public-safe runtime bundle
