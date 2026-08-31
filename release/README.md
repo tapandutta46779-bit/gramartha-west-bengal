@@ -2,6 +2,12 @@
 
 This folder is copied into the verified **GramArtha Judge Package** attached to the versioned GitHub software release.
 
+The primary evaluator asset is deliberately named:
+
+`GramArtha-v0.7.2-Judge-Package.zip`
+
+so a reviewer does not need to guess which release file to download.
+
 ## Fastest option
 
 If you only want to evaluate the product, use the hosted application:
@@ -51,12 +57,11 @@ The judge package contains:
 
 - the released backend and frontend;
 - prepared public-safe economic and OSM runtime databases;
-- deployment assets needed for reproducibility;
 - architecture, validation, limitations and implementation-status documents;
 - launchers for macOS, Linux and Windows;
 - license and third-party data notices.
 
-The GitHub release also publishes the Python wheel, source distribution, CycloneDX SBOM, release manifest and SHA-256 checksums as separate audit artifacts.
+The GitHub release also publishes the Python wheel, source distribution, reproducible public-runtime archive, CycloneDX SBOM, release manifest and SHA-256 checksums as separate audit artifacts.
 
 ## Integrity
 
