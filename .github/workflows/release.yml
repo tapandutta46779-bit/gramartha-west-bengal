@@ -266,64 +266,67 @@ jobs:
           branch = float(coverage.attrib.get("branch-rate", 0)) * 100
           commit = os.environ["RELEASE_COMMIT"]
 
-          notes = f"""# GramArtha v{version} — Verified Software Release
+          notes = [
+              f"# GramArtha v{version} — Verified Software Release",
+              "",
+              "## Start here",
+              "",
+              f"**For judges and evaluators: download `GramArtha-v{version}-Judge-Package.zip`.**",
+              "",
+              "It contains the backend, frontend, prepared public-safe runtime databases, macOS/Linux/Windows launchers, and judge/validation documentation in one ZIP.",
+              "",
+              "Hosted product: https://gramartha-west-bengal.onrender.com/ui/",
+              "",
+              "### Local launch",
+              "",
+              "- **macOS:** double-click `START_GRAMARTHA.command`",
+              "- **Linux:** run `./start_gramartha.sh`",
+              "- **Windows:** double-click `START_GRAMARTHA.bat`",
+              "",
+              "Python 3.12+ is required. First launch installs released Python dependencies into a private local virtual environment.",
+              "",
+              "## Verified before publication",
+              "",
+              "- 68/68 automated tests passing",
+              f"- backend line coverage: **{line:.1f}%**",
+              f"- backend branch coverage: **{branch:.1f}%**",
+              "- enforced combined coverage gate: **>=75%**",
+              "- Ruff + Python compilation",
+              "- dependency vulnerability audit",
+              "- SQLite integrity checks on both public runtime databases",
+              "- clean installation of the built wheel",
+              "- public-release boundary scan excluding raw/restricted evidence surfaces",
+              "",
+              "## Release assets",
+              "",
+              f"- `GramArtha-v{version}-Judge-Package.zip` — **recommended evaluator download**",
+              f"- `GramArtha-v{version}-Public-Runtime.tar.gz` — reproducible developer/runtime archive",
+              "- Python wheel and source distribution",
+              f"- `GramArtha-v{version}-SBOM.cdx.json` — CycloneDX dependency SBOM",
+              "- `RELEASE-MANIFEST.txt`",
+              "- `SHA256SUMS.txt`",
+              "",
+              "Restricted HCES/ASUSE respondent microdata are **not redistributed** in these public release assets.",
+              "",
+              f"Release commit: `{commit}`",
+              "",
+          ]
+          Path("dist/RELEASE-NOTES.md").write_text("\n".join(notes), encoding="utf-8")
 
-## Start here
-
-**For judges and evaluators: download `GramArtha-v{version}-Judge-Package.zip`.**
-
-It is the easiest local product package: backend + frontend + prepared public-safe runtime databases + macOS/Linux/Windows launchers + judge/validation documentation in one ZIP.
-
-The hosted product remains available at:
-https://gramartha-west-bengal.onrender.com/ui/
-
-### Local launch
-
-- **macOS:** double-click `START_GRAMARTHA.command`
-- **Linux:** run `./start_gramartha.sh`
-- **Windows:** double-click `START_GRAMARTHA.bat`
-
-Python 3.12+ is required. First launch installs released Python dependencies into a private local virtual environment.
-
-## What was verified before publication
-
-- 68/68 automated tests passing
-- backend line coverage: **{line:.1f}%**
-- backend branch coverage: **{branch:.1f}%**
-- enforced combined coverage gate: **>=75%**
-- Ruff + Python compilation
-- dependency vulnerability audit
-- SQLite `PRAGMA integrity_check` on both public runtime databases
-- clean installation of the built wheel
-- public-release boundary scan excluding raw/restricted evidence surfaces
-
-## Release assets
-
-- `GramArtha-v{version}-Judge-Package.zip` — **recommended evaluator download**
-- `GramArtha-v{version}-Public-Runtime.tar.gz` — reproducible developer/runtime archive
-- Python wheel and source distribution
-- `GramArtha-v{version}-SBOM.cdx.json` — CycloneDX dependency SBOM
-- `RELEASE-MANIFEST.txt`
-- `SHA256SUMS.txt`
-
-Restricted HCES/ASUSE respondent microdata are **not redistributed** in these public release assets.
-
-Release commit: `{commit}`
-"""
-          Path("dist/RELEASE-NOTES.md").write_text(notes, encoding="utf-8")
-
-          manifest = f"""GramArtha {version}
-Commit: {commit}
-Python: 3.12+
-Tests: 68/68 passing
-Backend line coverage: {line:.1f}%
-Backend branch coverage: {branch:.1f}%
-Coverage gate: >=75%
-Verification: Ruff + compileall + pytest coverage + dependency audit + SQLite integrity + wheel smoke install
-Public product boundary: raw/restricted evidence surfaces excluded by archive-content scan
-Primary evaluator artifact: GramArtha-v{version}-Judge-Package.zip
-"""
-          Path("dist/RELEASE-MANIFEST.txt").write_text(manifest, encoding="utf-8")
+          manifest = [
+              f"GramArtha {version}",
+              f"Commit: {commit}",
+              "Python: 3.12+",
+              "Tests: 68/68 passing",
+              f"Backend line coverage: {line:.1f}%",
+              f"Backend branch coverage: {branch:.1f}%",
+              "Coverage gate: >=75%",
+              "Verification: Ruff + compileall + pytest coverage + dependency audit + SQLite integrity + wheel smoke install",
+              "Public product boundary: raw/restricted evidence surfaces excluded by archive-content scan",
+              f"Primary evaluator artifact: GramArtha-v{version}-Judge-Package.zip",
+              "",
+          ]
+          Path("dist/RELEASE-MANIFEST.txt").write_text("\n".join(manifest), encoding="utf-8")
           PY
 
           (
