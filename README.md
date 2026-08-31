@@ -22,6 +22,7 @@
 
 <br>
 
+[![Live App](https://img.shields.io/badge/🚀%20OPEN%20LIVE%20APP-0f766e?style=for-the-badge)](https://gramartha-west-bengal.onrender.com/ui/)
 [![Latest Release](https://img.shields.io/badge/📦%20LATEST%20RELEASE-176348?style=for-the-badge)](../../releases/latest)
 [![Judge Walkthrough](https://img.shields.io/badge/🎯%20JUDGES%20START%20HERE-df6d20?style=for-the-badge)](docs/SIH_JUDGE_WALKTHROUGH.md)
 [![Validation](https://img.shields.io/badge/✅%20VALIDATION-2563eb?style=for-the-badge)](docs/VALIDATION.md)
@@ -73,7 +74,7 @@ The system keeps language AI at the edge. Geography, evidence status, market str
 | **Finance** | Scheme screening, loan calculations, **36-month** cash-flow digital twin, break-even/payback and working-capital analysis |
 | **Uncertainty** | **512** deterministic seeded triangular joint scenarios, survival/payback summaries, VaR/CVaR and regret-based robustness |
 | **Validation** | **68 automated tests passing** on current CI, plus real West Bengal E2E cases and a 23-district smoke run |
-| **Product** | Seven-stage web workflow, FastAPI contract, English/Bengali/Hindi output and PDF export |
+| **Product** | Seven-stage web workflow, FastAPI contract, English/Bengali/Hindi output, PDF export and a public web deployment |
 | **Deployment** | Render configuration plus reproducible public-safe compressed runtime databases |
 
 ---
@@ -243,7 +244,11 @@ The sequence is intentionally evidence-first:
 
 ## 🚀 Run it
 
-Requires **Python 3.12+**.
+### Public app
+
+**[Open GramArtha live →](https://gramartha-west-bengal.onrender.com/ui/)**
+
+For local development, requires **Python 3.12+**.
 
 ```bash
 python3 -m venv .venv
