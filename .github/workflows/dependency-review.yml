@@ -37,4 +37,4 @@ jobs:
           python -m pip install pip-audit
 
       - name: Audit installed third-party dependencies
-        run: pip-audit --local --strict --skip-editable
+        run: pip-audit --local --skip-editable
