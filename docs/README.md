@@ -6,9 +6,10 @@ This index separates the **current judge/reviewer path** from implementation ref
 
 | Document | Purpose |
 |---|---|
-| [`../README.md`](../README.md) | Product overview, live app, proof surfaces and quick start |
-| [`../ARCHITECTURE.md`](../ARCHITECTURE.md) | Complete business, decision and implementation system maps |
+| [`../README.md`](../README.md) | Product overview, live app, downloadable release, proof surfaces and quick start |
+| [`60_SECOND_JUDGE_VIEW.md`](60_SECOND_JUDGE_VIEW.md) | One-minute judge story: reality → network repair → financial survival, plus the 7-stage UI ↔ engine map |
 | [`SIH_JUDGE_WALKTHROUGH.md`](SIH_JUDGE_WALKTHROUGH.md) | Five-minute SIH evaluation route |
+| [`../ARCHITECTURE.md`](../ARCHITECTURE.md) | Complete business, decision and implementation system maps |
 | [`IMPLEMENTATION_STATUS.md`](IMPLEMENTATION_STATUS.md) | Implemented, partial and intentionally bounded surfaces |
 | [`VALIDATION.md`](VALIDATION.md) | Automated, E2E and geographic validation evidence |
 | [`LIMITATIONS.md`](LIMITATIONS.md) | Evidence, calibration and product limitations |
