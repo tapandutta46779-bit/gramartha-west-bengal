@@ -1,6 +1,8 @@
 # SIH26091 Judge Walkthrough — GramArtha
 
-This page is the shortest path through the repository and product. It is designed for a reviewer who has roughly five minutes and wants to distinguish implemented engineering from presentation claims.
+This page is the shortest five-minute path through the repository and product. It is designed for a reviewer who wants to distinguish implemented engineering from presentation claims.
+
+> **Only have one minute?** Start with [`60_SECOND_JUDGE_VIEW.md`](60_SECOND_JUDGE_VIEW.md): **Start with reality → Repair the network → Test financial survival.**
 
 ## The one-sentence idea
 
@@ -12,12 +14,26 @@ The language layer may structure intake or explain a completed result. The decis
 
 | Time | Show | What this proves |
 |---:|---|---|
-| 0:00–0:40 | Repository README hero and product screenshots | The project has a concrete product, measurable evidence scale and a defined technical core |
+| 0:00–0:40 | Repository README hero and product/release entry points | The project has a concrete hosted + downloadable product, measurable evidence scale and a defined technical core |
 | 0:40–1:20 | Product **Setup** + canonical locality selection | Decisions begin from a resolved West Bengal geography, not a free-text place name |
 | 1:20–2:00 | **Local Market** / evidence view | Evidence and spatial context are visible before the recommendation |
 | 2:00–3:10 | Run **Deep — 512 scenarios** and open the recommendation | The result is generated through graph/venture/finance/risk modules rather than a one-shot text answer |
 | 3:10–4:10 | Finance + downside/failure information | A venture is tested month by month; affordability is not reduced to a static EMI calculation |
 | 4:10–5:00 | **How did GramArtha decide?** audit panel + validation docs | Provenance, assumptions, limitations and methodology remain reviewable |
+
+## The seven product stages and the computation underneath
+
+| UI stage | Entrepreneur-facing purpose | Engine computation |
+|---|---|---|
+| **1 · Setup** | Select locality, capital and planning profile | Canonical geographic identity + entrepreneur constraints |
+| **2 · Local Market** | Inspect local evidence and spatial context | Provenance/freshness/confidence + OSM/catchment evidence + readiness gates |
+| **3 · Opportunities** | See candidate gaps/opportunities | Economic graph + exact flow + residual demand + bottleneck + candidate repairs |
+| **4 · Risk** | Understand downside and failure conditions | 512 deterministic seeded scenarios + VaR/CVaR + regret + failure boundaries |
+| **5 · Plan** | Get the smallest viable operating configuration | Counterfactual recomputation + cannibalization accounting + enumerated MVV search |
+| **6 · Finance** | See scheme fit and monthly cash reality | Scheme/rule checks + loan arithmetic + 36-month financial digital twin |
+| **7 · Action** | Launch in stages using measurable triggers | Frozen decision + staged triggers + multilingual/web/PDF presentation |
+
+This mapping is the fastest way to show that the seven-screen workflow is not decorative navigation: every user-facing stage corresponds to a specific computation or evidence boundary.
 
 ## The four questions GramArtha answers
 
@@ -77,7 +93,8 @@ Repository locations:
 | Languages | English, Bengali and Hindi output/reporting |
 | Automated tests | 68 passing on current CI |
 | Runtime checks | public runtime preparation, SQLite integrity and `/health` smoke test |
-| Security checks | CodeQL, pip-audit, Bandit and advisory Gitleaks |
+| Release | verified `v0.7.2` software release + downloadable Judge Package |
+| Security checks | CodeQL, pip-audit, Bandit and Gitleaks |
 
 ## SIH26091 mapping
 
@@ -105,6 +122,8 @@ These are useful questions because the answer can be checked against source code
 
 ## Reproduce locally
 
+For the fastest evaluator path, use the downloadable `v0.7.2` Judge Package from the repository release. For development from source:
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
@@ -126,6 +145,7 @@ node --check frontend/app.js
 
 ## Where to go deeper
 
+- `docs/60_SECOND_JUDGE_VIEW.md` — one-minute concept + user-stage/engine-stage map
 - `docs/IMPLEMENTATION_STATUS.md` — implemented vs incomplete surfaces
 - `docs/VALIDATION.md` — validation methodology and cases
 - `docs/LIMITATIONS.md` — evidence/model/product caveats
