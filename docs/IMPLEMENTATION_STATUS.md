@@ -1,29 +1,45 @@
 # Implementation Status
 
-Updated: 2026-08-28. Product version: 0.5.0 / decision methodology v5.
+**Updated:** 2026-09-01  
+**Current product version:** v0.7.2  
+**Decision methodology:** evidence-backed economic-network repair with explicit AI containment
 
-| Component | Status | Verified state |
+This is the current-status document. Older versioned audit reports remain in `docs/` for traceability and are indexed separately by [`docs/README.md`](README.md).
+
+| Component | Status | Current verified / documented state |
 |---|---|---|
-| West Bengal identity/evidence store | DONE | 53,537 geographic identities, 381,523 locality evidence records and 976 regional survey priors; SQLite integrity passes. |
-| Census geography/PCA | DONE AS HISTORICAL BASELINE | Official Census 2011 codes and observations are never labelled current. When needed, v0.5 uses an explicit low-confidence 2026 rural/urban scenario projection with base year, rates and bounds. |
-| Livestock | DONE AS HISTORICAL CONTEXT | 202,375 West Bengal species records from the 2019 livestock census; all labelled `STALE_FOR_DECISION`. |
-| OSM spatial layer | DONE WITH PROXY CAVEAT | State extract, 633,601 road ways, 17,212 POIs/places, catchment and local routing; volunteered completeness caveat retained. |
-| HCES processing | DONE | Restricted 2022-23 and 2023-24 archives integrity-tested; 18,136 and 18,120 West Bengal household samples transformed into zero-inclusive weighted milk priors. |
-| ASUSE processing | DONE | Restricted 2023-24 and calendar-2025 archives integrity-tested; latest 39,029 West Bengal enterprise sample transformed into 1,558 district/sector/NIC2 prior groups. |
-| Statistical/ML training | DONE | HCES 18,120 rows and ASUSE 38,626 rows; district-group holdout, baselines, ridge and random forest; fitted private artifacts, registry and real MAE/RMSE/calibration metrics saved. |
-| Production survey integration | DONE | Ordinary requests automatically receive applicable district/sector HCES and ASUSE priors. Direct survey estimators are used because ordinary requests lack the microfeatures required by fitted models. |
-| Data-freshness policy | DONE | Variable class, observation/effective date and explicit freshness labels are stored; stale/unknown dynamic values cannot unlock the graph or recommendation. |
-| Demand | MODELLED / GATED BY PATH | Generic adapters use low-confidence ASUSE planning envelopes. Dairy may use HCES rate times an explicit population scenario but still requires current physical/price evidence. No exact village demand is claimed. |
-| Supply / price / capacity / cost | GATED | No fabricated current value. Productive reachable supply, local price, incumbent capacity, route cost and source-linked venture costs are required. |
-| Graph / exact flow / bottleneck | DONE WHEN INPUTS EXIST | Automatic dairy graph is built only with decision-ready variables; min-cost maximum flow and marginal edge-capacity bottleneck ranking are exact for the supplied graph. |
-| Counterfactual / cannibalization | DONE | Baseline, newly served demand, venture flow and displaced incumbent flow are separated. |
-| Venture generation / MVV | DONE FOR ENUMERATED LIBRARY | Ten generic sector adapters plus a separately gated dairy path. Starter/growth configurations carry operational and cash-conversion fields. Selection is exact only over the enumerated set; no general configuration MILP is claimed. |
-| Finance | CURRENT SCREENING, REAL TERMS GATED | PMMY page updated 2026-02-05 and AHIDF temporary extension through 2026-09-30 are screened. Lender rates, underwriting, margin, portal window and sanction remain unknown. |
-| Digital twin / stress / robustness | DONE FOR SUPPLIED ASSUMPTIONS | 36-month accounting, distinct break-even/payback, 512 seeded triangular joint scenarios, survival/payback rates, VaR/CVaR, Pareto filtering, exact scenario-table regret and numerical failure boundaries are tested. Scenario probabilities are not empirically calibrated. |
-| Real West Bengal E2E | DONE | Seven diverse deep E2E cases return conditional benchmark plans. A 23-district smoke run returns HTTP 200 everywhere, with 22 conditional plans and one safe historical-boundary evidence gate. |
-| HTTP/browser UI | DONE LOCALLY | Seven-step local UI, DB district dropdown, scoped search, ten-adapter comparison and result tabs tested over HTTP in Chromium; zero console warnings/errors. Public Netlify deployment is not claimed. |
-| Test/audit/package | DONE | Ruff, 50 pytest tests, JavaScript syntax, deep E2E, all-district smoke, 31-page rendered PDF QA, and a versioned public-safe package. |
+| West Bengal identity/evidence store | DONE | **53,537** geographic identities, **381,523** locality evidence records and **976** regional survey priors in the audited implementation snapshot; deployment/runtime SQLite integrity is checked in CI. |
+| Census geography/PCA | DONE AS HISTORICAL BASELINE | Official Census 2011 codes and observations are never labelled current. Scenario projections retain explicit base year, assumptions and confidence rather than being presented as observed 2026 village facts. |
+| Livestock | DONE AS HISTORICAL CONTEXT | 202,375 West Bengal species records from the 2019 livestock census are retained as historical context and must not silently become current decision evidence. |
+| OSM spatial layer | DONE WITH PROXY CAVEAT | State-scale OSM-derived road/POI context, catchment and local routing are implemented; volunteered-data completeness caveats remain explicit. The public runtime uses a prepared OSM SQLite asset. |
+| HCES processing | DONE / RESTRICTED SOURCE BOUNDARY | Restricted 2022-23 and 2023-24 archives were integrity-tested and transformed into regional priors. Respondent microdata are not redistributed in the public release. |
+| ASUSE processing | DONE / RESTRICTED SOURCE BOUNDARY | Restricted enterprise survey archives were integrity-tested and transformed into district/sector/NIC2 priors. Respondent microdata are not redistributed in the public release. |
+| Statistical/ML training | DONE AS VALIDATION/RESEARCH LAYER | HCES/ASUSE training pipelines include baselines, ridge and random-forest models with geographic/group holdout evaluation and saved metrics/artifact registries. |
+| Production survey integration | DONE WITH EXPLICIT MODEL BOUNDARY | Ordinary requests receive applicable regional survey priors. Direct survey estimators are used where ordinary requests lack the microfeatures required by fitted models; the production decision path does not pretend unavailable features exist. |
+| Data-freshness policy | DONE | Variable class, observation/effective date and explicit freshness/confidence states are stored; stale or missing decision-critical values cannot silently become precise current evidence. |
+| Demand | MODELLED / PATH-GATED | Generic adapters may use low-confidence planning envelopes. Sector-specific paths may combine historical/statistical priors with explicit scenario assumptions, but exact present-day village demand is not claimed without supporting evidence. |
+| Supply / price / capacity / cost | GATED | No fabricated current value. Decision-ready paths require sufficient reachable supply, price/capacity/cost and source-linked assumptions according to the relevant adapter. |
+| Graph / exact flow / bottleneck | DONE WHEN INPUTS EXIST | Economic graph construction, min-cost/max-flow mechanics, residual demand and structural bottleneck ranking are implemented for supplied decision-ready inputs. |
+| Counterfactual / cannibalization | DONE | Baseline flow, newly served demand, venture flow and displaced incumbent flow are separated during repair analysis. |
+| Venture generation / MVV | DONE FOR ENUMERATED LIBRARY | Generic sector adapters plus separately gated sector paths generate bounded venture configurations. Selection is exact over the enumerated candidate space; no general-purpose optimizer over every imaginable business configuration is claimed. |
+| Finance | DONE WITH REAL-WORLD TERMS GATED | Scheme screening, loan arithmetic, break-even/payback and working-capital logic are implemented. Lender-specific underwriting, sanction, live portal availability and unknown commercial terms remain outside the deterministic claim. |
+| Digital twin / stress / robustness | DONE FOR SUPPLIED ASSUMPTIONS | **36-month** monthly accounting, working-capital gaps, **512 deterministic seeded joint scenarios**, survival/payback summaries, VaR/CVaR, Pareto filtering, regret-based comparison and numerical failure boundaries are implemented/tested. Scenario probabilities are not claimed to be empirically calibrated. |
+| AI boundary | DONE / ARCHITECTURAL CONSTRAINT | Language AI may structure intake or explain a frozen result. It must not invent evidence, perform hidden finance, silently replace the selected venture, or convert weak evidence into certainty. The core decision path remains evidence + explicit mathematics/rules. |
+| Real West Bengal E2E | DONE / VERSIONED EVIDENCE | Versioned deep E2E and district smoke evidence is retained under `outputs/` and historical audit documents. The project preserves safe gating/qualification when current decision evidence is insufficient. |
+| HTTP/browser UI | DONE + PUBLICLY HOSTED | Seven-stage browser product is implemented. Historical Chromium QA covers search, locality/evidence flows, analysis/result tabs and multilingual output. The current public product is linked from the README at `https://gramartha-west-bengal.onrender.com/ui/`. CI smoke-tests the reconstructed local runtime; it does not claim external-host uptime monitoring. |
+| Multilingual output / PDF | DONE | English, Bengali and Hindi presentation/reporting are implemented, with versioned rendered/PDF QA artifacts retained under `output/validation/` and `output/pdf/`. |
+| Test / CI quality | DONE | **68/68 tests passing** on the measured v0.7.2 baseline; **81.6% backend line coverage**, **61.4% branch coverage**, and a **75% minimum combined coverage gate**. CI also runs Ruff, Python compilation, frontend JS syntax, SQLite integrity, API health and repository-link/hygiene checks. |
+| Security automation | DONE | CodeQL for Python/JavaScript, pip-audit, Bandit and Gitleaks are configured; dependency auditing is separated from normal CI. |
+| Software release | DONE | `v0.7.2` is published as a verified software release with `GramArtha-v0.7.2-Judge-Package.zip`, public-runtime archive, wheel, source distribution, CycloneDX SBOM, release manifest and SHA-256 checksums. Platform launchers are included for macOS, Linux and Windows. |
 
-The strongest honest product is an operational local advisory and decision engine. Generic outputs
-remain low-confidence `MODELLED_BENCHMARK` planning cases, not present-day village observations,
-statewide economic completeness, empirical survival probabilities, or lender-approved investments.
+## Strongest honest product claim
+
+GramArtha is an operational **hyper-local business feasibility and financial-structuring decision-support system** whose distinguishing core is economic-network repair rather than one-shot text generation.
+
+Its strongest claims are the implemented evidence/provenance layer, economic graph and flow/bottleneck logic, counterfactual/MVV search over an explicit candidate library, 36-month finance, deterministic stress/robustness analysis, multilingual product/reporting layer and auditable AI boundary.
+
+## Boundaries that remain intentional
+
+Generic outputs may still contain low-confidence `MODELLED_BENCHMARK` planning cases. GramArtha does **not** claim complete present-day village observations statewide, empirically calibrated survival probabilities, an unrestricted global venture optimizer, lender-approved investments, guaranteed business success, or that scheme eligibility equals sanction.
+
+See [`LIMITATIONS.md`](LIMITATIONS.md), [`VALIDATION.md`](VALIDATION.md) and [`60_SECOND_JUDGE_VIEW.md`](60_SECOND_JUDGE_VIEW.md) for the shortest reviewer path.
