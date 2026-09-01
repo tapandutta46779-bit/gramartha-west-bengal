@@ -25,8 +25,9 @@
 <br>
 
 [![Live App](https://img.shields.io/badge/🚀%20OPEN%20LIVE%20APP-0f766e?style=for-the-badge)](https://gramartha-west-bengal.onrender.com/ui/)
+[![60 Second Judge View](https://img.shields.io/badge/⚡%2060--SECOND%20JUDGE%20VIEW-df6d20?style=for-the-badge)](docs/60_SECOND_JUDGE_VIEW.md)
 [![Download Judge Package](https://img.shields.io/badge/⬇️%20DOWNLOAD%20JUDGE%20PACKAGE-2563eb?style=for-the-badge)](https://github.com/tapandutta46779-bit/gramartha-west-bengal/releases/download/v0.7.2/GramArtha-v0.7.2-Judge-Package.zip)
-[![Judge Walkthrough](https://img.shields.io/badge/🎯%20JUDGES%20START%20HERE-df6d20?style=for-the-badge)](docs/SIH_JUDGE_WALKTHROUGH.md)
+[![Judge Walkthrough](https://img.shields.io/badge/🎯%205--MINUTE%20JUDGE%20WALKTHROUGH-b45309?style=for-the-badge)](docs/SIH_JUDGE_WALKTHROUGH.md)
 
 [![Verified Release](https://img.shields.io/badge/📦%20VERIFIED%20v0.7.2%20RELEASE-4338ca?style=for-the-badge)](https://github.com/tapandutta46779-bit/gramartha-west-bengal/releases/tag/v0.7.2)
 [![Architecture](https://img.shields.io/badge/🗺️%20SYSTEM%20MAPS-7c3aed?style=for-the-badge)](ARCHITECTURE.md)
@@ -55,16 +56,18 @@
 
 Language AI stays at the edge. Geography, evidence status, economic flow, venture selection, finance, uncertainty and robust ranking are deterministic or explicitly modelled. Weak, stale or missing evidence is preserved as such instead of being silently converted into a precise present-day fact.
 
-## ⚡ Four ways to evaluate GramArtha
+## ⚡ Four fast ways to evaluate GramArtha
 
 <table>
 <tr>
 <td width="25%" valign="top"><b>🚀 Open it now</b><br><br>Run a real analysis in the hosted product. No installation required.<br><br><a href="https://gramartha-west-bengal.onrender.com/ui/"><b>Open live GramArtha →</b></a></td>
+<td width="25%" valign="top"><b>⚡ Understand it in 60 seconds</b><br><br>Reality → network repair → financial survival, plus the 7-stage UI-to-engine map.<br><br><a href="docs/60_SECOND_JUDGE_VIEW.md"><b>Open 60-second judge view →</b></a></td>
 <td width="25%" valign="top"><b>⬇️ Download the product</b><br><br>Get the 38 MB judge-ready ZIP with prepared public runtime databases and macOS/Linux/Windows launchers.<br><br><a href="https://github.com/tapandutta46779-bit/gramartha-west-bengal/releases/download/v0.7.2/GramArtha-v0.7.2-Judge-Package.zip"><b>Download v0.7.2 →</b></a></td>
-<td width="25%" valign="top"><b>🎯 Judge it in 5 minutes</b><br><br>Follow the evidence-first SIH walkthrough from locality resolution to finance and audit trail.<br><br><a href="docs/SIH_JUDGE_WALKTHROUGH.md"><b>Open judge walkthrough →</b></a></td>
-<td width="25%" valign="top"><b>🔬 Audit the engineering</b><br><br>Inspect architecture, validation, limitations, provenance and quality gates.<br><br><a href="docs/README.md"><b>Open documentation index →</b></a></td>
+<td width="25%" valign="top"><b>🎯 Judge it in 5 minutes</b><br><br>Follow one decision from locality evidence through graph repair, finance, risk and audit trail.<br><br><a href="docs/SIH_JUDGE_WALKTHROUGH.md"><b>Open judge walkthrough →</b></a></td>
 </tr>
 </table>
+
+**Need the deep technical audit?** Start at the [`documentation index`](docs/README.md), then inspect [`IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md), [`VALIDATION.md`](docs/VALIDATION.md) and [`LIMITATIONS.md`](docs/LIMITATIONS.md).
 
 ---
 
